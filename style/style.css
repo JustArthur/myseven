@@ -1,0 +1,138 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    list-style: none;
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+    outline: none;
+}
+
+body {
+
+    margin: 20px;
+}
+
+.navbar {
+    display: flex;
+    border-bottom: 2px solid #ddd;
+}
+
+.navbar button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background-color: #f4f4f4;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+.navbar button:hover,
+.navbar button.active {
+    background-color: #ddd;
+}
+
+.content {
+    display: none;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-top: none;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.content.active {
+    display: flex;
+}
+
+
+/** tableau **/
+table{
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table :is(th, td) {
+    white-space: nowrap;
+    padding: 0 6px;
+    height: 40px;
+    font-size: 14px;
+}
+
+table th {
+    transition: 0.3s;
+    user-select: none;
+    text-align: inherit;
+    width: 200px;
+}
+
+table th i {
+    margin-left: 5px;
+    font-size: 12px
+}
+
+table th:is(.active,:hover) {
+    color: inherit;
+}
+
+table td {
+    opacity: 0.75;
+}
+
+table tr {
+    border-bottom: 1px solid #e9e5f3;
+}
+
+table tbody tr:last-child {
+    border: 0;
+}
+
+table tbody tr:nth-child(odd) {
+    background-color: rgb(97 102 120 / 4%);
+}
+
+table tbody tr:hover {
+    background-color: rgb(97 102 120 / 10%)
+}
+
+.pagination {
+    align-items: center;
+    gap: 5px;
+}
+
+.pagination.visible {
+    display: flex;
+}
+
+.pagination.invisible {
+    display: none;
+}
+
+.pagination span {
+    margin-left: auto;
+    font-weight: 600;
+}
+
+.pagination button {
+    padding: 5px 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f4f4f4;
+    font-size: 12px;
+}
+
+.pagination button:hover {
+    background-color: #ddd;
+    cursor: pointer;
+}
+
+.searchBar {
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.searchBar:focus {
+    border-color: #007bff;
+}
