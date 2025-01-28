@@ -2,7 +2,7 @@
     ini_set('display_errors', '1');
     ini_set('display_startup_errors', '1');
     error_reporting(E_ALL);
-    require_once( "connexionDB.php");
+    require_once("connexionDB.php");
 
 
     $DBB = new ConnexionDB();
@@ -14,7 +14,7 @@
         session_start();
     
         $identifiant = $_COOKIE['user_session'];
-        
+
         $stmt = $DB->prepare('SELECT * FROM testtablelogin WHERE identifiantUser = ?');
         $stmt->execute([$identifiant]);
         $user = $stmt->fetch();
@@ -29,7 +29,7 @@
         }
     }
 
-    $resClient = $DB->prepare('SELECT * FROM Clients ORDER BY nom ASC');
+    $resClient = $DB->prepare('SELECT * FROM clients ORDER BY nom ASC');
     $resClient->execute();
     $resClient = $resClient->fetchAll();
 
