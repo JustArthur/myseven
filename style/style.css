@@ -9,7 +9,9 @@
 }
 
 body {
-
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
     margin: 20px;
 }
 
@@ -135,4 +137,24 @@ table tbody tr:hover {
 
 .searchBar:focus {
     border-color: #007bff;
+}
+
+a.login-button {
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: none;
+    background-color: #007bff;
+    font-size: 12px;
+    text-align: center;
+    transition: background-color 0.3s;
+    color: white;
+}
+
+a.login-button:hover {
+    background-color: #0056b3;
+    color: white;
+}
+
+a.login-button.deco {
+    background-color: #dc3545;
 }
