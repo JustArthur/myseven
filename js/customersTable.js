@@ -17,6 +17,8 @@ const searchCustomers = () => {
             row.lastName.toLowerCase().includes(searchTerm) ||
             row.firstName.toLowerCase().includes(searchTerm) ||
             row.email.toLowerCase().includes(searchTerm) ||
+            row.phone.toLowerCase().includes(searchTerm) ||
+            row.adress.toLowerCase().includes(searchTerm) ||
             row.numCNI.toLowerCase().includes(searchTerm)
         );
 
@@ -32,6 +34,8 @@ const searchCustomers = () => {
                     <td>${row.lastName}</td>
                     <td>${row.firstName}</td>
                     <td>${row.email}</td>
+                    <td>${row.phone}</td>
+                    <td>${row.adress}</td>
                     <td>${row.numCNI}</td>
                 </tr>
             `).join('');
@@ -68,6 +72,8 @@ const updateTable = () => {
                     <td>${row.lastName}</td>
                     <td>${row.firstName}</td>
                     <td>${row.email}</td>
+                    <td>${row.phone}</td>
+                    <td>${row.adress}</td>
                     <td>${row.numCNI}</td>
                 </tr>
             `).join('');

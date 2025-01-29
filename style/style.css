@@ -158,3 +158,24 @@ a.login-button:hover {
 a.login-button.deco {
     background-color: #dc3545;
 }
+
+.btn_list {
+    display: flex;
+    gap: 10px;
+}
+
+.btn_list a.btn-generete {
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: none;
+    background-color: #007bff;
+    font-size: 12px;
+    text-align: center;
+    transition: background-color 0.3s;
+    color: white;
+}
+
+.btn_list a.btn-generete:hover {
+    background-color: #0056b3;
+    color: white;
+}

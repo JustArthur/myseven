@@ -2,8 +2,16 @@
     ini_set('display_errors', '1');
     ini_set('display_startup_errors', '1');
     error_reporting(E_ALL);
+
     require_once("connexionDB.php");
 
+    $tableauOnglets = [
+        'Clients',
+        'Véhicules',
+        'Générer des PDF'
+    ];
+
+    $i = 1;
 
     $DBB = new ConnexionDB();
     $DB = $DBB->DB();
@@ -27,6 +35,8 @@
         } else {
             session_destroy();
         }
+    } else {
+        header('Location: ./php/login.php');
     }
 
     $resClient = $DB->prepare('SELECT * FROM clients ORDER BY nom ASC');
@@ -54,29 +64,28 @@
 
     <link rel="stylesheet" href="./style/style.css">
 
-    <title>Document</title>
+    <title>Admin Panel</title>
 </head>
 <body>
 
     <div class="login">
         <?php if (!empty($_SESSION['user'])) { ?>
             <a href="./php/logout.php" class="login-button deco">Se deconnecter</a>
-        <?php } else {?>
-            <a href="./php/login.php" class="login-button">Se connecter</a>
-        <?php } ?>
+        <?php } else {
+            header('Location: ./php/login.php');
+        } ?>
     </div>
 
     <div class="tableau">
         <div class="navbar">
-            <button class="tab-button active" data-tab="tab1">Clients</button>
-            <button class="tab-button" data-tab="tab2">Véhicules</button>
-            <button class="tab-button" data-tab="tab3">Onglet 3</button>
-            <button class="tab-button" data-tab="tab4">Onglet 4</button>
+            <?php foreach($tableauOnglets as $onglet) { ?>
+                <button class="tab-button <?php if($i === 1) { echo 'active'; } ?>" data-tab="tab<?= $i ?>"><?= $onglet ?></button>
+            <?php $i++; } ?>
         </div>
 
         <!-- Clients -->
         <div class="content active" id="tab1">
-            <h2>Clients</h2>
+            <h2><?= $tableauOnglets[0] ?></h2>
             <input type="text" class="searchBar" id="searchBarCustomer" placeholder="Rechercher un client..." onkeyup="searchCustomers()">
 
             <table class="table" id="customersTable">
@@ -85,6 +94,8 @@
                         <th>Nom de famille</th>
                         <th>Prénom</th>
                         <th>Adresse-mail</th>
+                        <th>Téléphone</th>
+                        <th>Adresse Postal</th>
                         <th>Numéro CNI</th>
                     </tr>
                 </thead>
@@ -102,7 +113,7 @@
 
         <!-- Véhicules -->
         <div class="content" id="tab2">
-            <h2>Véhicules</h2>
+            <h2><?= $tableauOnglets[1] ?></h2>
                 <input type="text" class="searchBar" id="searchBarVehicule" placeholder="Rechercher un véhicule..." onkeyup="searchVehicule()">
 
                 <table class="table" id="vehiculeTable">
@@ -111,6 +122,9 @@
                             <th>Immatriculation</th>
                             <th>Marque</th>
                             <th>Modèle</th>
+                            <th>Puissance</th>
+                            <th>Type boite</th>
+                            <th>Couleur</th>
                             <th>Kilomètrage</th>
                         </tr>
                     </thead>
@@ -127,13 +141,12 @@
         </div>
 
         <div class="content" id="tab3">
-            <h2>Onglet 3</h2>
-            <p>test desc</p>
-        </div>
-
-        <div class="content" id="tab4">
-            <h2>Onglet 4</h2>
-            <p>test desc</p>
+            <h2><?= $tableauOnglets[2] ?></h2>
+            <div class="btn_list">
+                <a href="./php/generatePDF/generateProcurationSignature.php" class="btn-generete">Procuration signature</a>
+                <a href="./php/generatePDF/generateBonReservation.php" class="btn-generete">Bon de réservation</a>
+                <a href="./php/generatePDF/generateAccordBaissePrix.php" class="btn-generete">Accord de baisse du prix net vendeur</a>
+            </div>
         </div>
     </div>
     
@@ -148,6 +161,8 @@
                         lastName: \"" . addslashes($client['nom']) . "\",
                         firstName: \"" . addslashes($client['prenom']) . "\",
                         email: \"" . addslashes($client['email']) . "\",
+                        phone: \"" . addslashes($client['telephone']) . "\",
+                        adress: \"" . addslashes($client['adresse'] . " " . $client['ville'] . " " . $client['cp']) . "\",
                         numCNI: \"" . addslashes($client['numero_cni']) . "\"
                     }";
                 }
@@ -164,7 +179,10 @@
                         immatriculation: \"" . addslashes($vehicule['immatriculation']) . "\",
                         marque: \"" . addslashes($vehicule['marque']) . "\",
                         model: \"" . addslashes($vehicule['model']) . "\",
-                        kilometrage: \"" . addslashes($vehicule['kilometrage']) . "\"
+                        puissance: \"" . addslashes($vehicule['puissance']) . "\",
+                        type_boite: \"" . addslashes($vehicule['type_boite']) . "\",
+                        couleur: \"" . addslashes($vehicule['couleur']) . "\",
+                        kilometrage: \"" . addslashes($vehicule['kilometrage']."km") . "\"
                     }";
                 }
                 echo implode(",\n", $itemsVehicule);

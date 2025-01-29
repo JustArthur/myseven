@@ -17,6 +17,9 @@ const searchVehicule = () => {
             row.immatriculation.toLowerCase().includes(searchTerm) ||
             row.marque.toLowerCase().includes(searchTerm) ||
             row.model.toLowerCase().includes(searchTerm) ||
+            row.puissance.toLowerCase().includes(searchTerm) ||
+            row.type_boite.toLowerCase().includes(searchTerm) ||
+            row.couleur.toLowerCase().includes(searchTerm) ||
             row.kilometrage.toLowerCase().includes(searchTerm)
         );
 
@@ -32,6 +35,9 @@ const searchVehicule = () => {
                     <td>${row.immatriculation}</td>
                     <td>${row.marque}</td>
                     <td>${row.model}</td>
+                    <td>${row.puissance}</td>
+                    <td>${row.type_boite}</td>
+                    <td>${row.couleur}</td>
                     <td>${row.kilometrage}</td>
                 </tr>
             `).join('');
@@ -68,6 +74,9 @@ const updateTableVehicule = () => {
                     <td>${row.immatriculation}</td>
                     <td>${row.marque}</td>
                     <td>${row.model}</td>
+                    <td>${row.puissance}</td>
+                    <td>${row.type_boite}</td>
+                    <td>${row.couleur}</td>
                     <td>${row.kilometrage}</td>
                 </tr>
             `).join('');
