@@ -77,11 +77,6 @@
         }
     
     }
-
-    // A SUPPRIMER DEBUG ONLY
-    if (!empty($_SESSION['user'])) {
-        var_dump($_SESSION['user']);
-    }
 ?>
 
 <!DOCTYPE html>
@@ -118,22 +113,24 @@
                 <h2><?= $tableauOnglets[0] ?></h2>
                 <input type="text" class="searchBar" id="searchBarCustomer" placeholder="Rechercher un client..." onkeyup="searchCustomers()">
 
-                <table class="table" id="customersTable">
-                    <thead class="table-head" id="customersTableHead">
-                        <tr class="table-row" id="customersTableHeadRow">
-                            <th>Nom de famille</th>
-                            <th>Prénom</th>
-                            <th>Adresse-mail</th>
-                            <th>Téléphone</th>
-                            <th>Adresse Postal</th>
-                            <th>Numéro CNI</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody class="table-body" id="customersTableBody">
-                        <!-- INSERT AVEC JS -->
-                    </tbody>
-                </table>
+                <div class="overflowTable">
+                    <table class="table" id="customersTable">
+                        <thead class="table-head" id="customersTableHead">
+                            <tr class="table-row" id="customersTableHeadRow">
+                                <th>Nom de famille</th>
+                                <th>Prénom</th>
+                                <th>Adresse-mail</th>
+                                <th>Téléphone</th>
+                                <th>Adresse Postal</th>
+                                <th>Numéro CNI</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body" id="customersTableBody">
+                            <!-- INSERT AVEC JS -->
+                        </tbody>
+                    </table>
+                </div>
 
                 <div class="pagination visible" id="paginationCustomer">
                     <a onclick="prevPage()">Page précédente</a>
@@ -147,23 +144,25 @@
                 <h2><?= $tableauOnglets[1] ?></h2>
                     <input type="text" class="searchBar" id="searchBarVehicule" placeholder="Rechercher un véhicule..." onkeyup="searchVehicule()">
 
-                    <table class="table" id="vehiculeTable">
-                        <thead class="table-head" id="vehiculeTableHead">
-                            <tr class="table-row" id="vehiculeTableHeadRow">
-                                <th>Immatriculation</th>
-                                <th>Marque</th>
-                                <th>Modèle</th>
-                                <th>Puissance</th>
-                                <th>Type boite</th>
-                                <th>Couleur</th>
-                                <th>Kilomètrage</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-body" id="vehiculeTableBody">
-                            <!-- INSERT AVEC JS -->
-                        </tbody>
-                    </table>
+                    <div class="overflowTable">
+                        <table class="table" id="vehiculeTable">
+                            <thead class="table-head" id="vehiculeTableHead">
+                                <tr class="table-row" id="vehiculeTableHeadRow">
+                                    <th>Immatriculation</th>
+                                    <th>Marque</th>
+                                    <th>Modèle</th>
+                                    <th>Puissance</th>
+                                    <th>Type boite</th>
+                                    <th>Couleur</th>
+                                    <th>Kilomètrage</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-body" id="vehiculeTableBody">
+                                <!-- INSERT AVEC JS -->
+                            </tbody>
+                        </table>
+                    </div>
 
                     <div class="pagination visible" id="paginationVehicule">
                         <a onclick="prevPageVehicule()">Page précédente</a>

@@ -1,5 +1,15 @@
 let currentPage = 1,
-    rowsPerPage = 10;
+    rowsPerPage = 40;
+
+if (rowsCustomers.length <= rowsPerPage) {
+    const pagination = document.getElementById('paginationCustomer');
+    pagination.classList.remove('visible');
+    pagination.classList.add('invisible');
+} else {
+    const pagination = document.getElementById('paginationCustomer');
+    pagination.classList.remove('invisible');
+    pagination.classList.add('visible');
+}
 
 const searchCustomers = () => {
     const searchTerm = document.getElementById('searchBarCustomer').value.toLowerCase();

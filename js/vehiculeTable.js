@@ -1,5 +1,15 @@
 let currentPageVehicule = 1,
-    rowsPerPageVehicule = 10;
+    rowsPerPageVehicule = 50;
+
+if (rowsCustomers.length <= rowsPerPage) {
+    const pagination = document.getElementById('paginationCustomer');
+    pagination.classList.remove('visible');
+    pagination.classList.add('invisible');
+} else {
+    const pagination = document.getElementById('paginationCustomer');
+    pagination.classList.remove('invisible');
+    pagination.classList.add('visible');
+}
 
 const searchVehicule = () => {
     const searchTerm = document.getElementById('searchBarVehicule').value.toLowerCase();
