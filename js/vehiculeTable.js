@@ -1,5 +1,5 @@
 let currentPageVehicule = 1,
-    rowsPerPageVehicule = 50;
+    rowsPerPageVehicule = 10;
 
 const searchVehicule = () => {
     const searchTerm = document.getElementById('searchBarVehicule').value.toLowerCase();
@@ -29,7 +29,7 @@ const searchVehicule = () => {
 
     const tbody = document.getElementById("vehiculeTableBody");
     tbody.innerHTML = filteredRowsVehicule
-        .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+        .slice((currentPageVehicule - 1) * rowsPerPageVehicule, currentPageVehicule * rowsPerPageVehicule)
         .map(row => `
                 <tr>
                     <td>${row.immatriculation}</td>
@@ -39,6 +39,9 @@ const searchVehicule = () => {
                     <td>${row.type_boite}</td>
                     <td>${row.couleur}</td>
                     <td>${row.kilometrage}</td>
+                    <td>
+                        <input type="radio" name="selectedVehicule" value="${row.immatriculation}">
+                    </td>
                 </tr>
             `).join('');
     updatePaginationVehicule();
@@ -46,30 +49,31 @@ const searchVehicule = () => {
 
 const updatePaginationVehicule = () => {
     const pageInfo = document.getElementById('pageInfoVehicule');
-    const totalPages = Math.ceil(rowsVehicules.length / rowsPerPage);
-    pageInfo.textContent = `Page ${currentPage} / ${totalPages}`;
+    const totalPagesVehicules = Math.ceil(rowsVehicules.length / rowsPerPageVehicule);
+    pageInfo.textContent = `Page ${currentPageVehicule} / ${totalPagesVehicules}`;
 };
 
 const prevPageVehicule = () => {
-    if (currentPage > 1) {
-        currentPage--;
-        updateTable();
+    if (currentPageVehicule > 1) {
+        currentPageVehicule--;
+        updateTableVehicule();
     }
 };
 
 const nextPageVehicule = () => {
-    const totalPages = Math.ceil(rowsVehicules.length / rowsPerPage);
-    if (currentPage < totalPages) {
-        currentPage++;
-        updateTable();
+    const totalPagesVehicules = Math.ceil(rowsVehicules.length / rowsPerPageVehicule);
+
+    if (currentPageVehicule < totalPagesVehicules) {
+        currentPageVehicule++;
+        updateTableVehicule();
     }
 };
 
 const updateTableVehicule = () => {
     const tbody = document.getElementById("vehiculeTableBody");
     tbody.innerHTML = rowsVehicules
-        .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
-        .map(row => `
+        .slice((currentPageVehicule - 1) * rowsPerPageVehicule, currentPageVehicule * rowsPerPageVehicule)
+        .map((row) => `
                 <tr>
                     <td>${row.immatriculation}</td>
                     <td>${row.marque}</td>
@@ -78,6 +82,9 @@ const updateTableVehicule = () => {
                     <td>${row.type_boite}</td>
                     <td>${row.couleur}</td>
                     <td>${row.kilometrage}</td>
+                    <td>
+                        <input type="radio" name="selectedVehicule" value="${row.immatriculation}">
+                    </td>
                 </tr>
             `).join('');
     updatePaginationVehicule();

@@ -16,8 +16,7 @@
     $DBB = new ConnexionDB();
     $DB = $DBB->DB();
 
-    $prixNetVendeur = 1000;
-    
+
     $resClient = $DB->prepare('SELECT * FROM clients WHERE email = ?');
     $resClient->execute([$_POST['client']]);
     $resClient = $resClient->fetch();
@@ -32,32 +31,36 @@
 
     $importVarPDF = [
         $resClient['nom'] . ' ' . $resClient['prenom'],
-        $resVehicule['marque'] . ' ' . $resVehicule['model'], //marque model
+        //date anniv
+        //lieu naissance
+        $resClient['adresse'] . ' ' . ucfirst($resClient['ville']) . ' ' . $resClient['cp'],
+        $resVehicule['marque'] . ' ' . $resVehicule['model'],
         $resVehicule['immatriculation'], //immat
-        $prixNetVendeur,
         $day,
         $month,
         $year
     ];
 
-    $pdfNameFile = "ACCORD DE BAISSE DU PRIX NET VENDEUR" . $importVarPDF[0] . ".pdf";
+    $pdfNameFile = "PROCURATION DE SIGNATURE " . $importVarPDF[0] . ".pdf";
 
     $pdf = new \setasign\Fpdi\Fpdi();
 
-    $pageCount = $pdf->setSourceFile('../../pdf/ACCORD_DE_BAISSE_DU_PRIX_NET_VENDEUR.pdf');
+    $pageCount = $pdf->setSourceFile('../../pdf/PROCURATION_DE_SIGNATURE.pdf');
     $pageId = $pdf->importPage(1, \setasign\Fpdi\PdfReader\PageBoundaries::MEDIA_BOX);
 
     $pdf->addPage();
     $pdf->useImportedPage($pageId, 5, 10, 200);
 
     $importCoordinates = [
-        ['x' => 52, 'y' => 91],  // nom prénom
-        ['x' => 70, 'y' => 102],  // marque model
-        ['x' => 45, 'y' => 112],  // immat
-        ['x' => 118, 'y' => 123],  // prix net vendeur
-        ['x' => 55, 'y' => 161],  // day
-        ['x' => 68, 'y' => 161],  // month
-        ['x' => 80, 'y' => 161]  // year
+        ['x' => 52, 'y' => 87],  // nom prénom
+        //date anniv
+        //lieu naissance
+        ['x' => 48, 'y' => 104],  // adresse
+        ['x' => 58, 'y' => 147],  // marque model
+        ['x' => 50, 'y' => 155],  // immat
+        ['x' => 51, 'y' => 199],  // day
+        ['x' => 59, 'y' => 199],  // month
+        ['x' => 67, 'y' => 199]  // year
     ];
 
     foreach ($importVarPDF as $index => $valPDF) {

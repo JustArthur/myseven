@@ -49,6 +49,36 @@
 
     $DBClose = $DBB->closeConnection();
 
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        extract($_POST);
+    
+        $routes = [
+            'generateProcurationSignature' => 'generateProcurationSignature.php',
+            'generateBonReservation' => 'generateBonReservation.php',
+            'generateAccordBaissePrix' => 'generateAccordBaissePrix.php'
+        ];
+
+        if (empty($selectedCustomer) || empty($selectedVehicule)) {
+            echo "<script>
+                    alert('Veuillez sélectionner un client et un véhicule avant de continuer.');
+                  </script>";
+        } else {
+            foreach ($routes as $key => $file) {
+                if (isset($_POST[$key])) {
+                    echo "
+                        <form style='display:none' id='postForm' action='./php/generatePDF/$file' target='_blank' method='POST'>
+                            <input type='hidden' name='client' value='" . htmlspecialchars($selectedCustomer) . "'>
+                            <input type='hidden' name='immatCar' value='" . htmlspecialchars($selectedVehicule) . "'>
+                        </form>
+                        <script>document.getElementById('postForm').submit();</script>
+                    ";
+                }
+            }
+        }
+    
+    }
+
+    // A SUPPRIMER DEBUG ONLY
     if (!empty($_SESSION['user'])) {
         var_dump($_SESSION['user']);
     }
@@ -67,88 +97,91 @@
     <title>Admin Panel</title>
 </head>
 <body>
-
-    <div class="login">
-        <?php if (!empty($_SESSION['user'])) { ?>
-            <a href="./php/logout.php" class="login-button deco">Se deconnecter</a>
-        <?php } else {
-            header('Location: ./php/login.php');
-        } ?>
-    </div>
-
-    <div class="tableau">
-        <div class="navbar">
-            <?php foreach($tableauOnglets as $onglet) { ?>
-                <button class="tab-button <?php if($i === 1) { echo 'active'; } ?>" data-tab="tab<?= $i ?>"><?= $onglet ?></button>
-            <?php $i++; } ?>
+    <form method="POST">
+        <div class="login">
+            <?php if (!empty($_SESSION['user'])) { ?>
+                <a href="./php/logout.php" class="login-button deco">Se deconnecter</a>
+            <?php } else {
+                header('Location: ./php/login.php');
+            } ?>
         </div>
 
-        <!-- Clients -->
-        <div class="content active" id="tab1">
-            <h2><?= $tableauOnglets[0] ?></h2>
-            <input type="text" class="searchBar" id="searchBarCustomer" placeholder="Rechercher un client..." onkeyup="searchCustomers()">
-
-            <table class="table" id="customersTable">
-                <thead class="table-head" id="customersTableHead">
-                    <tr class="table-row" id="customersTableHeadRow">
-                        <th>Nom de famille</th>
-                        <th>Prénom</th>
-                        <th>Adresse-mail</th>
-                        <th>Téléphone</th>
-                        <th>Adresse Postal</th>
-                        <th>Numéro CNI</th>
-                    </tr>
-                </thead>
-                <tbody class="table-body" id="customersTableBody">
-                    <tr></tr>
-                </tbody>
-            </table>
-
-            <div class="pagination visible" id="paginationCustomer">
-                <button onclick="prevPage()">Page précédente</button>
-                <button onclick="nextPage()">Page suivante</button>
-                <span id="pageInfoCustomer"></span>
+        <div class="tableau">
+            <div class="navbar">
+                <?php foreach($tableauOnglets as $onglet) { ?>
+                    <a class="tab-button <?php if($i === 1) { echo 'active'; } ?>" data-tab="tab<?= $i ?>"><?= $onglet ?></a>
+                <?php $i++; } ?>
             </div>
-        </div>
 
-        <!-- Véhicules -->
-        <div class="content" id="tab2">
-            <h2><?= $tableauOnglets[1] ?></h2>
-                <input type="text" class="searchBar" id="searchBarVehicule" placeholder="Rechercher un véhicule..." onkeyup="searchVehicule()">
+            <!-- Clients -->
+            <div class="content active" id="tab1">
+                <h2><?= $tableauOnglets[0] ?></h2>
+                <input type="text" class="searchBar" id="searchBarCustomer" placeholder="Rechercher un client..." onkeyup="searchCustomers()">
 
-                <table class="table" id="vehiculeTable">
-                    <thead class="table-head" id="vehiculeTableHead">
-                        <tr class="table-row" id="vehiculeTableHeadRow">
-                            <th>Immatriculation</th>
-                            <th>Marque</th>
-                            <th>Modèle</th>
-                            <th>Puissance</th>
-                            <th>Type boite</th>
-                            <th>Couleur</th>
-                            <th>Kilomètrage</th>
+                <table class="table" id="customersTable">
+                    <thead class="table-head" id="customersTableHead">
+                        <tr class="table-row" id="customersTableHeadRow">
+                            <th>Nom de famille</th>
+                            <th>Prénom</th>
+                            <th>Adresse-mail</th>
+                            <th>Téléphone</th>
+                            <th>Adresse Postal</th>
+                            <th>Numéro CNI</th>
+                            <th></th>
                         </tr>
                     </thead>
-                    <tbody class="table-body" id="vehiculeTableBody">
-                        <tr></tr>
+                    <tbody class="table-body" id="customersTableBody">
+                        <!-- INSERT AVEC JS -->
                     </tbody>
                 </table>
 
-                <div class="pagination visible" id="paginationVehicule">
-                    <button onclick="prevPageVehicule()">Page précédente</button>
-                    <button onclick="nextPageVehicule()">Page suivante</button>
-                    <span id="pageInfoVehicule"></span>
+                <div class="pagination visible" id="paginationCustomer">
+                    <a onclick="prevPage()">Page précédente</a>
+                    <a onclick="nextPage()">Page suivante</a>
+                    <span id="pageInfoCustomer"></span>
                 </div>
-        </div>
+            </div>
 
-        <div class="content" id="tab3">
-            <h2><?= $tableauOnglets[2] ?></h2>
-            <div class="btn_list">
-                <a href="./php/generatePDF/generateProcurationSignature.php" class="btn-generete">Procuration signature</a>
-                <a href="./php/generatePDF/generateBonReservation.php" class="btn-generete">Bon de réservation</a>
-                <a href="./php/generatePDF/generateAccordBaissePrix.php" class="btn-generete">Accord de baisse du prix net vendeur</a>
+            <!-- Véhicules -->
+            <div class="content" id="tab2">
+                <h2><?= $tableauOnglets[1] ?></h2>
+                    <input type="text" class="searchBar" id="searchBarVehicule" placeholder="Rechercher un véhicule..." onkeyup="searchVehicule()">
+
+                    <table class="table" id="vehiculeTable">
+                        <thead class="table-head" id="vehiculeTableHead">
+                            <tr class="table-row" id="vehiculeTableHeadRow">
+                                <th>Immatriculation</th>
+                                <th>Marque</th>
+                                <th>Modèle</th>
+                                <th>Puissance</th>
+                                <th>Type boite</th>
+                                <th>Couleur</th>
+                                <th>Kilomètrage</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body" id="vehiculeTableBody">
+                            <!-- INSERT AVEC JS -->
+                        </tbody>
+                    </table>
+
+                    <div class="pagination visible" id="paginationVehicule">
+                        <a onclick="prevPageVehicule()">Page précédente</a>
+                        <a onclick="nextPageVehicule()">Page suivante</a>
+                        <span id="pageInfoVehicule"></span>
+                    </div>
+            </div>
+
+            <div class="content" id="tab3">
+                <h2><?= $tableauOnglets[2] ?></h2>
+                <div class="btn_list">
+                    <button type="submit" name="generateProcurationSignature" target="_blank" class="btn-generete action-link">Procuration signature</button>
+                    <button type="submit" name="generateBonReservation" target="_blank" class="btn-generete action-link">Bon de réservation</button>
+                    <button type="submit" name="generateAccordBaissePrix" target="_blank" class="btn-generete action-link">Accord de baisse du prix net vendeur</button>
+                </div>
             </div>
         </div>
-    </div>
+    </form>
     
 
     <script>
@@ -191,6 +224,8 @@
     </script>
     <script type="text/javascript" src="js/customersTable.js"></script>
     <script type="text/javascript" src="js/vehiculeTable.js"></script>
+
+    <script type="text/javascript" src="js/verifInput.js"></script>
 
     <script type="text/javascript" src="js/navigation.js"></script>
 </body>

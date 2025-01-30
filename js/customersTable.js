@@ -1,5 +1,5 @@
 let currentPage = 1,
-    rowsPerPage = 50;
+    rowsPerPage = 10;
 
 const searchCustomers = () => {
     const searchTerm = document.getElementById('searchBarCustomer').value.toLowerCase();
@@ -29,7 +29,7 @@ const searchCustomers = () => {
     const tbody = document.getElementById("customersTableBody");
     tbody.innerHTML = filteredRows
         .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
-        .map(row => `
+        .map((row) => `
                 <tr>
                     <td>${row.lastName}</td>
                     <td>${row.firstName}</td>
@@ -37,6 +37,9 @@ const searchCustomers = () => {
                     <td>${row.phone}</td>
                     <td>${row.adress}</td>
                     <td>${row.numCNI}</td>
+                    <td>
+                        <input type="radio" name="selectedCustomer" value="${row.email}">
+                    </td>
                 </tr>
             `).join('');
     updatePagination();
@@ -67,16 +70,19 @@ const updateTable = () => {
     const tbody = document.getElementById("customersTableBody");
     tbody.innerHTML = rowsCustomers
         .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
-        .map(row => `
-                <tr>
-                    <td>${row.lastName}</td>
-                    <td>${row.firstName}</td>
-                    <td>${row.email}</td>
-                    <td>${row.phone}</td>
-                    <td>${row.adress}</td>
-                    <td>${row.numCNI}</td>
-                </tr>
-            `).join('');
+        .map((row) => `
+            <tr>
+                <td>${row.lastName}</td>
+                <td>${row.firstName}</td>
+                <td>${row.email}</td>
+                <td>${row.phone}</td>
+                <td>${row.adress}</td>
+                <td>${row.numCNI}</td>
+                <td>
+                    <input type="radio" name="selectedCustomer" value="${row.email}">
+                </td>
+            </tr>
+        `).join('');
     updatePagination();
 };
 

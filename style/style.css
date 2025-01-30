@@ -8,7 +8,7 @@
     outline: none;
 }
 
-body {
+form {
     display: flex;
     flex-direction: column;
     gap: 40px;
@@ -20,7 +20,7 @@ body {
     border-bottom: 2px solid #ddd;
 }
 
-.navbar button {
+.navbar a {
     flex: 1;
     padding: 10px;
     border: none;
@@ -30,8 +30,8 @@ body {
     transition: background-color 0.3s;
 }
 
-.navbar button:hover,
-.navbar button.active {
+.navbar a:hover,
+.navbar a.active {
     background-color: #ddd;
 }
 
@@ -98,6 +98,10 @@ table tbody tr:hover {
     background-color: rgb(97 102 120 / 10%)
 }
 
+table tbody tr td:last-child input {
+    cursor: pointer;
+}
+
 .pagination {
     align-items: center;
     gap: 5px;
@@ -116,7 +120,7 @@ table tbody tr:hover {
     font-weight: 600;
 }
 
-.pagination button {
+.pagination a {
     padding: 5px 20px;
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -124,7 +128,7 @@ table tbody tr:hover {
     font-size: 12px;
 }
 
-.pagination button:hover {
+.pagination a:hover {
     background-color: #ddd;
     cursor: pointer;
 }
@@ -139,7 +143,7 @@ table tbody tr:hover {
     border-color: #007bff;
 }
 
-a.login-button {
+.login-button {
     padding: 10px 15px;
     border-radius: 5px;
     border: none;
@@ -150,12 +154,12 @@ a.login-button {
     color: white;
 }
 
-a.login-button:hover {
+.login-button:hover {
     background-color: #0056b3;
     color: white;
 }
 
-a.login-button.deco {
+.login-button.deco {
     background-color: #dc3545;
 }
 
@@ -164,7 +168,7 @@ a.login-button.deco {
     gap: 10px;
 }
 
-.btn_list a.btn-generete {
+.btn_list .btn-generete {
     padding: 10px 15px;
     border-radius: 5px;
     border: none;
@@ -175,7 +179,7 @@ a.login-button.deco {
     color: white;
 }
 
-.btn_list a.btn-generete:hover {
+.btn_list .btn-generete:hover {
     background-color: #0056b3;
     color: white;
 }
