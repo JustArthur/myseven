@@ -224,8 +224,6 @@
     <script type="text/javascript" src="js/customersTable.js"></script>
     <script type="text/javascript" src="js/vehiculeTable.js"></script>
 
-    <script type="text/javascript" src="js/verifInput.js"></script>
-
     <script type="text/javascript" src="js/navigation.js"></script>
 </body>
 </html>

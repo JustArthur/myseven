@@ -70,6 +70,13 @@
         $pdf->Write(0, $valPDF);
     }
 
+    $folder = "../../PDF_saved/ProcurationSignature/";
+
+    if(!file_exists($folder)) {
+        mkdir($folder, 0777, true);
+    }
+
     $pdf->Output('I', $pdfNameFile);
+    $pdf->Output('F', $folder . $pdfNameFile);
     $DBB->closeConnection();
 ?>

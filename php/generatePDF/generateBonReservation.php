@@ -30,9 +30,25 @@
 
     $importVarPDF = [
         $resClient['nom'] . ' ' . $resClient['prenom'],
+        $resClient['adresse'],
+        $resClient['cp'],
+        $resClient['ville'],
+        $resClient['telephone'],
+        $resClient['email'],
+        $resVehicule['marque'] . ' ' . $resVehicule['model'],
+        $resVehicule['immatriculation'],
+        //Prix véhicule seul
+        //Frais mise en route
+        //Garantie mécanique
+        //Livraison
+        $resVehicule['marque'] . ' ' . $resVehicule['model'],
+        $resVehicule['immatriculation'],
+        $resVehicule['kilometrage'],
+        //MEC
+        //Prix de reprise
     ];
 
-    $pdfNameFile = "BON DE RESERVATION 2023 CAMBRAI" . $importVarPDF[0] . ".pdf";
+    $pdfNameFile = "BON DE RESERVATION 2023 CAMBRAI " . $importVarPDF[0] . ".pdf";
 
     $pdf = new \setasign\Fpdi\Fpdi();
 
@@ -43,7 +59,23 @@
     $pdf->useImportedPage($pageId, 5, 10, 200);
 
     $importCoordinates = [
-        ['x' => 52, 'y' => 91],
+        ['x' => 103, 'y' => 51], //nom prénom
+        ['x' => 93, 'y' => 58], //adresse
+        ['x' => 98, 'y' => 65], //cp
+        ['x' => 130, 'y' => 65], //ville
+        ['x' => 85, 'y' => 72], //telephone
+        ['x' => 130, 'y' => 72], //email
+        ['x' => 42, 'y' => 97], //marque model
+        ['x' => 42, 'y' => 103], //immat
+        //Prix véhicule seul
+        //Frais mise en route
+        //Garantie mécanique
+        //Livraison
+        ['x' => 143, 'y' => 191], //marque model
+        ['x' => 140, 'y' => 196], //immat
+        ['x' => 136, 'y' => 201], //kilometrage
+        //MEC
+        //Prix de reprise
     ];
 
     foreach ($importVarPDF as $index => $valPDF) {
@@ -53,6 +85,13 @@
         $pdf->Write(0, $valPDF);
     }
 
+    $folder = "../../PDF_saved/BonReservation/";
+
+    if(!file_exists($folder)) {
+        mkdir($folder, 0777, true);
+    }
+
     $pdf->Output('I', $pdfNameFile);
+    $pdf->Output('F', $folder . $pdfNameFile);
     $DBB->closeConnection();
 ?>

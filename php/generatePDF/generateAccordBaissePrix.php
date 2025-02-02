@@ -40,7 +40,7 @@
         $year
     ];
 
-    $pdfNameFile = "ACCORD DE BAISSE DU PRIX NET VENDEUR" . $importVarPDF[0] . ".pdf";
+    $pdfNameFile = "ACCORD DE BAISSE DU PRIX NET VENDEUR " . $importVarPDF[0] . ".pdf";
 
     $pdf = new \setasign\Fpdi\Fpdi();
 
@@ -67,6 +67,13 @@
         $pdf->Write(0, $valPDF);
     }
 
+    $folder = "../../PDF_saved/AccordBaissePrix/";
+
+    if(!file_exists($folder)) {
+        mkdir($folder, 0777, true);
+    }
+
     $pdf->Output('I', $pdfNameFile);
+    $pdf->Output('F', $folder . $pdfNameFile);
     $DBB->closeConnection();
 ?>
