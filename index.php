@@ -53,6 +53,7 @@
         extract($_POST);
     
         $routes = [
+            'generateMandatVente' => 'generateMandatVente.php',
             'generateProcurationSignature' => 'generateProcurationSignature.php',
             'generateBonReservation' => 'generateBonReservation.php',
             'generateAccordBaissePrix' => 'generateAccordBaissePrix.php'
@@ -174,9 +175,10 @@
             <div class="content" id="tab3">
                 <h2><?= $tableauOnglets[2] ?></h2>
                 <div class="btn_list">
-                    <button type="submit" name="generateProcurationSignature" target="_blank" class="btn-generete action-link">Procuration signature</button>
-                    <button type="submit" name="generateBonReservation" target="_blank" class="btn-generete action-link">Bon de réservation</button>
-                    <button type="submit" name="generateAccordBaissePrix" target="_blank" class="btn-generete action-link">Accord de baisse du prix net vendeur</button>
+                    <button type="submit" name="generateMandatVente" target="_blank" class="btn-generate action-link">Mandat de vente</button>
+                    <button type="submit" name="generateProcurationSignature" target="_blank" class="btn-generate action-link">Procuration signature</button>
+                    <button type="submit" name="generateBonReservation" target="_blank" class="btn-generate action-link">Bon de réservation</button>
+                    <button type="submit" name="generateAccordBaissePrix" target="_blank" class="btn-generate action-link">Accord de baisse du prix net vendeur</button>
                 </div>
             </div>
         </div>
