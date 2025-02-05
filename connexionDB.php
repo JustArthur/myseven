@@ -8,7 +8,6 @@
         private $pdo;
 
         public function __construct() {
-            // Charger les variables d'environnement depuis le fichier .env
             $dotenv = Dotenv::createImmutable(__DIR__);
             $dotenv->load();
 

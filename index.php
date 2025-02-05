@@ -16,27 +16,60 @@
     $DBB = new ConnexionDB();
     $DB = $DBB->DB();
 
-    if (isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
-        session_id($_COOKIE['user_session']);
+    require_once 'vendor/autoload.php';
+    use Dotenv\Dotenv;
+    $dotenv = Dotenv::createImmutable(__DIR__);
+    $dotenv->load();
 
-        session_start();
-    
-        $identifiant = $_COOKIE['user_session'];
+    $nextcloudUrl = $_ENV['NEXT_CLOUD_URL'];
+    $clientId = $_ENV['NEXT_CLOUD_CLIENT_ID'];
+    $clientSecret = $_ENV['NEXT_CLOUD_CLIENT_SECRET'];
+    $redirectUri = $_ENV['NEXT_CLOUD_REDIRECT_URI'];
 
-        $stmt = $DB->prepare('SELECT * FROM testtablelogin WHERE identifiantUser = ?');
-        $stmt->execute([$identifiant]);
-        $user = $stmt->fetch();
-    
-        if ($user) {
-            $_SESSION['user'] = array(
-                'id' => htmlspecialchars($user['idUser'], ENT_QUOTES),
-                'identifiant' => htmlspecialchars($user['identifiantUser'], ENT_QUOTES)
-            );
+    var_dump($_GET['code']);
+
+    if (isset($_GET['code'])) {
+        $code = $_GET['code'];
+
+        $tokenUrl = "$nextcloudUrl/apps/oauth2/api/v1/token";
+        $data = [
+            "grant_type" => "authorization_code",
+            "client_id" => $clientId,
+            "client_secret" => $clientSecret,
+            "redirect_uri" => $redirectUri,
+            "code" => $code
+        ];
+
+        $options = [
+            "http" => [
+                "header" => "Content-Type: application/x-www-form-urlencoded",
+                "method" => "POST",
+                "content" => http_build_query($data)
+            ]
+        ];
+        $context = stream_context_create($options);
+        $response = file_get_contents($tokenUrl, false, $context);
+        $tokenInfo = json_decode($response, true);
+
+        if (isset($tokenInfo['access_token'])) {
+            $accessToken = $tokenInfo['access_token'];
+
+            $userInfoUrl = "$nextcloudUrl/ocs/v2.php/cloud/user?format=json";
+            $opts = [
+                "http" => [
+                    "header" => "Authorization: Bearer $accessToken"
+                ]
+            ];
+            $context = stream_context_create($opts);
+            $userInfoResponse = file_get_contents($userInfoUrl, false, $context);
+            $userInfo = json_decode($userInfoResponse, true);
+
+            echo "Bienvenue, " . htmlspecialchars($userInfo['ocs']['data']['displayname']);
         } else {
-            session_destroy();
+            echo "Erreur d'authentification.";
         }
     } else {
-        header('Location: ./php/login.php');
+        header("Location: ./php/login.php");
     }
 
     $resClient = $DB->prepare('SELECT * FROM clients ORDER BY nom ASC');
@@ -76,7 +109,6 @@
                 }
             }
         }
-    
     }
 ?>
 
@@ -94,13 +126,13 @@
 </head>
 <body>
     <form method="POST">
-        <div class="login">
+        <!-- <div class="login">
             <?php if (!empty($_SESSION['user'])) { ?>
                 <a href="./php/logout.php" class="login-button deco">Se deconnecter</a>
             <?php } else {
-                header('Location: ./php/login.php');
+                // header('Location: ./php/login.php');
             } ?>
-        </div>
+        </div> -->
 
         <div class="tableau">
             <div class="navbar">
