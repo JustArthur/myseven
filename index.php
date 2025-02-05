@@ -223,7 +223,6 @@
             <?php
                 $itemsCustomer = [];
                 foreach ($resClient as $client) {
-                    // Échapper les retours à la ligne et autres caractères spéciaux
                     $lastName = addslashes($client['nom']);
                     $firstName = addslashes($client['prenom']);
                     $email = addslashes($client['email']);
@@ -231,7 +230,6 @@
                     $address = addslashes($client['adresse'] . " " . $client['ville'] . " " . $client['cp']);
                     $numCNI = addslashes($client['numero_cni']);
                     
-                    // Remplacer les retours à la ligne par des espaces ou échappement
                     $lastName = str_replace(["\n", "\r"], " ", $lastName);
                     $firstName = str_replace(["\n", "\r"], " ", $firstName);
                     $email = str_replace(["\n", "\r"], " ", $email);
@@ -239,7 +237,6 @@
                     $address = str_replace(["\n", "\r"], " ", $address);
                     $numCNI = str_replace(["\n", "\r"], " ", $numCNI);
 
-                    // Ajout du client au tableau
                     $itemsCustomer[] = 
                     "{
                         lastName: \"$lastName\",

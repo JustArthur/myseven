@@ -3,10 +3,10 @@
     ini_set('display_startup_errors', '1');
     error_reporting(E_ALL);
 
-    if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
-        header('Location: ../../php/login.php');
-        exit();
-    }
+    // if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
+    //     header('Location: ../../php/login.php');
+    //     exit();
+    // }
 
     require_once('../../vendor/setasign/fpdf/fpdf.php');
     require_once('../../vendor/setasign/fpdi/src/autoload.php');
