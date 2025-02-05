@@ -62,7 +62,6 @@
     $scope = "openid profile email";
 
     $authorizeUrl = "$nextcloudUrl/apps/oauth2/authorize?response_type=code&client_id=$clientId&redirect_uri=$redirectUri&scope=$scope";
-    echo "Redirect URL: " . $authorizeUrl;
 ?>
 
 <!DOCTYPE html>

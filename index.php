@@ -68,9 +68,10 @@
         } else {
             echo "Erreur d'authentification.";
         }
-    } else {
-        header("Location: ./php/login.php");
     }
+    //  else {
+    //     header("Location: ./php/login.php");
+    // }
 
     $resClient = $DB->prepare('SELECT * FROM clients ORDER BY nom ASC');
     $resClient->execute();
