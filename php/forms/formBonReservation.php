@@ -6,7 +6,7 @@
     if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
         header('Location: ../../php/login.php');
         exit();
-    }  
+    }
 ?>
 
 <!DOCTYPE html>
@@ -24,7 +24,7 @@
 
     <div class="search-container">
         <h2>Générer un bon de réservation</h2>
-        <form id="form_pdf" action="../generatePDF/generateBonReservation.php" method="POST">
+        <form class="gap" id="form_pdf" action="../generatePDF/generateBonReservation.php" method="POST">
             <div class="input_box">
                 <span class="label form_required">Adresse-mail du client</span>
                 <input required type="email" disabled  value="<?= $_POST['client'] ?>" class="disabled" id="customerMail">

@@ -63,8 +63,11 @@ main {
 form {
     display: flex;
     flex-direction: column;
-    gap: 30px;
     width: 100%;
+}
+
+form.gap {
+    gap: 30px;
 }
 
 .wrapper {
@@ -252,6 +255,12 @@ span.label.form_required::after {
 
 .input_box .submit_btn:hover {
     background-color: #0056b3;
+}
+
+.input_box.delaiVente .inputSelect {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
 }
 
 select {
