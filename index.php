@@ -16,63 +16,6 @@
     $DBB = new ConnexionDB();
     $DB = $DBB->DB();
 
-    // require_once 'vendor/autoload.php';
-    // use Dotenv\Dotenv;
-    // $dotenv = Dotenv::createImmutable(__DIR__);
-    // $dotenv->load();
-
-    // $nextcloudUrl = $_ENV['NEXT_CLOUD_URL'];
-    // $clientId = $_ENV['NEXT_CLOUD_CLIENT_ID'];
-    // $clientSecret = $_ENV['NEXT_CLOUD_CLIENT_SECRET'];
-    // $redirectUri = $_ENV['NEXT_CLOUD_REDIRECT_URI'];
-
-    // var_dump($_GET['code']);
-
-    // if (isset($_GET['code'])) {
-    //     $code = $_GET['code'];
-
-    //     $tokenUrl = "$nextcloudUrl/apps/oauth2/api/v1/token";
-    //     $data = [
-    //         "grant_type" => "authorization_code",
-    //         "client_id" => $clientId,
-    //         "client_secret" => $clientSecret,
-    //         "redirect_uri" => $redirectUri,
-    //         "code" => $code
-    //     ];
-
-    //     $options = [
-    //         "http" => [
-    //             "header" => "Content-Type: application/x-www-form-urlencoded",
-    //             "method" => "POST",
-    //             "content" => http_build_query($data)
-    //         ]
-    //     ];
-    //     $context = stream_context_create($options);
-    //     $response = file_get_contents($tokenUrl, false, $context);
-    //     $tokenInfo = json_decode($response, true);
-
-    //     if (isset($tokenInfo['access_token'])) {
-    //         $accessToken = $tokenInfo['access_token'];
-
-    //         $userInfoUrl = "$nextcloudUrl/ocs/v2.php/cloud/user?format=json";
-    //         $opts = [
-    //             "http" => [
-    //                 "header" => "Authorization: Bearer $accessToken"
-    //             ]
-    //         ];
-    //         $context = stream_context_create($opts);
-    //         $userInfoResponse = file_get_contents($userInfoUrl, false, $context);
-    //         $userInfo = json_decode($userInfoResponse, true);
-
-    //         echo "Bienvenue, " . htmlspecialchars($userInfo['ocs']['data']['displayname']);
-    //     } else {
-    //         echo "Erreur d'authentification.";
-    //     }
-    // }
-    //  else {
-    //     header("Location: ./php/login.php");
-    // }
-
     $resClient = $DB->prepare('SELECT * FROM Clients ORDER BY nom ASC');
     $resClient->execute();
     $resClient = $resClient->fetchAll();

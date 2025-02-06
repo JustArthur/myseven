@@ -2,4 +2,5 @@ composer.phar
 /vendor/
 .env
 php/data.json
-./PDF_saved/
+PDF_saved/
+php/generatePDF/data.json

@@ -56,12 +56,40 @@
     $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
     $dotenv->load();
 
-    $nextcloudUrl = $_ENV['NEXT_CLOUD_URL'];
-    $clientId = $_ENV['NEXT_CLOUD_CLIENT_ID'];
-    $redirectUri = $_ENV['NEXT_CLOUD_REDIRECT_URI'];
-    $scope = "openid profile email";
+    // $nextcloudUrl = $_ENV['NEXT_CLOUD_URL'];
+    // $clientId = $_ENV['NEXT_CLOUD_CLIENT_ID'];
+    // $redirectUri = $_ENV['NEXT_CLOUD_REDIRECT_URI'];
+    // $scope = "openid profile email";
 
-    $authorizeUrl = "$nextcloudUrl/apps/oauth2/authorize?response_type=code&client_id=$clientId&redirect_uri=$redirectUri&scope=$scope";
+    // $authorizeUrl = "$nextcloudUrl/apps/oauth2/authorize?response_type=code&client_id=$clientId&redirect_uri=$redirectUri&scope=$scope";
+
+
+    require_once './NextCloudOAuth.php';
+
+    session_start();
+
+    $clientId = $_ENV['NEXT_CLOUD_CLIENT_ID'];
+    $clientSecret = $_ENV['NEXT_CLOUD_CLIENT_SECRET'];
+    $redirectUri = $_ENV['NEXT_CLOUD_REDIRECT_URI'];
+    $nextCloudOAuth = new NextCloudOAuth($clientId, $clientSecret, $redirectUri);
+
+    if (isset($_GET['code'])) {
+        // Exchange authorization code for access token
+        $accessToken = $nextCloudOAuth->getAccessToken($_GET['code']);
+        $_SESSION['access_token'] = $accessToken;
+        header('Location: ../index.php');
+        exit;
+    }
+
+    if (!isset($_SESSION['access_token'])) {
+        // Redirect to NextCloud authorization URL
+        $authUrl = $nextCloudOAuth->getAuthorizationUrl();
+        header('Location: ' . $authUrl);
+        exit;
+    }
+
+    // Application logic after successful authentication
+    echo 'You are logged in with NextCloud!';
 ?>
 
 <!DOCTYPE html>
@@ -75,8 +103,8 @@
     <title>Se connecter</title>
 </head>
 <body>
-    <a href="<?= htmlspecialchars($authorizeUrl) ?>">
+    <!-- <a href="<?= htmlspecialchars($authorizeUrl) ?>">
         <button>Se connecter avec Nextcloud</button>
-    </a>
+    </a> -->
 </body>
 </html>
