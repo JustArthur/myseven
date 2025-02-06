@@ -41,7 +41,7 @@
         $year
     ];
 
-    $pdfNameFile = "PROCURATION DE SIGNATURE " . $importVarPDF[0] . ".pdf";
+    $pdfNameFile = "PROCURATION DE SIGNATURE " . $importVarPDF[0] . " " . random_int(0, 9999) . ".pdf";
 
     $pdf = new \setasign\Fpdi\Fpdi();
 

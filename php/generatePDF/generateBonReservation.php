@@ -102,7 +102,7 @@
         //Prix de reprise
     ];
 
-    $pdfNameFile = "BON DE RESERVATION 2023 CAMBRAI " . $importVarPDF[0] . ".pdf";
+    $pdfNameFile = "BON DE RESERVATION 2023 CAMBRAI " . $importVarPDF[0] . " " . random_int(0, 9999) . ".pdf";
 
     $pdf = new \setasign\Fpdi\Fpdi();
 

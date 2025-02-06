@@ -97,7 +97,7 @@
         ['x' => 75, 'y' => 255]
     ];
 
-    $pdfNameFile = "MANDAT DE VENTE " . $_POST['immatricuCar'] . ".pdf";
+    $pdfNameFile = "MANDAT DE VENTE " . $_POST['immatricuCar'] . " " . random_int(0, 9999) . ".pdf";
 
     $pdf = new \setasign\Fpdi\Fpdi();
 

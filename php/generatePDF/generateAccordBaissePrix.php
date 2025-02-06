@@ -40,7 +40,7 @@
         $year
     ];
 
-    $pdfNameFile = "ACCORD DE BAISSE DU PRIX NET VENDEUR " . $importVarPDF[0] . ".pdf";
+    $pdfNameFile = "ACCORD DE BAISSE DU PRIX NET VENDEUR " . $importVarPDF[0] . " " . random_int(0, 9999) . ".pdf";
 
     $pdf = new \setasign\Fpdi\Fpdi();
 
