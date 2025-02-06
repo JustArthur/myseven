@@ -17,7 +17,7 @@
     $DB = $DBB->DB();
   
     $resClient = $DB->prepare('SELECT * FROM clients WHERE email = ?');
-    $resClient->execute([$_POST['client']]);
+    $resClient->execute([$_POST['customerMail']]);
     $resClient = $resClient->fetch();
 
     $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE immatriculation = ?');
@@ -27,6 +27,60 @@
     $day = date("d");
     $month = date("m");
     $year = date("Y");
+
+    $crossToCreate = [];
+
+    switch($_POST['garantieMecanique']) {
+        case '3Mois':
+            array_push($crossToCreate, ['x' => 116, 'y' => 125]);
+            $prixGarantie = 0;
+            break;
+
+        case '12Mois':
+            array_push($crossToCreate, ['x' => 23, 'y' => 119]);
+            $prixGarantie = 890;
+            break;
+
+        case '12MoisPrestige':
+            array_push($crossToCreate, ['x' => 23, 'y' => 125]);
+            $prixGarantie = 1490;
+            break;
+
+        case '24Mois':  
+            array_push($crossToCreate, ['x' => 104, 'y' => 119]);
+            $prixGarantie = 1490;
+            break;
+
+        case 'refuse':
+            array_push($crossToCreate, ['x' => 23, 'y' => 131]);
+            $prixGarantie = 0;
+            break;
+
+        default:
+            array_push($crossToCreate, ['x' => 23, 'y' => 131]);
+            $prixGarantie = 0;
+            break;
+    }
+
+    switch($_POST['fraisMiseEnRoute']) {
+        case 'Oui':
+            array_push($crossToCreate, ['x' => 24, 'y' => 158.5]);
+            $fraisMiseEnRoute = 690;
+            break;
+
+        default:
+            break;
+    }
+
+    switch($_POST['expertiseSouhaitee']) {
+        case 'Oui':
+            array_push($crossToCreate, ['x' => 56, 'y' => 184]);
+            break;
+
+        default:
+            array_push($crossToCreate, ['x' => 66.5, 'y' => 184]);
+            break;
+    }
 
     $importVarPDF = [
         $resClient['nom'] . ' ' . $resClient['prenom'],
@@ -77,6 +131,13 @@
         //MEC
         //Prix de reprise
     ];
+
+    foreach ($crossToCreate as $index) {
+        $pdf->SetFont('Helvetica');
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->SetXY($index['x'], $index['y']);
+        $pdf->Write(0, 'X');
+    }
 
     foreach ($importVarPDF as $index => $valPDF) {
         $pdf->SetFont('Helvetica');

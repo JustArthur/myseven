@@ -3,7 +3,7 @@
     ini_set('display_startup_errors', '1');
     error_reporting(E_ALL);
 
-    if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
+    if (!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
         header('Location: ../../php/login.php');
         exit();
     }
@@ -11,31 +11,23 @@
     require_once('../../vendor/setasign/fpdf/fpdf.php');
     require_once('../../vendor/setasign/fpdi/src/autoload.php');
 
-    require_once("../../connexionDB.php");    
+    require_once("../../connexionDB.php");
 
     $DBB = new ConnexionDB();
     $DB = $DBB->DB();
-    
+
     $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE immatriculation = ?');
-    $resVehicule->execute([$_POST['immatCar']]);
+    $resVehicule->execute([$_POST['immatricuCar']]);
     $resVehicule = $resVehicule->fetch();
 
     $resClient = $DB->prepare('SELECT * FROM clients WHERE email = ?');
-    $resClient->execute([$_POST['client']]);
+    $resClient->execute([$_POST['customerMail']]);
     $resClient = $resClient->fetch();
 
-
-    //Verif de si le client existe dans la BDD
-    if(!isset($resClient['email']) && empty($resClient['email'])) {
-        header('Location: error.php?error=client');
-        $DBB->closeConnection();
-        exit();
-    }
-
-
-
     $filePath = 'data.json';
-    if (!file_exists($filePath)) { file_put_contents($filePath, json_encode(['count' => 0]));}
+    if (!file_exists($filePath)) {
+        file_put_contents($filePath, json_encode(['count' => 0]));
+    }
 
     $data = json_decode(file_get_contents($filePath), true);
 
@@ -47,17 +39,6 @@
     $formattedId = sprintf('%s%s-%03d', $currentYear, $currentMonth, $data['count']);
 
     file_put_contents($filePath, json_encode($data, JSON_PRETTY_PRINT));
-
-    $_POST['nbrMains'] = "test";
-    $_POST['originCar'] = "test";
-    $_POST['jourVisite'] = "test";
-    $_POST['prixVente'] = "test";
-    $_POST['raisonVente'] = "test";
-    $_POST['delayVenteText'] = "test";
-    $_POST['delayVenteType'] = "test";
-    $_POST['prixVenteSouhaite'] = "test";
-    $_POST['immatCar'] = "test";
-
 
     //Valeur dans la BDD
     $importVarPDF = [
@@ -85,13 +66,13 @@
         $_POST['delayVenteText'] . " " . $_POST['delayVenteType'],
         $_POST['prixVenteSouhaite'],
         ucfirst($resClient['agence']), //Lieu agence
-        date('d m Y'),
+        date('d/m/Y'),
     ];
 
     $importCoordinates = [
-        ['x' => 33, 'y' => 55], 
-        ['x' => 56, 'y' => 63], 
-        ['x' => 65, 'y' => 79], 
+        ['x' => 33, 'y' => 55],
+        ['x' => 56, 'y' => 63],
+        ['x' => 65, 'y' => 79],
         ['x' => 40, 'y' => 87],
         ['x' => 70, 'y' => 97],
         ['x' => 43, 'y' => 106],
@@ -116,7 +97,7 @@
         ['x' => 75, 'y' => 255]
     ];
 
-    $pdfNameFile = "MANDAT DE VENTE " . $_POST['immatCar'];
+    $pdfNameFile = "MANDAT DE VENTE " . $_POST['immatricuCar'] . ".pdf";
 
     $pdf = new \setasign\Fpdi\Fpdi();
 
@@ -135,7 +116,7 @@
 
     $folder = "../../PDF_saved/MandatVente/";
 
-    if(!file_exists($folder)) {
+    if (!file_exists($folder)) {
         mkdir($folder, 0777, true);
     }
 

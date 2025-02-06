@@ -53,10 +53,10 @@
         extract($_POST);
     
         $routes = [
-            'generateMandatVente' => 'generateMandatVente.php',
-            'generateProcurationSignature' => 'generateProcurationSignature.php',
-            'generateBonReservation' => 'generateBonReservation.php',
-            'generateAccordBaissePrix' => 'generateAccordBaissePrix.php'
+            'generateMandatVente' => './php/forms/formMandatVente.php',
+            'generateProcurationSignature' => './php/generatePDF/generateProcurationSignature.php',
+            'generateBonReservation' => './php/forms/formBonReservation.php',
+            'generateAccordBaissePrix' => './php/generatePDF/generateAccordBaissePrix.php'
         ];
 
         if (empty($selectedCustomer) || empty($selectedVehicule)) {
@@ -67,7 +67,7 @@
             foreach ($routes as $key => $file) {
                 if (isset($_POST[$key])) {
                     echo "
-                        <form style='display:none' id='postForm' action='./php/generatePDF/$file' target='_blank' method='POST'>
+                        <form style='display:none' id='postForm' action='$file' target='_blank' method='POST'>
                             <input type='hidden' name='client' value='" . htmlspecialchars($selectedCustomer) . "'>
                             <input type='hidden' name='immatCar' value='" . htmlspecialchars($selectedVehicule) . "'>
                         </form>
