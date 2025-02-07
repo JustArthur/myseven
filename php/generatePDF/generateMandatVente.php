@@ -97,8 +97,6 @@
         ['x' => 75, 'y' => 255]
     ];
 
-    $pdfNameFile = "MANDAT DE VENTE " . $_POST['immatricuCar'] . " " . random_int(0, 9999) . ".pdf";
-
     $pdf = new \setasign\Fpdi\Fpdi();
 
     $pageCount = $pdf->setSourceFile('../../pdf/MANDAT DE VENTE NOUVEAU.pdf');
@@ -119,6 +117,9 @@
     if (!file_exists($folder)) {
         mkdir($folder, 0777, true);
     }
+
+    $fileCount = count(glob($folder . "*.pdf")) + 1;
+    $pdfNameFile = "MANDAT DE VENTE " . $importVarPDF[1] . "_" . $fileCount . ".pdf";
 
     $pdf->Output('I', $pdfNameFile);
     $pdf->Output('F', $folder . $pdfNameFile);

@@ -24,10 +24,6 @@
     $resVehicule->execute([$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();
 
-    $day = date("d");
-    $month = date("m");
-    $year = date("Y");
-
     $crossToCreate = [];
 
     switch($_POST['garantieMecanique']) {
@@ -100,9 +96,13 @@
         $resVehicule['kilometrage'],
         //MEC
         //Prix de reprise
+        //frais total hors carte grise
+        //frais carte grise
+        $resClient['agence'],
+        date("d/m/Y"),
     ];
 
-    $pdfNameFile = "BON DE RESERVATION 2023 CAMBRAI " . $importVarPDF[0] . " " . random_int(0, 9999) . ".pdf";
+    
 
     $pdf = new \setasign\Fpdi\Fpdi();
 
@@ -117,8 +117,8 @@
         ['x' => 93, 'y' => 58], //adresse
         ['x' => 98, 'y' => 65], //cp
         ['x' => 130, 'y' => 65], //ville
-        ['x' => 85, 'y' => 72], //telephone
-        ['x' => 130, 'y' => 72], //email
+        ['x' => 85, 'y' => 71.5], //telephone
+        ['x' => 130, 'y' => 71.5], //email
         ['x' => 42, 'y' => 97], //marque model
         ['x' => 42, 'y' => 103], //immat
         //Prix véhicule seul
@@ -130,6 +130,10 @@
         ['x' => 136, 'y' => 201], //kilometrage
         //MEC
         //Prix de reprise
+        //frais total hors carte grise
+        //frais carte grise
+        ['x' => 16, 'y' => 264.5], //agence
+        ['x' => 68, 'y' => 264.5], //date
     ];
 
     foreach ($crossToCreate as $index) {
@@ -151,6 +155,9 @@
     if(!file_exists($folder)) {
         mkdir($folder, 0777, true);
     }
+
+    $fileCount = count(glob($folder . "*.pdf")) + 1;
+    $pdfNameFile = "BON DE RESERVATION 2023 CAMBRAI " . $importVarPDF[0] . "_" . $fileCount . ".pdf";
 
     $pdf->Output('I', $pdfNameFile);
     $pdf->Output('F', $folder . $pdfNameFile);
