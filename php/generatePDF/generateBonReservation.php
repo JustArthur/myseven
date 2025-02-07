@@ -69,6 +69,7 @@
             break;
 
         default:
+            $fraisMiseEnRoute = 0;
             break;
     }
 
@@ -82,6 +83,9 @@
             break;
     }
 
+    $prixTotalHCG = $prixGarantie + $fraisMiseEnRoute ;
+    $fraisCG = "10";
+
     $importVarPDF = [
         $resClient['nom'] . ' ' . $resClient['prenom'],
         $resClient['adresse'],
@@ -91,15 +95,19 @@
         $resClient['email'],
         $resVehicule['marque'] . ' ' . $resVehicule['model'],
         $resVehicule['immatriculation'],
-        //Prix véhicule seul
-        //Frais mise en route
-        //Garantie mécanique
-        //Livraison
+        $_POST['PrixVehicule'],
+        $fraisMiseEnRoute,
+        $prixGarantie,
+        $_POST['livraison'],
         $resVehicule['marque'] . ' ' . $resVehicule['model'],
         $resVehicule['immatriculation'],
         $resVehicule['kilometrage'],
         //MEC
         //Prix de reprise
+        $prixTotalHCG,
+        $fraisCG,
+        $resClient['agence'],
+        date('d/m/Y')
     ];
 
     $pdfNameFile = "BON DE RESERVATION 2023 CAMBRAI " . $importVarPDF[0] . " " . random_int(0, 9999) . ".pdf";
@@ -121,15 +129,19 @@
         ['x' => 130, 'y' => 72], //email
         ['x' => 42, 'y' => 97], //marque model
         ['x' => 42, 'y' => 103], //immat
-        //Prix véhicule seul
-        //Frais mise en route
-        //Garantie mécanique
-        //Livraison
+        ['x' => 41, 'y' => 189.5], //prix véhicule
+        ['x' => 47, 'y' => 196.5], //frais mise à la route
+        ['x' => 47, 'y' => 203.5], //graentie méca
+        ['x' => 29, 'y' => 210], //Livraison
         ['x' => 143, 'y' => 191], //marque model
         ['x' => 140, 'y' => 196], //immat
         ['x' => 136, 'y' => 201], //kilometrage
         //MEC
         //Prix de reprise
+        ['x' => 65, 'y' => 217], //Prix total HCG
+        ['x' => 65, 'y' => 223], //Frais CG
+        ['x' => 20, 'y' => 264], //Agence
+        ['x' => 70, 'y' => 264], // Date
     ];
 
     foreach ($crossToCreate as $index) {

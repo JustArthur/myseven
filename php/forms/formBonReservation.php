@@ -29,7 +29,31 @@
                 <span class="label form_required">Adresse-mail du client</span>
                 <input required type="email" disabled  value="<?= $_POST['client'] ?>" class="disabled" id="customerMail">
                 <input hidden type="text" name="customerMail" value="<?= $_POST['client'] ?>">
+            </div>
+
+            <div class="input_box">
+                <span class="label form_required">Immatriculation</span>
+                <input required type="text" disabled  value="<?= $_POST['immatCar'] ?>" class="disabled" id="customerMail">
                 <input hidden type="text" name="immatCar" value="<?= $_POST['immatCar'] ?>">
+            </div>
+
+            <div class="input_box">
+                <span class="label form_required">Prix véhicule seul</span>
+                <input required type="text" name="PrixVehicule" id="prixVehicule">
+            </div>
+
+            <div class="input_box">
+                <span class="label form_required">Livraison</span>
+                <input required type="text" name="livraison" id="livraison">
+            </div>
+
+            <div class="input_box">
+                <span class="label form_required">Frais de mise à la route et de courtage</span>
+
+                <select name="fraisMiseEnRoute" id="fraisMiseEnRoute">
+                    <option value="Oui">Oui (690 €)</option>
+                    <option value="Non">Non</option>
+                </select>
             </div>
 
             <div class="input_box">
@@ -41,15 +65,6 @@
                     <option value="12Mois">12 Mois (890 €)</option>
                     <option value="12MoisPrestige">12 Mois prestige (1490 €)</option>
                     <option value="24Mois">24 Mois (1490 €)</option>
-                </select>
-            </div>
-
-            <div class="input_box">
-                <span class="label form_required">Frais de mise à la route et de courtage</span>
-
-                <select name="fraisMiseEnRoute" id="fraisMiseEnRoute">
-                    <option value="Oui">Oui (690 €)</option>
-                    <option value="Non">Non</option>
                 </select>
             </div>
 
@@ -69,8 +84,33 @@
 
     </div>
     </main>
+    <script>
+        const inputPrixVehicule = document.getElementById('prixVehicule');
+        const livraison = document.getElementById('livraison');
 
-    <script src="../../js/error_text.js"></script>
-    <script src="../../js/spacePrix.js"></script>
+        inputPrixVehicule.addEventListener('input', (event) => {
+            let valeur = event.target.value.replace(/\s+/g, '');
+
+            if (!/^\d*$/.test(valeur)) {
+                valeur = valeur.replace(/\D/g, '');
+            }
+
+            const valeurFormatee = valeur.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+            event.target.value = valeurFormatee;
+        });
+
+        livraison.addEventListener('input', (event) => {
+            let valeur = event.target.value.replace(/\s+/g, '');
+
+            if (!/^\d*$/.test(valeur)) {
+                valeur = valeur.replace(/\D/g, '');
+            }
+
+            const valeurFormatee = valeur.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+            event.target.value = valeurFormatee;
+        });
+    </script>
 </body>
 </html>

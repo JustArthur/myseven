@@ -1,6 +1,7 @@
 const inputEuroVenteSouhaite = document.getElementById('inputEuroVenteSouhaite');
 const inputEuroPrixVente = document.getElementById('inputEuroPrixVente');
 
+
 inputEuroVenteSouhaite.addEventListener('input', (event) => {
     let valeur = event.target.value.replace(/\s+/g, '');
 
