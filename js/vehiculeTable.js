@@ -1,7 +1,7 @@
 let currentPageVehicule = 1,
     rowsPerPageVehicule = 50;
 
-if (rowsCustomers.length <= rowsPerPage) {
+if (rowsVehicules.length <= rowsPerPage) {
     const pagination = document.getElementById('paginationCustomer');
     pagination.classList.remove('visible');
     pagination.classList.add('invisible');
