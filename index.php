@@ -39,7 +39,7 @@
         header('Location: ./php/login.php');
     }
 
-    $resClient = $DB->prepare('SELECT * FROM clients ORDER BY nom ASC');
+    $resClient = $DB->prepare('SELECT * FROM Clients ORDER BY nom ASC');
     $resClient->execute();
     $resClient = $resClient->fetchAll();
 

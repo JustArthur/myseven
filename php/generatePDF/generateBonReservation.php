@@ -16,7 +16,7 @@
     $DBB = new ConnexionDB();
     $DB = $DBB->DB();
   
-    $resClient = $DB->prepare('SELECT * FROM clients WHERE email = ?');
+    $resClient = $DB->prepare('SELECT * FROM Clients WHERE email = ?');
     $resClient->execute([$_POST['customerMail']]);
     $resClient = $resClient->fetch();
 
@@ -110,8 +110,6 @@
         date('d/m/Y')
     ];
 
-    $pdfNameFile = "BON DE RESERVATION 2023 CAMBRAI " . $importVarPDF[0] . " " . random_int(0, 9999) . ".pdf";
-
     $pdf = new \setasign\Fpdi\Fpdi();
 
     $pageCount = $pdf->setSourceFile('../../pdf/BON_DE_RESERVATION_2023_CAMBRAI.pdf');
@@ -159,6 +157,9 @@
     }
 
     $folder = "../../PDF_saved/BonReservation/";
+
+    $fileCount = count(glob($folder . "*.pdf")) + 1;
+    $pdfNameFile = "BON_RESERVATION_" . $importVarPDF[1] . "_" . $fileCount . ".pdf";
 
     if(!file_exists($folder)) {
         mkdir($folder, 0777, true);

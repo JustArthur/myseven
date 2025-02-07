@@ -18,7 +18,7 @@
 
     $prixNetVendeur = 1000;
     
-    $resClient = $DB->prepare('SELECT * FROM clients WHERE email = ?');
+    $resClient = $DB->prepare('SELECT * FROM Clients WHERE email = ?');
     $resClient->execute([$_POST['client']]);
     $resClient = $resClient->fetch();
 

@@ -20,7 +20,7 @@
     $resVehicule->execute([$_POST['immatricuCar']]);
     $resVehicule = $resVehicule->fetch();
 
-    $resClient = $DB->prepare('SELECT * FROM clients WHERE email = ?');
+    $resClient = $DB->prepare('SELECT * FROM Clients WHERE email = ?');
     $resClient->execute([$_POST['customerMail']]);
     $resClient = $resClient->fetch();
 
