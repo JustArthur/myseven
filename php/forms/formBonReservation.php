@@ -39,12 +39,12 @@
 
             <div class="input_box">
                 <span class="label form_required">Prix véhicule seul</span>
-                <input required type="text" name="PrixVehicule" id="prixVehicule">
+                <input required type="number" name="PrixVehicule" id="prixVehicule">
             </div>
 
             <div class="input_box">
                 <span class="label form_required">Livraison</span>
-                <input required type="text" name="livraison" id="livraison">
+                <input required type="number" name="livraison" id="livraison">
             </div>
 
             <div class="input_box">
@@ -84,33 +84,5 @@
 
     </div>
     </main>
-    <script>
-        const inputPrixVehicule = document.getElementById('prixVehicule');
-        const livraison = document.getElementById('livraison');
-
-        inputPrixVehicule.addEventListener('input', (event) => {
-            let valeur = event.target.value.replace(/\s+/g, '');
-
-            if (!/^\d*$/.test(valeur)) {
-                valeur = valeur.replace(/\D/g, '');
-            }
-
-            const valeurFormatee = valeur.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-
-            event.target.value = valeurFormatee;
-        });
-
-        livraison.addEventListener('input', (event) => {
-            let valeur = event.target.value.replace(/\s+/g, '');
-
-            if (!/^\d*$/.test(valeur)) {
-                valeur = valeur.replace(/\D/g, '');
-            }
-
-            const valeurFormatee = valeur.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-
-            event.target.value = valeurFormatee;
-        });
-    </script>
 </body>
 </html>
