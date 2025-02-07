@@ -40,8 +40,6 @@
         $year
     ];
 
-    $pdfNameFile = "ACCORD DE BAISSE DU PRIX NET VENDEUR " . $importVarPDF[0] . " " . random_int(0, 9999) . ".pdf";
-
     $pdf = new \setasign\Fpdi\Fpdi();
 
     $pageCount = $pdf->setSourceFile('../../pdf/ACCORD_DE_BAISSE_DU_PRIX_NET_VENDEUR.pdf');
@@ -72,6 +70,9 @@
     if(!file_exists($folder)) {
         mkdir($folder, 0777, true);
     }
+
+    $fileCount = count(glob($folder . "*.pdf")) + 1;
+    $pdfNameFile = "ACCORD_DE BAISSE_DU_PRIX_NET_VENDEUR_" . $importVarPDF[0] . "_" . $fileCount . ".pdf";
 
     $pdf->Output('I', $pdfNameFile);
     $pdf->Output('F', $folder . $pdfNameFile);

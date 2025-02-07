@@ -41,8 +41,6 @@
         $year
     ];
 
-    $pdfNameFile = "PROCURATION DE SIGNATURE " . $importVarPDF[0] . " " . random_int(0, 9999) . ".pdf";
-
     $pdf = new \setasign\Fpdi\Fpdi();
 
     $pageCount = $pdf->setSourceFile('../../pdf/PROCURATION_DE_SIGNATURE.pdf');
@@ -75,6 +73,9 @@
     if(!file_exists($folder)) {
         mkdir($folder, 0777, true);
     }
+
+    $fileCount = count(glob($folder . "*.pdf")) + 1;
+    $pdfNameFile = "PROCURATION_DE_SIGNATURE_" . $importVarPDF[0] . "_" . $fileCount . ".pdf";
 
     $pdf->Output('I', $pdfNameFile);
     $pdf->Output('F', $folder . $pdfNameFile);
