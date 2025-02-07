@@ -75,7 +75,7 @@
     }
 
     $fileCount = count(glob($folder . "*.pdf")) + 1;
-    $pdfNameFile = "PROCURATION DE SIGNATURE " . $importVarPDF[0] . "_" . $fileCount . ".pdf";
+    $pdfNameFile = "PROCURATION_DE_SIGNATURE_" . $importVarPDF[0] . "_" . $fileCount . ".pdf";
 
     $pdf->Output('I', $pdfNameFile);
     $pdf->Output('F', $folder . $pdfNameFile);

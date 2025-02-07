@@ -119,7 +119,7 @@
     }
 
     $fileCount = count(glob($folder . "*.pdf")) + 1;
-    $pdfNameFile = "MANDAT DE VENTE " . $importVarPDF[1] . "_" . $fileCount . ".pdf";
+    $pdfNameFile = "MANDAT_DE_VENTE_" . $importVarPDF[1] . "_" . $fileCount . ".pdf";
 
     $pdf->Output('I', $pdfNameFile);
     $pdf->Output('F', $folder . $pdfNameFile);

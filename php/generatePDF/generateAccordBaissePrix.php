@@ -72,7 +72,7 @@
     }
 
     $fileCount = count(glob($folder . "*.pdf")) + 1;
-    $pdfNameFile = "ACCORD DE BAISSE DU PRIX NET VENDEUR " . $importVarPDF[0] . "_" . $fileCount . ".pdf";
+    $pdfNameFile = "ACCORD_DE BAISSE_DU_PRIX_NET_VENDEUR_" . $importVarPDF[0] . "_" . $fileCount . ".pdf";
 
     $pdf->Output('I', $pdfNameFile);
     $pdf->Output('F', $folder . $pdfNameFile);

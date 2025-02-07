@@ -157,7 +157,7 @@
     }
 
     $fileCount = count(glob($folder . "*.pdf")) + 1;
-    $pdfNameFile = "BON DE RESERVATION 2023 CAMBRAI " . $importVarPDF[0] . "_" . $fileCount . ".pdf";
+    $pdfNameFile = "BON_DE_RESERVATION_" . $importVarPDF[0] . "_" . $fileCount . ".pdf";
 
     $pdf->Output('I', $pdfNameFile);
     $pdf->Output('F', $folder . $pdfNameFile);
