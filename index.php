@@ -190,7 +190,6 @@
             <?php
                 $itemsCustomer = [];
                 foreach ($resClient as $client) {
-                    // Échapper les retours à la ligne et autres caractères spéciaux
                     $lastName = addslashes($client['nom']);
                     $firstName = addslashes($client['prenom']);
                     $email = addslashes($client['email']);
@@ -198,7 +197,6 @@
                     $address = addslashes($client['adresse'] . " " . $client['ville'] . " " . $client['cp']);
                     $numCNI = addslashes($client['numero_cni']);
                     
-                    // Remplacer les retours à la ligne par des espaces ou échappement
                     $lastName = str_replace(["\n", "\r"], " ", $lastName);
                     $firstName = str_replace(["\n", "\r"], " ", $firstName);
                     $email = str_replace(["\n", "\r"], " ", $email);
@@ -206,7 +204,6 @@
                     $address = str_replace(["\n", "\r"], " ", $address);
                     $numCNI = str_replace(["\n", "\r"], " ", $numCNI);
 
-                    // Ajout du client au tableau
                     $itemsCustomer[] = 
                     "{
                         lastName: \"$lastName\",
@@ -225,15 +222,31 @@
             <?php
                 $itemsVehicule = [];
                 foreach ($resVehicule as $vehicule) {
+                    $immatriculation = addslashes($vehicule['immatriculation']);
+                    $marque = addslashes($vehicule['marque']);
+                    $model = addslashes($vehicule['model']);
+                    $puissance = addslashes($vehicule['puissance']);
+                    $type_boite = addslashes($vehicule['type_boite']);
+                    $couleur = addslashes($vehicule['couleur']);
+                    $kilometrage = addslashes($vehicule['kilometrage']);
+                    
+                    $immatriculation = str_replace(["\n", "\r"], " ", $immatriculation);
+                    $marque = str_replace(["\n", "\r"], " ", $marque);
+                    $model = str_replace(["\n", "\r"], " ", $model);
+                    $puissance = str_replace(["\n", "\r"], " ", $puissance);
+                    $type_boite = str_replace(["\n", "\r"], " ", $type_boite);
+                    $couleur = str_replace(["\n", "\r"], " ", $couleur);
+                    $kilometrage = str_replace(["\n", "\r"], " ", $kilometrage);
+
                     $itemsVehicule[] = 
                     "{
-                        immatriculation: \"" . addslashes($vehicule['immatriculation']) . "\",
-                        marque: \"" . addslashes($vehicule['marque']) . "\",
-                        model: \"" . addslashes($vehicule['model']) . "\",
-                        puissance: \"" . addslashes($vehicule['puissance']) . "\",
-                        type_boite: \"" . addslashes($vehicule['type_boite']) . "\",
-                        couleur: \"" . addslashes($vehicule['couleur']) . "\",
-                        kilometrage: \"" . addslashes($vehicule['kilometrage']."km") . "\"
+                        immatriculation: \"$immatriculation\",
+                        marque: \"$marque\",
+                        model: \"$model\",
+                        puissance: \"$puissance\",
+                        type_boite: \"$type_boite\",
+                        couleur: \"$couleur\",
+                        kilometrage: \"$kilometrage\"
                     }";
                 }
                 echo implode(",\n", $itemsVehicule);
