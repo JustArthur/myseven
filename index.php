@@ -23,7 +23,7 @@
     
         $identifiant = $_COOKIE['user_session'];
 
-        $stmt = $DB->prepare('SELECT * FROM testtablelogin WHERE identifiantUser = ?');
+        $stmt = $DB->prepare('SELECT * FROM users WHERE identifiantUser = ?');
         $stmt->execute([$identifiant]);
         $user = $stmt->fetch();
     

@@ -17,7 +17,7 @@
     
             $identifiant = htmlspecialchars($identifiant, ENT_QUOTES);
     
-            $verif_password = $DB->prepare("SELECT passwordUser FROM testtablelogin WHERE identifiantUser = ?");
+            $verif_password = $DB->prepare("SELECT passwordUser FROM users WHERE identifiantUser = ?");
             $verif_password->execute([$identifiant]);
             $verif_password = $verif_password->fetch();
     
@@ -30,7 +30,7 @@
             }
     
             if ($valid) {
-                $sql = $DB->prepare("SELECT * FROM testtablelogin WHERE identifiantUser = ?");
+                $sql = $DB->prepare("SELECT * FROM users WHERE identifiantUser = ?");
                 $sql->execute([$identifiant]);
                 $sql = $sql->fetch();
 

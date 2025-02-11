@@ -25,10 +25,6 @@
     $resVehicule->execute([$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();
 
-    $day = date("d");
-    $month = date("m");
-    $year = date("Y");
-
     $importVarPDF = [
         $resClient['nom'] . ' ' . $resClient['prenom'],
         //date anniv
@@ -36,9 +32,9 @@
         $resClient['adresse'] . ' ' . ucfirst($resClient['ville']) . ' ' . $resClient['cp'],
         $resVehicule['marque'] . ' ' . $resVehicule['model'],
         $resVehicule['immatriculation'], //immat
-        $day,
-        $month,
-        $year
+        date("d"),
+        date("m"),
+        date("Y")
     ];
 
     $pdf = new \setasign\Fpdi\Fpdi();

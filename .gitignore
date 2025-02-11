@@ -3,3 +3,4 @@ composer.phar
 .env
 php/generatePDF/data.json
 /PDF_saved/
+createUser.php

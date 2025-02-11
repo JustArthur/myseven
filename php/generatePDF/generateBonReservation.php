@@ -84,7 +84,7 @@
     }
 
     $prixTotalHCG = $prixGarantie + $fraisMiseEnRoute + (int)$_POST['PrixVehicule'] + (int)$_POST['livraison'];
-    $fraisCG = "10";
+    $fraisCG = $prixGarantie + $fraisMiseEnRoute + (int)$_POST['livraison'];
 
     $importVarPDF = [
         $resClient['nom'] . ' ' . $resClient['prenom'],
