@@ -4,9 +4,9 @@
     error_reporting(E_ALL);
 
     header("Content-Type: application/json");
-    header("Access-Control-Allow-Origin: *");
-    header("Access-Control-Allow-Methods: POST");
-    header("Access-Control-Allow-Headers: Content-Type");
+    // header("Access-Control-Allow-Origin: *");
+    // header("Access-Control-Allow-Methods: POST");
+    // header("Access-Control-Allow-Headers: Content-Type");
 
     require_once('../../vendor/setasign/fpdi/src/autoload.php');
     require_once("../../connexionDB.php");
@@ -14,16 +14,28 @@
     $DBB = new ConnexionDB();
     $DB = $DBB->DB();
 
-    $json = file_get_contents("php://input");
-    $data = json_decode($json, true);
+    $data = json_decode(file_get_contents("php://input"), true);
 
-    if (!$data || !isset($data["email"])) {
+    if (!$data || !isset($data["oldEmail"])) {
+        echo json_encode(["error" => "Données invalides", "data" => $data]);
         exit;
     }
 
-    $fields = ["nom", "prenom", "telephone", "adresse", "ville", "cp", "numero_cni"];
+    $oldEmail = $data["oldEmail"];
+    $newEmail = $data["email"];
+
+    $fields = ["nom", "prenom", "email", "telephone", "adresse", "ville", "cp", "numero_cni"];
     $updateFields = [];
     $params = [];
+
+    if ($newEmail !== $oldEmail) {
+        $checkEmail = $DB->prepare("SELECT COUNT(*) FROM Clients WHERE email = ?");
+        $checkEmail->execute([$newEmail]);
+        if ($checkEmail->fetchColumn() > 0) {
+            echo json_encode(["error" => "Cet email est déjà utilisé."]);
+            exit;
+        }
+    }
 
     foreach ($fields as $field) {
         if (isset($data[$field])) {
@@ -32,17 +44,19 @@
         }
     }
 
-    $params[] = $data["email"];
+    $updateFields[] = "email = ?";
+    $params[] = $newEmail;
+
+    $params[] = $oldEmail;
 
     if (!empty($updateFields)) {
         $sql = "UPDATE Clients SET " . implode(", ", $updateFields) . " WHERE email = ?";
         $stmt = $DB->prepare($sql);
         
         if ($stmt->execute($params)) {
-            // Success
+            echo json_encode(["success" => "Mise à jour réussie"]);
         } else {
-            // Error
-            exit;
+            echo json_encode(["error" => "Erreur lors de la mise à jour"]);
         }
     }
 ?>

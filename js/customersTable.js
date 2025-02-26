@@ -38,27 +38,7 @@ const searchCustomers = () => {
         pagination.classList.add('invisible');
     }
 
-    const tbody = document.getElementById("customersTableBody");
-    tbody.innerHTML = filteredRows
-        .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
-        .map(row => {
-            const realIndex = rowsCustomers.findIndex(r => r.email === row.email);
-            return `
-                <tr data-index="${realIndex}">
-                    <td ondblclick="editCellClient(this, 'nom', ${realIndex})">${row.nom}</td>
-                    <td ondblclick="editCellClient(this, 'prenom', ${realIndex})">${row.prenom}</td>
-                    <td ondblclick="editCellClient(this, 'email', ${realIndex})">${row.email}</td>
-                    <td ondblclick="editCellClient(this, 'telephone', ${realIndex})">${row.telephone}</td>
-                    <td ondblclick="editCellClient(this, 'adresse', ${realIndex})">${row.adresse}</td>
-                    <td ondblclick="editCellClient(this, 'ville', ${realIndex})">${row.ville}</td>
-                    <td ondblclick="editCellClient(this, 'cp', ${realIndex})">${row.cp}</td>
-                    <td ondblclick="editCellClient(this, 'numero_cni', ${realIndex})">${row.numero_cni}</td>
-                    <td>
-                        <input type="radio" name="selectedCustomer" value="${row.email}">
-                    </td>
-                </tr>
-            `;
-        }).join('');
+    updateTable(filteredRows);
     updatePagination();
 };
 
@@ -72,7 +52,7 @@ const updatePagination = () => {
 const prevPage = () => {
     if (currentPage > 1) {
         currentPage--;
-        updateTable();
+        updateTable(rowsCustomers);
     }
 };
 
@@ -80,13 +60,13 @@ const nextPage = () => {
     const totalPages = Math.ceil(rowsCustomers.length / rowsPerPage);
     if (currentPage < totalPages) {
         currentPage++;
-        updateTable();
+        updateTable(rowsCustomers);
     }
 };
 
-const updateTable = () => {
+const updateTable = (tabRows) => {
     const tbody = document.getElementById("customersTableBody");
-    tbody.innerHTML = rowsCustomers
+    tbody.innerHTML = tabRows
         .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
         .map(row => {
             const realIndex = rowsCustomers.findIndex(r => r.email === row.email);
@@ -121,16 +101,51 @@ const editCellClient = (td, field, index) => {
     input.focus();
     input.select();
 
+    const oldEmail = rowsCustomers[index].email;
+
+    const validateInput = (field, value) => {
+        if (value === "") return false;
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const numberRegex = /^[0-9]+$/;
+
+        if (field === "email" && !emailRegex.test(value)) {
+            input.removeEventListener("blur", saveChanges);
+            alert("Veuillez entrer une adresse email valide.");
+            return false;
+        }
+
+        const emailExists = rowsCustomers.some(customer => customer.email === value && customer.email !== oldEmail);
+        if (emailExists) {
+            input.removeEventListener("blur", saveChanges);
+            alert("Cet email est déjà utilisé. Veuillez en choisir un autre.");
+            return false;
+        }
+
+        if (["telephone", "cp", "numero_cni"].includes(field) && !numberRegex.test(value)) {
+            input.removeEventListener("blur", saveChanges);
+            alert("Ce champ ne peut contenir que des chiffres.");
+            return false;
+        }
+
+        return true;
+    };
+
     const saveChanges = () => {
         const newValue = input.value.trim();
 
-        if (newValue == "" || newValue === oldValue) {
+        if (newValue === oldValue) {
+            td.innerHTML = oldValue;
+            return;
+        }
+
+        if (!validateInput(field, newValue)) {
             td.innerHTML = oldValue;
             return;
         }
 
         rowsCustomers[index][field] = newValue;
-        updateDatabaseClient(rowsCustomers[index]);
+        updateDatabaseClient(rowsCustomers[index], oldEmail);
         
         td.innerHTML = newValue;
     };
@@ -144,14 +159,16 @@ const editCellClient = (td, field, index) => {
 };
 
 
-const updateDatabaseClient = (customer) => {
+
+const updateDatabaseClient = (customer, oldEmail) => {
+    console.log(customer);
     fetch("./php/tableEdit/update_customer.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(customer)
+        body: JSON.stringify({ ...customer, oldEmail })
     })
 };
 
-updateTable();
+updateTable(rowsCustomers);
