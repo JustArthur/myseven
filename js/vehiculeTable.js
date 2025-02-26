@@ -21,7 +21,6 @@ const searchVehicule = () => {
         filteredRowsVehicule = rowsVehicules;
         pagination.classList.remove('invisible');
         pagination.classList.add('visible');
-
     } else {
         filteredRowsVehicule = rowsVehicules.filter(row =>
             row.immatriculation.toLowerCase().includes(searchTerm) ||
@@ -40,20 +39,23 @@ const searchVehicule = () => {
     const tbody = document.getElementById("vehiculeTableBody");
     tbody.innerHTML = filteredRowsVehicule
         .slice((currentPageVehicule - 1) * rowsPerPageVehicule, currentPageVehicule * rowsPerPageVehicule)
-        .map(row => `
-                <tr>
-                    <td>${row.immatriculation}</td>
-                    <td>${row.marque}</td>
-                    <td>${row.model}</td>
-                    <td>${row.puissance}</td>
-                    <td>${row.type_boite}</td>
-                    <td>${row.couleur}</td>
-                    <td>${row.kilometrage}</td>
+        .map(row => {
+            const realIndex = rowsVehicules.findIndex(r => r.immatriculation === row.immatriculation);
+            return `
+                <tr data-index="${realIndex}">
+                    <td ondblclick="editCellVehicle(this, 'immatriculation', ${realIndex})">${row.immatriculation}</td>
+                    <td ondblclick="editCellVehicle(this, 'marque', ${realIndex})">${row.marque}</td>
+                    <td ondblclick="editCellVehicle(this, 'model', ${realIndex})">${row.model}</td>
+                    <td ondblclick="editCellVehicle(this, 'puissance', ${realIndex})">${row.puissance}</td>
+                    <td ondblclick="editCellVehicle(this, 'type_boite', ${realIndex})">${row.type_boite}</td>
+                    <td ondblclick="editCellVehicle(this, 'couleur', ${realIndex})">${row.couleur}</td>
+                    <td ondblclick="editCellVehicle(this, 'kilometrage', ${realIndex})">${row.kilometrage}</td>
                     <td>
                         <input type="radio" name="selectedVehicule" value="${row.immatriculation}">
                     </td>
                 </tr>
-            `).join('');
+            `;
+        }).join('');
     updatePaginationVehicule();
 };
 
@@ -83,21 +85,67 @@ const updateTableVehicule = () => {
     const tbody = document.getElementById("vehiculeTableBody");
     tbody.innerHTML = rowsVehicules
         .slice((currentPageVehicule - 1) * rowsPerPageVehicule, currentPageVehicule * rowsPerPageVehicule)
-        .map((row) => `
+        .map((row, index) => `
                 <tr>
-                    <td>${row.immatriculation}</td>
-                    <td>${row.marque}</td>
-                    <td>${row.model}</td>
-                    <td>${row.puissance}</td>
-                    <td>${row.type_boite}</td>
-                    <td>${row.couleur}</td>
-                    <td>${row.kilometrage}</td>
+                    <td ondblclick="editCellVehicle(this, 'immatriculation', ${index})">${row.immatriculation}</td>
+                    <td ondblclick="editCellVehicle(this, 'marque', ${index})">${row.marque}</td>
+                    <td ondblclick="editCellVehicle(this, 'model', ${index})">${row.model}</td>
+                    <td ondblclick="editCellVehicle(this, 'puissance', ${index})">${row.puissance}</td>
+                    <td ondblclick="editCellVehicle(this, 'type_boite', ${index})">${row.type_boite}</td>
+                    <td ondblclick="editCellVehicle(this, 'couleur', ${index})">${row.couleur}</td>
+                    <td ondblclick="editCellVehicle(this, 'kilometrage', ${index})">${row.kilometrage}</td>
                     <td>
                         <input type="radio" name="selectedVehicule" value="${row.immatriculation}">
                     </td>
                 </tr>
             `).join('');
     updatePaginationVehicule();
+};
+
+
+const editCellVehicle = (td, field, index) => {
+    const oldValue = td.innerText.trim();
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = oldValue;
+    input.classList.add("edit-input");
+
+    td.innerHTML = "";
+    td.appendChild(input);
+    input.focus();
+
+    const saveChanges = () => {
+        const newValue = input.value.trim();
+
+        if (newValue === "" || newValue === oldValue) {
+            td.innerHTML = oldValue;
+            return;
+        }
+
+        rowsVehicules[index][field] = newValue;
+        updateDatabaseVehicle(rowsVehicules[index]);
+
+        td.innerHTML = newValue;
+    };
+
+    input.addEventListener("blur", saveChanges);
+    input.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+            saveChanges();
+        }
+    });
+};
+
+
+
+const updateDatabaseVehicle = (vehicules) => {
+    fetch("./php/tableEdit/update_vehicules.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(vehicules)
+    })
 };
 
 updateTableVehicule();

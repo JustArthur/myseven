@@ -93,7 +93,7 @@
     <title>Admin Panel</title>
 </head>
 <body>
-    <form method="POST">
+    <form id="bigForm" method="POST">
         <div class="login">
             <?php if (!empty($_SESSION['user'])) { ?>
                 <a href="./php/logout.php" class="login-button deco">Se deconnecter</a>
@@ -118,11 +118,13 @@
                     <table class="table" id="customersTable">
                         <thead class="table-head" id="customersTableHead">
                             <tr class="table-row" id="customersTableHeadRow">
-                                <th>Nom de famille</th>
+                                <th>Nom</th>
                                 <th>Prénom</th>
                                 <th>Adresse-mail</th>
                                 <th>Téléphone</th>
-                                <th>Adresse Postal</th>
+                                <th>Numéro et rue</th>
+                                <th>Ville</th>
+                                <th>Code postale</th>
                                 <th>Numéro CNI</th>
                                 <th></th>
                             </tr>
@@ -194,7 +196,9 @@
                     $firstName = addslashes($client['prenom']);
                     $email = addslashes($client['email']);
                     $phone = addslashes($client['telephone']);
-                    $address = addslashes($client['adresse'] . " " . $client['ville'] . " " . $client['cp']);
+                    $address = addslashes($client['adresse']);
+                    $ville = addslashes($client['ville']);
+                    $cp = addslashes($client['cp']);
                     $numCNI = addslashes($client['numero_cni']);
                     
                     $lastName = str_replace(["\n", "\r"], " ", $lastName);
@@ -202,16 +206,20 @@
                     $email = str_replace(["\n", "\r"], " ", $email);
                     $phone = str_replace(["\n", "\r"], " ", $phone);
                     $address = str_replace(["\n", "\r"], " ", $address);
+                    $ville = str_replace(["\n", "\r"], " ", $ville);
+                    $cp = str_replace(["\n", "\r"], " ", $cp);
                     $numCNI = str_replace(["\n", "\r"], " ", $numCNI);
 
                     $itemsCustomer[] = 
                     "{
-                        lastName: \"$lastName\",
-                        firstName: \"$firstName\",
+                        nom: \"$lastName\",
+                        prenom: \"$firstName\",
                         email: \"$email\",
-                        phone: \"$phone\",
-                        adress: \"$address\",
-                        numCNI: \"$numCNI\"
+                        telephone: \"$phone\",
+                        adresse: \"$address\",
+                        ville: \"$ville\",
+                        cp: \"$cp\",
+                        numero_cni: \"$numCNI\"
                     }";
                 }
                 echo implode(",\n", $itemsCustomer);
@@ -252,6 +260,12 @@
                 echo implode(",\n", $itemsVehicule);
             ?>
         ];
+
+        document.getElementById("bigForm").addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+            }
+        });
     </script>
     <script type="text/javascript" src="js/customersTable.js"></script>
     <script type="text/javascript" src="js/vehiculeTable.js"></script>
