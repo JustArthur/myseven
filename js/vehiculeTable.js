@@ -113,11 +113,12 @@ const editCellVehicle = (td, field, index) => {
     td.innerHTML = "";
     td.appendChild(input);
     input.focus();
+    input.select();
 
     const saveChanges = () => {
         const newValue = input.value.trim();
 
-        if (newValue === "" || newValue === oldValue) {
+        if (newValue == "" || newValue === oldValue) {
             td.innerHTML = oldValue;
             return;
         }

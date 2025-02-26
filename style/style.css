@@ -19,10 +19,11 @@ form {
 
 .navbar {
     display: flex;
-    border-bottom: 2px solid #ddd;
+    border-bottom: 1px solid #ddd;
     height: max-content;
+    border-radius: 5px 5px 0 0;
+    overflow: hidden;
 }
-
 .navbar a {
     flex: 1;
     padding: 10px;
@@ -51,6 +52,8 @@ form {
     border-top: none;
     flex-direction: column;
     gap: 20px;
+    border-radius: 0 0 5px 5px;
+    overflow: hidden;
 }
 
 .content.active {
