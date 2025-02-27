@@ -4,9 +4,6 @@
     error_reporting(E_ALL);
 
     header("Content-Type: application/json");
-    // header("Access-Control-Allow-Origin: *");
-    // header("Access-Control-Allow-Methods: POST");
-    // header("Access-Control-Allow-Headers: Content-Type");
 
     require_once('../../vendor/setasign/fpdi/src/autoload.php');
     require_once("../../connexionDB.php");
