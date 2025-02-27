@@ -4,3 +4,4 @@ composer.phar
 php/generatePDF/data.json
 /PDF_saved/
 createUser.php
+.vscode/

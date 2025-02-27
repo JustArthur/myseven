@@ -1,9 +1,9 @@
 <?php
-    ini_set('display_errors', '1');
-    ini_set('display_startup_errors', '1');
-    error_reporting(E_ALL);
+    ini_set(option: 'display_errors', value: '1');
+    ini_set(option: 'display_startup_errors', value: '1');
+    error_reporting(error_level: E_ALL);
 
-    require_once("connexionDB.php");
+    require_once 'connexionDB.php';
 
     $tableauOnglets = [
         'Clients',
@@ -17,26 +17,26 @@
     $DB = $DBB->DB();
 
     if (isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
-        session_id($_COOKIE['user_session']);
+        session_id(id: $_COOKIE['user_session']);
 
         session_start();
     
         $identifiant = $_COOKIE['user_session'];
 
-        $stmt = $DB->prepare('SELECT * FROM users WHERE identifiantUser = ?');
-        $stmt->execute([$identifiant]);
+        $stmt = $DB->prepare(query: 'SELECT * FROM users WHERE identifiantUser = ?');
+        $stmt->execute(params: [$identifiant]);
         $user = $stmt->fetch();
     
         if ($user) {
             $_SESSION['user'] = array(
-                'id' => htmlspecialchars($user['idUser'], ENT_QUOTES),
-                'identifiant' => htmlspecialchars($user['identifiantUser'], ENT_QUOTES)
+                'id' => htmlspecialchars(string: $user['idUser'], flags: ENT_QUOTES),
+                'identifiant' => htmlspecialchars(string: $user['identifiantUser'], flags: ENT_QUOTES)
             );
         } else {
             session_destroy();
         }
     } else {
-        header('Location: ./php/login.php');
+        header(header: 'Location: ./php/login.php');
     }
 
     $resClient = $DB->prepare('SELECT * FROM Clients ORDER BY nom ASC');
@@ -47,10 +47,10 @@
     $resVehicule->execute();
     $resVehicule = $resVehicule->fetchAll();
 
-    $DBClose = $DBB->closeConnection();
+    $DBB->closeConnection();
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        extract($_POST);
+        extract(array: $_POST);
     
         $routes = [
             'generateMandatVente' => './php/forms/formMandatVente.php',
@@ -68,8 +68,8 @@
                 if (isset($_POST[$key])) {
                     echo "
                         <form style='display:none' id='postForm' action='$file' target='_blank' method='POST'>
-                            <input type='hidden' name='client' value='" . htmlspecialchars($selectedCustomer) . "'>
-                            <input type='hidden' name='immatCar' value='" . htmlspecialchars($selectedVehicule) . "'>
+                            <input type='hidden' name='client' value='" . htmlspecialchars(string: $selectedCustomer) . "'>
+                            <input type='hidden' name='immatCar' value='" . htmlspecialchars(string: $selectedVehicule) . "'>
                         </form>
                         <script>document.getElementById('postForm').submit();</script>
                     ";
@@ -90,7 +90,7 @@
 
     <link rel="stylesheet" href="./style/style.css">
 
-    <title>Admin Panel</title>
+    <title>Myseven - Panel Administrateur</title>
 </head>
 <body>
     <form id="bigForm" method="POST">
@@ -98,19 +98,19 @@
             <?php if (!empty($_SESSION['user'])) { ?>
                 <a href="./php/logout.php" class="login-button deco">Se deconnecter</a>
             <?php } else {
-                header('Location: ./php/login.php');
+                header(header: 'Location: ./php/login.php');
             } ?>
         </div>
 
         <div class="tableau">
             <div class="navbar">
-                <?php foreach($tableauOnglets as $onglet) { ?>
-                    <a class="tab-button <?php if($i === 1) { echo 'active'; } ?>" data-tab="tab<?= $i ?>"><?= $onglet ?></a>
-                <?php $i++; } ?>
+                <?php foreach($tableauOnglets as $index => $onglet) { ?>
+                    <a class="tab-button" data-tab="tab<?= $index + 1 ?>"><?= $onglet ?></a>
+                <?php } ?>
             </div>
 
             <!-- Clients -->
-            <div class="content active" id="tab1">
+            <div class="content" id="tab1">
                 <h2><?= $tableauOnglets[0] ?></h2>
                 <input type="text" class="searchBar" id="searchBarCustomer" placeholder="Rechercher un client..." onkeyup="searchCustomers()">
 
@@ -192,23 +192,23 @@
             <?php
                 $itemsCustomer = [];
                 foreach ($resClient as $client) {
-                    $lastName = addslashes($client['nom']);
-                    $firstName = addslashes($client['prenom']);
-                    $email = addslashes($client['email']);
-                    $phone = addslashes($client['telephone']);
-                    $address = addslashes($client['adresse']);
-                    $ville = addslashes($client['ville']);
-                    $cp = addslashes($client['cp']);
-                    $numCNI = addslashes($client['numero_cni']);
+                    $lastName = addslashes(string: $client['nom']);
+                    $firstName = addslashes(string: $client['prenom']);
+                    $email = addslashes(string: $client['email']);
+                    $phone = addslashes(string: $client['telephone']);
+                    $address = addslashes(string: $client['adresse']);
+                    $ville = addslashes(string: $client['ville']);
+                    $cp = addslashes(string: $client['cp']);
+                    $numCNI = addslashes(string: $client['numero_cni']);
                     
-                    $lastName = str_replace(["\n", "\r"], " ", $lastName);
-                    $firstName = str_replace(["\n", "\r"], " ", $firstName);
-                    $email = str_replace(["\n", "\r"], " ", $email);
-                    $phone = str_replace(["\n", "\r"], " ", $phone);
-                    $address = str_replace(["\n", "\r"], " ", $address);
-                    $ville = str_replace(["\n", "\r"], " ", $ville);
-                    $cp = str_replace(["\n", "\r"], " ", $cp);
-                    $numCNI = str_replace(["\n", "\r"], " ", $numCNI);
+                    $lastName = str_replace(search: ["\n", "\r"], replace: " ", subject: $lastName);
+                    $firstName = str_replace(search: ["\n", "\r"], replace: " ", subject: $firstName);
+                    $email = str_replace(search: ["\n", "\r"], replace: " ", subject: $email);
+                    $phone = str_replace(search: ["\n", "\r"], replace: " ", subject: $phone);
+                    $address = str_replace(search: ["\n", "\r"], replace: " ", subject: $address);
+                    $ville = str_replace(search: ["\n", "\r"], replace: " ", subject: $ville);
+                    $cp = str_replace(search: ["\n", "\r"], replace: " ", subject: $cp);
+                    $numCNI = str_replace(search: ["\n", "\r"], replace: " ", subject: $numCNI);
 
                     $itemsCustomer[] = 
                     "{
@@ -222,7 +222,7 @@
                         numero_cni: \"$numCNI\"
                     }";
                 }
-                echo implode(",\n", $itemsCustomer);
+                echo implode(separator: ",\n", array: $itemsCustomer);
             ?>
         ];
 
@@ -230,21 +230,21 @@
             <?php
                 $itemsVehicule = [];
                 foreach ($resVehicule as $vehicule) {
-                    $immatriculation = addslashes($vehicule['immatriculation']);
-                    $marque = addslashes($vehicule['marque']);
-                    $model = addslashes($vehicule['model']);
-                    $puissance = addslashes($vehicule['puissance']);
-                    $type_boite = addslashes($vehicule['type_boite']);
-                    $couleur = addslashes($vehicule['couleur']);
-                    $kilometrage = addslashes($vehicule['kilometrage']);
+                    $immatriculation = addslashes(string: $vehicule['immatriculation']);
+                    $marque = addslashes(string: $vehicule['marque']);
+                    $model = addslashes(string: $vehicule['model']);
+                    $puissance = addslashes(string: $vehicule['puissance']);
+                    $type_boite = addslashes(string: $vehicule['type_boite']);
+                    $couleur = addslashes(string: $vehicule['couleur']);
+                    $kilometrage = addslashes(string: $vehicule['kilometrage']);
                     
-                    $immatriculation = str_replace(["\n", "\r"], " ", $immatriculation);
-                    $marque = str_replace(["\n", "\r"], " ", $marque);
-                    $model = str_replace(["\n", "\r"], " ", $model);
-                    $puissance = str_replace(["\n", "\r"], " ", $puissance);
-                    $type_boite = str_replace(["\n", "\r"], " ", $type_boite);
-                    $couleur = str_replace(["\n", "\r"], " ", $couleur);
-                    $kilometrage = str_replace(["\n", "\r"], " ", $kilometrage);
+                    $immatriculation = str_replace(search: ["\n", "\r"], replace: " ", subject: $immatriculation);
+                    $marque = str_replace(search: ["\n", "\r"], replace: " ", subject: $marque);
+                    $model = str_replace(search: ["\n", "\r"], replace: " ", subject: $model);
+                    $puissance = str_replace(search: ["\n", "\r"], replace: " ", subject: $puissance);
+                    $type_boite = str_replace(search: ["\n", "\r"], replace: " ", subject: $type_boite);
+                    $couleur = str_replace(search: ["\n", "\r"], replace: " ", subject: $couleur);
+                    $kilometrage = str_replace(search: ["\n", "\r"], replace: " ", subject: $kilometrage);
 
                     $itemsVehicule[] = 
                     "{
@@ -257,7 +257,7 @@
                         kilometrage: \"$kilometrage\"
                     }";
                 }
-                echo implode(",\n", $itemsVehicule);
+                echo implode(separator: ",\n", array: $itemsVehicule);
             ?>
         ];
 

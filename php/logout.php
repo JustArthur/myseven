@@ -3,20 +3,20 @@
 
     $_SESSION['user'] = array();
 
-    if (ini_get("session.use_cookies")) {
+    if (ini_get(option: "session.use_cookies")) {
         $params = session_get_cookie_params();
-        setcookie(session_name(), '', time() - 42000,
-            $params["path"], $params["domain"],
-            $params["secure"], $params["httponly"]
+        setcookie(name: session_name(), value: '', expires_or_options: time() - 42000,
+            path: $params["path"], domain: $params["domain"],
+            secure: $params["secure"], httponly: $params["httponly"]
         );
     }
     
     if (isset($_COOKIE['user_session'])) {
-        setcookie('user_session', '', time() - 42000, '/');
+        setcookie(name: 'user_session', value: '', expires_or_options: time() - 42000, path: '/');
     }
     
     session_destroy();
 
-    header('Location: ./login.php');
+    header(header: 'Location: ./login.php');
     exit();
 ?>

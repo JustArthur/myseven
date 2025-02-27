@@ -1,10 +1,10 @@
 <?php
-    ini_set('display_errors', '1');
-    ini_set('display_startup_errors', '1');
-    error_reporting(E_ALL);
+    ini_set(option: 'display_errors', value: '1');
+    ini_set(option: 'display_startup_errors', value: '1');
+    error_reporting(error_level: E_ALL);
 
     if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
-        header('Location: ../../php/login.php');
+        header(header: 'Location: ../../php/login.php');
         exit();
     }  
 ?>
@@ -17,7 +17,7 @@
 
     <link rel="stylesheet" href="../../style/formStyle.css">
 
-    <title>Document</title>
+    <title>Myseven - Générer un mandat de vente</title>
 </head>
 <body>
     <main>

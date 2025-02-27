@@ -1,39 +1,39 @@
 <?php
-    ini_set('display_errors', '1');
-    ini_set('display_startup_errors', '1');
-    error_reporting(E_ALL);
+    ini_set(option: 'display_errors', value: '1');
+    ini_set(option: 'display_startup_errors', value: '1');
+    error_reporting(error_level: E_ALL);
 
     if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
-        header('Location: ../../php/login.php');
+        header(header: 'Location: ../../php/login.php');
         exit();
     }
 
-    require_once('../../vendor/setasign/fpdf/fpdf.php');
-    require_once('../../vendor/setasign/fpdi/src/autoload.php');
+    require_once '../../vendor/setasign/fpdf/fpdf.php';
+    require_once '../../vendor/setasign/fpdi/src/autoload.php';
 
-    require_once("../../connexionDB.php");
+    require_once '../../connexionDB.php';
 
     $DBB = new ConnexionDB();
     $DB = $DBB->DB();
 
     $prixNetVendeur = 1000;
     
-    $resClient = $DB->prepare('SELECT * FROM Clients WHERE email = ?');
-    $resClient->execute([$_POST['client']]);
+    $resClient = $DB->prepare(query: 'SELECT * FROM Clients WHERE email = ?');
+    $resClient->execute(params: [$_POST['client']]);
     $resClient = $resClient->fetch();
 
-    $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE immatriculation = ?');
-    $resVehicule->execute([$_POST['immatCar']]);
+    $resVehicule = $DB->prepare(query: 'SELECT * FROM vehicules WHERE immatriculation = ?');
+    $resVehicule->execute(params: [$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();
 
-    $day = date("d");
-    $month = date("m");
-    $year = date("Y");
+    $day = date(format: "d");
+    $month = date(format: "m");
+    $year = date(format: "Y");
 
     $importVarPDF = [
         $resClient['nom'] . ' ' . $resClient['prenom'],
-        $resVehicule['marque'] . ' ' . $resVehicule['model'], //marque model
-        $resVehicule['immatriculation'], //immat
+        $resVehicule['marque'] . ' ' . $resVehicule['model'],
+        $resVehicule['immatriculation'],
         $prixNetVendeur,
         $day,
         $month,
@@ -42,11 +42,11 @@
 
     $pdf = new \setasign\Fpdi\Fpdi();
 
-    $pageCount = $pdf->setSourceFile('../../pdf/ACCORD_DE_BAISSE_DU_PRIX_NET_VENDEUR.pdf');
-    $pageId = $pdf->importPage(1, \setasign\Fpdi\PdfReader\PageBoundaries::MEDIA_BOX);
+    $pageCount = $pdf->setSourceFile(file: '../../pdf/ACCORD_DE_BAISSE_DU_PRIX_NET_VENDEUR.pdf');
+    $pageId = $pdf->importPage(pageNumber: 1, box: \setasign\Fpdi\PdfReader\PageBoundaries::MEDIA_BOX);
 
     $pdf->addPage();
-    $pdf->useImportedPage($pageId, 5, 10, 200);
+    $pdf->useImportedPage(pageId: $pageId, x: 5, y: 10, width: 200);
 
     $importCoordinates = [
         ['x' => 52, 'y' => 91],  // nom prénom
@@ -59,22 +59,22 @@
     ];
 
     foreach ($importVarPDF as $index => $valPDF) {
-        $pdf->SetFont('Helvetica');
-        $pdf->SetTextColor(0, 0, 0);
-        $pdf->SetXY($importCoordinates[$index]['x'], $importCoordinates[$index]['y']);
-        $pdf->Write(0, $valPDF);
+        $pdf->SetFont(family: 'Helvetica');
+        $pdf->SetTextColor(r: 0, g: 0, b: 0);
+        $pdf->SetXY(x: $importCoordinates[$index]['x'], y: $importCoordinates[$index]['y']);
+        $pdf->Write(h: 0, txt: $valPDF);
     }
 
     $folder = "../../PDF_saved/AccordBaissePrix/";
 
-    if(!file_exists($folder)) {
-        mkdir($folder, 0777, true);
+    if(!file_exists(filename: $folder)) {
+        mkdir(directory: $folder, permissions: 0777, recursive: true);
     }
 
-    $fileCount = count(glob($folder . "*.pdf")) + 1;
+    $fileCount = count(value: glob(pattern: $folder . "*.pdf")) + 1;
     $pdfNameFile = "ACCORD_DE BAISSE_DU_PRIX_NET_VENDEUR_" . $importVarPDF[0] . "_" . $fileCount . ".pdf";
 
-    $pdf->Output('I', $pdfNameFile);
-    $pdf->Output('F', $folder . $pdfNameFile);
     $DBB->closeConnection();
+    $pdf->Output(dest: 'I', name: $pdfNameFile);
+    $pdf->Output(dest: 'F', name: $folder . $pdfNameFile);
 ?>

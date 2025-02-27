@@ -3,26 +3,26 @@
     include_once '../connexionDB.php';
 
     if (!empty($_SESSION['user'])) {
-        header('Location: ../index.php');
+        header(header: 'Location: ../index.php');
         exit();
     }
     
     if (!empty($_POST)) {
-        extract($_POST);
+        extract(array: $_POST);
         if (isset($_POST['connexion'])) {
             $DBB = new ConnexionDB();
             $DB = $DBB->DB();
     
             $valid = true;
     
-            $identifiant = htmlspecialchars($identifiant, ENT_QUOTES);
+            $identifiant = htmlspecialchars(string: $identifiant, flags: ENT_QUOTES);
     
-            $verif_password = $DB->prepare("SELECT passwordUser FROM users WHERE identifiantUser = ?");
-            $verif_password->execute([$identifiant]);
+            $verif_password = $DB->prepare(query: "SELECT passwordUser FROM users WHERE identifiantUser = ?");
+            $verif_password->execute(params: [$identifiant]);
             $verif_password = $verif_password->fetch();
     
             if ($verif_password && isset($verif_password['passwordUser'])) {
-                if (!password_verify($password, $verif_password['passwordUser'])) {
+                if (!password_verify(password: $password, hash: $verif_password['passwordUser'])) {
                     $valid = false;
                 }
             } else {
@@ -30,21 +30,21 @@
             }
     
             if ($valid) {
-                $sql = $DB->prepare("SELECT * FROM users WHERE identifiantUser = ?");
-                $sql->execute([$identifiant]);
+                $sql = $DB->prepare(query: "SELECT * FROM users WHERE identifiantUser = ?");
+                $sql->execute(params: [$identifiant]);
                 $sql = $sql->fetch();
 
-                session_regenerate_id(true);
+                session_regenerate_id(delete_old_session: true);
     
                 $_SESSION['user'] = array(
-                    'id' => htmlspecialchars($sql['idUser'], ENT_QUOTES),
-                    'identifiant' => htmlspecialchars($sql['identifiantUser'], ENT_QUOTES)
+                    'id' => htmlspecialchars(string: $sql['idUser'], flags: ENT_QUOTES),
+                    'identifiant' => htmlspecialchars(string: $sql['identifiantUser'], flags: ENT_QUOTES)
                 );
 
-                setcookie('user_session', $_SESSION['user']['identifiant'], time() + (86400 * 30), "/", "", false, true);
-    
+                setcookie(name: 'user_session', value: $_SESSION['user']['identifiant'], expires_or_options: time() + (86400 * 30), path: "/", domain: "", secure: false, httponly: true);
+                $DBB->closeConnection();
 
-                header('Location: ../index.php');
+                header(header: 'Location: ../index.php');
                 exit();
             }
         }
@@ -59,7 +59,7 @@
 
     <link rel="stylesheet" href="../style/connexionStyle.css">
 
-    <title>Se connecter</title>
+    <title>Myseven - Se connecter</title>
 </head>
 <body>
     <form method="POST">
