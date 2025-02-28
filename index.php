@@ -11,8 +11,6 @@
         'Générer des PDF'
     ];
 
-    $i = 1;
-
     $DBB = new ConnexionDB();
     $DB = $DBB->DB();
 
