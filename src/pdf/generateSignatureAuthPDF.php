@@ -1,28 +1,28 @@
 <?php
-    ini_set(option: 'display_errors', value: '1');
-    ini_set(option: 'display_startup_errors', value: '1');
-    error_reporting(error_level: E_ALL);
+    ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
+    error_reporting(E_ALL);
 
     if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
-        header(header: 'Location: ../../php/login.php');
+        header('Location: ../../login.php');
         exit();
     }
 
     require_once '../../vendor/setasign/fpdf/fpdf.php';
     require_once '../../vendor/setasign/fpdi/src/autoload.php';
 
-    require_once '../../connexionDB.php';
+    require_once '../../database.php';
 
     $DBB = new ConnexionDB();
     $DB = $DBB->DB();
 
 
-    $resClient = $DB->prepare(query: 'SELECT * FROM Clients WHERE email = ?');
-    $resClient->execute(params: [$_POST['client']]);
+    $resClient = $DB->prepare('SELECT * FROM Clients WHERE email = ?');
+    $resClient->execute([$_POST['client']]);
     $resClient = $resClient->fetch();
 
-    $resVehicule = $DB->prepare(query: 'SELECT * FROM vehicules WHERE immatriculation = ?');
-    $resVehicule->execute(params: [$_POST['immatCar']]);
+    $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE immatriculation = ?');
+    $resVehicule->execute([$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();
 
     $importVarPDF = [
@@ -39,11 +39,11 @@
 
     $pdf = new \setasign\Fpdi\Fpdi();
 
-    $pageCount = $pdf->setSourceFile(file: '../../pdf/PROCURATION_DE_SIGNATURE.pdf');
-    $pageId = $pdf->importPage(pageNumber: 1, box: \setasign\Fpdi\PdfReader\PageBoundaries::MEDIA_BOX);
+    $pageCount = $pdf->setSourceFile('../../documents/signature_authorization.pdf');
+    $pageId = $pdf->importPage(1, \setasign\Fpdi\PdfReader\PageBoundaries::MEDIA_BOX);
 
     $pdf->addPage();
-    $pdf->useImportedPage(pageId: $pageId, x: 5, y: 10, width: 200);
+    $pdf->useImportedPage($pageId, 5, 10, 200);
 
     $importCoordinates = [
         ['x' => 52, 'y' => 87],  // nom prénom
@@ -58,22 +58,25 @@
     ];
 
     foreach ($importVarPDF as $index => $valPDF) {
-        $pdf->SetFont(family: 'Helvetica');
-        $pdf->SetTextColor(r: 0, g: 0, b: 0);
-        $pdf->SetXY(x: $importCoordinates[$index]['x'], y: $importCoordinates[$index]['y']);
-        $pdf->Write(h: 0, txt: $valPDF);
+        $pdf->SetFont('Helvetica');
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->SetXY($importCoordinates[$index]['x'], $importCoordinates[$index]['y']);
+        $pdf->Write(0, $valPDF);
     }
 
-    $folder = "../../PDF_saved/ProcurationSignature/";
+    $folder = "../../storage/signature_auth/";
 
-    if(!file_exists(filename: $folder)) {
-        mkdir(directory: $folder, permissions: 0777, recursive: true);
+    if(!file_exists($folder)) {
+        mkdir($folder, 0777, true);
     }
 
-    $fileCount = count(value: glob(pattern: $folder . "*.pdf")) + 1;
+    $pattern = $folder . "PROCURATION_DE_SIGNATURE_" . preg_quote($importVarPDF[0], '/') . "_*.pdf";
+    $pdfFiles = glob($pattern);
+    $fileCount = count($pdfFiles) + 1;
+
     $pdfNameFile = "PROCURATION_DE_SIGNATURE_" . $importVarPDF[0] . "_" . $fileCount . ".pdf";
 
     $DBB->closeConnection();
-    $pdf->Output(dest: 'I', name: $pdfNameFile);
-    $pdf->Output(dest: 'F', name: $folder . $pdfNameFile);
+    $pdf->Output('I', $pdfNameFile);
+    $pdf->Output('F', $folder . $pdfNameFile);
 ?>

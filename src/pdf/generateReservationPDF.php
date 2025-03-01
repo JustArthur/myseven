@@ -1,17 +1,17 @@
 <?php
-    ini_set(option: 'display_errors', value: '1');
-    ini_set(option: 'display_startup_errors', value: '1');
-    error_reporting(error_level: E_ALL);
+    ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
+    error_reporting(E_ALL);
 
-    if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
-        header(header: 'Location: ../../php/login.php');
+    if (!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
+        header(header: 'Location: ../../login.php');
         exit();
     }
 
     require_once '../../vendor/setasign/fpdf/fpdf.php';
     require_once '../../vendor/setasign/fpdi/src/autoload.php';
 
-    require_once '../../connexionDB.php';
+    require_once '../../database.php';
 
     $DBB = new ConnexionDB();
     $DB = $DBB->DB();
@@ -24,47 +24,43 @@
     $resVehicule->execute(params: [$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();
 
-    $day = date(format: "d");
-    $month = date(format: "m");
-    $year = date(format: "Y");
-
     $crossToCreate = [];
 
     switch($_POST['garantieMecanique']) {
         case '3Mois':
-            array_push(array: $crossToCreate, values: ['x' => 116, 'y' => 125]);
+            array_push($crossToCreate, ['x' => 116, 'y' => 125]);
             $prixGarantie = 0;
             break;
 
         case '12Mois':
-            array_push(array: $crossToCreate, values: ['x' => 23, 'y' => 119]);
+            array_push($crossToCreate, ['x' => 23, 'y' => 119]);
             $prixGarantie = 890;
             break;
 
         case '12MoisPrestige':
-            array_push(array: $crossToCreate, values: ['x' => 23, 'y' => 125]);
+            array_push($crossToCreate, ['x' => 23, 'y' => 125]);
             $prixGarantie = 1490;
             break;
 
         case '24Mois':  
-            array_push(array: $crossToCreate, values: ['x' => 104, 'y' => 119]);
+            array_push($crossToCreate, ['x' => 104, 'y' => 119]);
             $prixGarantie = 1490;
             break;
 
         case 'refuse':
-            array_push(array: $crossToCreate, values: ['x' => 23, 'y' => 131]);
+            array_push($crossToCreate, ['x' => 23, 'y' => 131]);
             $prixGarantie = 0;
             break;
 
         default:
-            array_push(array: $crossToCreate, values: ['x' => 23, 'y' => 131]);
+            array_push($crossToCreate, ['x' => 23, 'y' => 131]);
             $prixGarantie = 0;
             break;
     }
 
     switch($_POST['fraisMiseEnRoute']) {
         case 'Oui':
-            array_push(array: $crossToCreate, values: ['x' => 24, 'y' => 158.5]);
+            array_push($crossToCreate, ['x' => 24, 'y' => 158.5]);
             $fraisMiseEnRoute = 690;
             break;
 
@@ -75,11 +71,11 @@
 
     switch($_POST['expertiseSouhaitee']) {
         case 'Oui':
-            array_push(array: $crossToCreate, values: ['x' => 56, 'y' => 184]);
+            array_push($crossToCreate, ['x' => 56, 'y' => 184]);
             break;
 
         default:
-            array_push(array: $crossToCreate, values: ['x' => 66.5, 'y' => 184]);
+            array_push($crossToCreate, ['x' => 66.5, 'y' => 184]);
             break;
     }
 
@@ -112,11 +108,11 @@
 
     $pdf = new \setasign\Fpdi\Fpdi();
 
-    $pageCount = $pdf->setSourceFile(file: '../../pdf/BON_DE_RESERVATION_2023_CAMBRAI.pdf');
-    $pageId = $pdf->importPage(pageNumber: 1, box: \setasign\Fpdi\PdfReader\PageBoundaries::MEDIA_BOX);
+    $pageCount = $pdf->setSourceFile('../../documents/reservation_contract.pdf');
+    $pageId = $pdf->importPage(1, \setasign\Fpdi\PdfReader\PageBoundaries::MEDIA_BOX);
 
     $pdf->addPage();
-    $pdf->useImportedPage(pageId: $pageId, x: 5, y: 10, width: 200);
+    $pdf->useImportedPage($pageId, 5, 10, 200);
 
     $importCoordinates = [
         ['x' => 103, 'y' => 51], //nom prénom
@@ -143,29 +139,32 @@
     ];
 
     foreach ($crossToCreate as $index) {
-        $pdf->SetFont(family: 'Helvetica');
-        $pdf->SetTextColor(r: 0, g: 0, b: 0);
-        $pdf->SetXY(x: $index['x'], y: $index['y']);
-        $pdf->Write(h: 0, txt: 'X');
+        $pdf->SetFont('Helvetica');
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->SetXY($index['x'], $index['y']);
+        $pdf->Write(0, 'X');
     }
 
     foreach ($importVarPDF as $index => $valPDF) {
-        $pdf->SetFont(family: 'Helvetica');
+        $pdf->SetFont('Helvetica');
         $pdf->SetTextColor(r: 0, g: 0, b: 0);
-        $pdf->SetXY(x: $importCoordinates[$index]['x'], y: $importCoordinates[$index]['y']);
-        $pdf->Write(h: 0, txt: $valPDF);
+        $pdf->SetXY($importCoordinates[$index]['x'], $importCoordinates[$index]['y']);
+        $pdf->Write(0, $valPDF);
     }
 
-    $folder = "../../PDF_saved/BonReservation/";
+    $folder = "../../storage/reservations/";
 
-    $fileCount = count(value: glob(pattern: $folder . "*.pdf")) + 1;
-    $pdfNameFile = "BON_RESERVATION_" . $importVarPDF[1] . "_" . $fileCount . ".pdf";
+    $pattern = $folder . "BON_RESERVATION_" . preg_quote($importVarPDF[0], '/') . "_*.pdf";
+    $pdfFiles = glob($pattern);
+    $fileCount = count($pdfFiles) + 1;
+
+    $pdfNameFile = "BON_RESERVATION_" . $importVarPDF[0] . "_" . $fileCount . ".pdf";
 
     if(!file_exists(filename: $folder)) {
-        mkdir(directory: $folder, permissions: 0777, recursive: true);
+        mkdir($folder, 0777, true);
     }
 
     $DBB->closeConnection();
-    $pdf->Output(dest: 'I', name: $pdfNameFile);
-    $pdf->Output(dest: 'F', name: $folder . $pdfNameFile);
+    $pdf->Output('I', $pdfNameFile);
+    $pdf->Output('F', $folder . $pdfNameFile);
 ?>

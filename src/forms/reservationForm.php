@@ -1,10 +1,10 @@
 <?php
-    ini_set(option: 'display_errors', value: '1');
-    ini_set(option: 'display_startup_errors', value: '1');
-    error_reporting(error_level: E_ALL);
+    ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
+    error_reporting(E_ALL);
 
     if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
-        header(header: 'Location: ../../php/login.php');
+        header('Location: ../../login.php');
         exit();
     }
 ?>
@@ -15,7 +15,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="../../style/formStyle.css">
+    <link rel="stylesheet" href="../../assets/css/forms.css">
 
     <title>Myseven - Générer un bon de réservation</title>
 </head>
@@ -24,7 +24,7 @@
 
     <div class="search-container">
         <h2>Générer un bon de réservation</h2>
-        <form class="gap" id="form_pdf" action="../generatePDF/generateBonReservation.php" method="POST">
+        <form class="gap" id="form_pdf" action="../pdf/generateReservationPDF.php" method="POST">
             <div class="input_box">
                 <span class="label form_required">Adresse-mail du client</span>
                 <input required type="email" disabled  value="<?= $_POST['client'] ?>" class="disabled" id="customerMail">

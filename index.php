@@ -1,9 +1,9 @@
 <?php
-    ini_set(option: 'display_errors', value: '1');
-    ini_set(option: 'display_startup_errors', value: '1');
-    error_reporting(error_level: E_ALL);
+    ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
+    error_reporting(E_ALL);
 
-    require_once 'connexionDB.php';
+    require_once 'database.php';
 
     $tableauOnglets = [
         'Clients',
@@ -15,26 +15,26 @@
     $DB = $DBB->DB();
 
     if (isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
-        session_id(id: $_COOKIE['user_session']);
+        session_id($_COOKIE['user_session']);
 
         session_start();
     
         $identifiant = $_COOKIE['user_session'];
 
-        $stmt = $DB->prepare(query: 'SELECT * FROM users WHERE identifiantUser = ?');
-        $stmt->execute(params: [$identifiant]);
+        $stmt = $DB->prepare('SELECT * FROM users WHERE identifiantUser = ?');
+        $stmt->execute([$identifiant]);
         $user = $stmt->fetch();
     
         if ($user) {
             $_SESSION['user'] = array(
-                'id' => htmlspecialchars(string: $user['idUser'], flags: ENT_QUOTES),
-                'identifiant' => htmlspecialchars(string: $user['identifiantUser'], flags: ENT_QUOTES)
+                'id' => htmlspecialchars($user['idUser'], ENT_QUOTES),
+                'identifiant' => htmlspecialchars($user['identifiantUser'], ENT_QUOTES)
             );
         } else {
             session_destroy();
         }
     } else {
-        header(header: 'Location: ./php/login.php');
+        header('Location: login.php');
     }
 
     $resClient = $DB->prepare('SELECT * FROM Clients ORDER BY nom ASC');
@@ -48,16 +48,16 @@
     $DBB->closeConnection();
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        extract(array: $_POST);
+        extract($_POST);
     
         $routes = [
-            'generateMandatVente' => './php/forms/formMandatVente.php',
-            'generateProcurationSignature' => './php/generatePDF/generateProcurationSignature.php',
-            'generateBonReservation' => './php/forms/formBonReservation.php',
-            'generateAccordBaissePrix' => './php/generatePDF/generateAccordBaissePrix.php'
+            'generateMandatVente' => 'src/forms/saleMandateForm.php',
+            'generateProcurationSignature' => 'src/pdf/generateSignatureAuthPDF.php',
+            'generateBonReservation' => 'src/forms/reservationForm.php',
+            'generateAccordBaissePrix' => 'src/pdf/generatePriceReductionPDF.php'
         ];
 
-        if (empty($selectedCustomer) || empty($selectedVehicule)) {
+        if (empty($selectedCustomers) || empty($selectedVehicles)) {
             echo "<script>
                     alert('Veuillez sélectionner un client et un véhicule avant de continuer.');
                   </script>";
@@ -66,15 +66,14 @@
                 if (isset($_POST[$key])) {
                     echo "
                         <form style='display:none' id='postForm' action='$file' target='_blank' method='POST'>
-                            <input type='hidden' name='client' value='" . htmlspecialchars(string: $selectedCustomer) . "'>
-                            <input type='hidden' name='immatCar' value='" . htmlspecialchars(string: $selectedVehicule) . "'>
+                            <input type='hidden' name='client' value='" . htmlspecialchars(string: $selectedCustomers) . "'>
+                            <input type='hidden' name='immatCar' value='" . htmlspecialchars(string: $selectedVehicles) . "'>
                         </form>
                         <script>document.getElementById('postForm').submit();</script>
                     ";
                 }
             }
         }
-    
     }
 ?>
 
@@ -86,7 +85,7 @@
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="./style/style.css">
+    <link rel="stylesheet" href="assets/css/tables.css">
 
     <title>Myseven - Panel Administrateur</title>
 </head>
@@ -94,9 +93,9 @@
     <form id="bigForm" method="POST">
         <div class="login">
             <?php if (!empty($_SESSION['user'])) { ?>
-                <a href="./php/logout.php" class="login-button deco">Se deconnecter</a>
+                <a href="logout.php" class="login-button deco">Se deconnecter</a>
             <?php } else {
-                header(header: 'Location: ./php/login.php');
+                header('Location: login.php');
             } ?>
         </div>
 
@@ -110,7 +109,7 @@
             <!-- Clients -->
             <div class="content" id="tab1">
                 <h2><?= $tableauOnglets[0] ?></h2>
-                <input type="text" class="searchBar" id="searchBarCustomer" placeholder="Rechercher un client..." onkeyup="searchCustomers()">
+                <input type="text" class="searchBar" id="searchBarCustomers" placeholder="Rechercher un client..." onkeyup="searchTable('customers', 'searchBarCustomers')">
 
                 <div class="overflowTable">
                     <table class="table" id="customersTable">
@@ -127,50 +126,51 @@
                                 <th></th>
                             </tr>
                         </thead>
-                        <tbody class="table-body" id="customersTableBody">
+                        <tbody class="table-body" id="CustomersTableBody">
                             <!-- INSERT AVEC JS -->
                         </tbody>
                     </table>
                 </div>
 
-                <div class="pagination visible" id="paginationCustomer">
-                    <a onclick="prevPage()">Page précédente</a>
-                    <a onclick="nextPage()">Page suivante</a>
-                    <span id="pageInfoCustomer"></span>
+                <div class="pagination visible" id="paginationCustomers">
+                    <a onclick="prevPage('Customers')">Page précédente</a>
+                    <a onclick="nextPage('Customers')">Page suivante</a>
+                    <span id="pageInfoCustomers"></span>
                 </div>
             </div>
 
             <!-- Véhicules -->
             <div class="content" id="tab2">
                 <h2><?= $tableauOnglets[1] ?></h2>
-                    <input type="text" class="searchBar" id="searchBarVehicule" placeholder="Rechercher un véhicule..." onkeyup="searchVehicule()">
+                <input type="text" class="searchBar" id="searchBarVehicles" placeholder="Rechercher un véhicule..." onkeyup="searchTable('vehicles', 'searchBarVehicles')">
 
-                    <div class="overflowTable">
-                        <table class="table" id="vehiculeTable">
-                            <thead class="table-head" id="vehiculeTableHead">
-                                <tr class="table-row" id="vehiculeTableHeadRow">
-                                    <th>Immatriculation</th>
-                                    <th>Marque</th>
-                                    <th>Modèle</th>
-                                    <th>Puissance</th>
-                                    <th>Type boite</th>
-                                    <th>Couleur</th>
-                                    <th>Kilomètrage</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody class="table-body" id="vehiculeTableBody">
-                                <!-- INSERT AVEC JS -->
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="overflowTable">
+                    <table class="table" id="vehicleTable">
+                        <thead class="table-head" id="vehicleTableHead">
+                            <tr class="table-row" id="vehicleTableHeadRow">
+                                <th>Immatriculation</th>
+                                <th>Marque</th>
+                                <th>Modèle</th>
+                                <th>Puissance</th>
+                                <th>Type boite</th>
+                                <th>Couleur</th>
+                                <th>Kilomètrage</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body" id="VehiclesTableBody">
+                            <!-- INSERT AVEC JS -->
+                        </tbody>
+                    </table>
+                </div>
 
-                    <div class="pagination visible" id="paginationVehicule">
-                        <a onclick="prevPageVehicule()">Page précédente</a>
-                        <a onclick="nextPageVehicule()">Page suivante</a>
-                        <span id="pageInfoVehicule"></span>
-                    </div>
+                <div class="pagination visible" id="paginationVehicles">
+                    <a onclick="prevPage('Vehicles')">Page précédente</a>
+                    <a onclick="nextPage('Vehicles')">Page suivante</a>
+                    <span id="pageInfoVehicles"></span>
+                </div>
             </div>
+
 
             <div class="content" id="tab3">
                 <h2><?= $tableauOnglets[2] ?></h2>
@@ -190,23 +190,15 @@
             <?php
                 $itemsCustomer = [];
                 foreach ($resClient as $client) {
-                    $lastName = addslashes(string: $client['nom']);
-                    $firstName = addslashes(string: $client['prenom']);
-                    $email = addslashes(string: $client['email']);
-                    $phone = addslashes(string: $client['telephone']);
-                    $address = addslashes(string: $client['adresse']);
-                    $ville = addslashes(string: $client['ville']);
-                    $cp = addslashes(string: $client['cp']);
-                    $numCNI = addslashes(string: $client['numero_cni']);
                     
-                    $lastName = str_replace(search: ["\n", "\r"], replace: " ", subject: $lastName);
-                    $firstName = str_replace(search: ["\n", "\r"], replace: " ", subject: $firstName);
-                    $email = str_replace(search: ["\n", "\r"], replace: " ", subject: $email);
-                    $phone = str_replace(search: ["\n", "\r"], replace: " ", subject: $phone);
-                    $address = str_replace(search: ["\n", "\r"], replace: " ", subject: $address);
-                    $ville = str_replace(search: ["\n", "\r"], replace: " ", subject: $ville);
-                    $cp = str_replace(search: ["\n", "\r"], replace: " ", subject: $cp);
-                    $numCNI = str_replace(search: ["\n", "\r"], replace: " ", subject: $numCNI);
+                    $lastName = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $client['nom']));
+                    $firstName = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $client['prenom']));
+                    $email = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $client['email']));
+                    $phone = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $client['telephone']));
+                    $address = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $client['adresse']));
+                    $ville = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $client['ville']));
+                    $cp = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $client['cp']));
+                    $numCNI = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $client['numero_cni']));
 
                     $itemsCustomer[] = 
                     "{
@@ -224,25 +216,18 @@
             ?>
         ];
 
-        const rowsVehicules = [
+        const rowsVehicles = [
             <?php
                 $itemsVehicule = [];
                 foreach ($resVehicule as $vehicule) {
-                    $immatriculation = addslashes(string: $vehicule['immatriculation']);
-                    $marque = addslashes(string: $vehicule['marque']);
-                    $model = addslashes(string: $vehicule['model']);
-                    $puissance = addslashes(string: $vehicule['puissance']);
-                    $type_boite = addslashes(string: $vehicule['type_boite']);
-                    $couleur = addslashes(string: $vehicule['couleur']);
-                    $kilometrage = addslashes(string: $vehicule['kilometrage']);
-                    
-                    $immatriculation = str_replace(search: ["\n", "\r"], replace: " ", subject: $immatriculation);
-                    $marque = str_replace(search: ["\n", "\r"], replace: " ", subject: $marque);
-                    $model = str_replace(search: ["\n", "\r"], replace: " ", subject: $model);
-                    $puissance = str_replace(search: ["\n", "\r"], replace: " ", subject: $puissance);
-                    $type_boite = str_replace(search: ["\n", "\r"], replace: " ", subject: $type_boite);
-                    $couleur = str_replace(search: ["\n", "\r"], replace: " ", subject: $couleur);
-                    $kilometrage = str_replace(search: ["\n", "\r"], replace: " ", subject: $kilometrage);
+                   
+                    $immatriculation = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $vehicule['immatriculation']));
+                    $marque = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $vehicule['marque']));
+                    $model = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $vehicule['model']));
+                    $puissance = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $vehicule['puissance']));
+                    $type_boite = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $vehicule['type_boite']));
+                    $couleur = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $vehicule['couleur']));
+                    $kilometrage = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $vehicule['kilometrage']));
 
                     $itemsVehicule[] = 
                     "{
@@ -265,9 +250,8 @@
             }
         });
     </script>
-    <script type="text/javascript" src="js/customersTable.js"></script>
-    <script type="text/javascript" src="js/vehiculeTable.js"></script>
-
-    <script type="text/javascript" src="js/navigation.js"></script>
+    
+    <script type="text/javascript" src="assets/js/tableGenerator.js"></script>
+    <script type="text/javascript" src="assets/js/navigation.js"></script>
 </body>
 </html>

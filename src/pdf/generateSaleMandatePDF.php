@@ -4,41 +4,44 @@
     error_reporting(E_ALL);
 
     if (!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
-        header('Location: ../../php/login.php');
+        header('Location: ../../login.php');
         exit();
     }
 
     require_once '../../vendor/setasign/fpdf/fpdf.php';
     require_once '../../vendor/setasign/fpdi/src/autoload.php';
 
-    require_once '../../connexionDB.php';
+    require_once '../../database.php';
 
     $DBB = new ConnexionDB();
     $DB = $DBB->DB();
 
-    $resVehicule = $DB->prepare(query: 'SELECT * FROM vehicules WHERE immatriculation = ?');
-    $resVehicule->execute(params: [$_POST['immatricuCar']]);
+    $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE immatriculation = ?');
+    $resVehicule->execute([$_POST['immatricuCar']]);
     $resVehicule = $resVehicule->fetch();
 
-    $resClient = $DB->prepare(query: 'SELECT * FROM Clients WHERE email = ?');
-    $resClient->execute(params: [$_POST['customerMail']]);
+    $resClient = $DB->prepare('SELECT * FROM Clients WHERE email = ?');
+    $resClient->execute([$_POST['customerMail']]);
     $resClient = $resClient->fetch();
 
-    $filePath = 'data.json';
-    if (!file_exists(filename: $filePath)) {
-        file_put_contents(filename: $filePath, data: json_encode(value: ['count' => 0]));
+    $filePath = '../../storage/json_data/sale_mandate_id.json';
+
+    $directory = dirname($filePath);
+    if (!is_dir($directory)) {
+        mkdir($directory, 0777, true);
     }
 
-    $data = json_decode(json: file_get_contents(filename: $filePath), associative: true);
+    if (!file_exists($filePath)) {
+        file_put_contents($filePath, json_encode(['count' => 0]));
+    }
+
+    $data = json_decode(file_get_contents($filePath), true);
 
     $data['count']++;
 
-    $currentYear = date(format: 'y');
-    $currentMonth = date(format: 'm');
+    $formattedId = sprintf('%s%s-%03d', date('y'), date('m'), $data['count']);
 
-    $formattedId = sprintf('%s%s-%03d', $currentYear, $currentMonth, $data['count']);
-
-    file_put_contents(filename: $filePath, data: json_encode(value: $data, flags: JSON_PRETTY_PRINT));
+    file_put_contents($filePath, json_encode($data, JSON_PRETTY_PRINT));
 
     //Valeur dans la BDD
     $importVarPDF = [
@@ -99,29 +102,32 @@
 
     $pdf = new \setasign\Fpdi\Fpdi();
 
-    $pageCount = $pdf->setSourceFile(file: '../../pdf/MANDAT DE VENTE NOUVEAU.pdf');
-    $pageId = $pdf->importPage(pageNumber: 1, box: \setasign\Fpdi\PdfReader\PageBoundaries::MEDIA_BOX);
+    $pageCount = $pdf->setSourceFile('../../documents/new_sale_mandate.pdf');
+    $pageId = $pdf->importPage(1, \setasign\Fpdi\PdfReader\PageBoundaries::MEDIA_BOX);
 
     $pdf->addPage();
-    $pdf->useImportedPage(pageId: $pageId, x: 5, y: 10, width: 200);
+    $pdf->useImportedPage($pageId, 5, 10, 200);
 
     foreach ($importVarPDF as $index => $valPDF) {
-        $pdf->SetFont(family: 'Helvetica');
-        $pdf->SetTextColor(r: 0, g: 0, b: 0);
-        $pdf->SetXY(x: $importCoordinates[$index]['x'], y: $importCoordinates[$index]['y']);
-        $pdf->Write(h: 0, txt: $valPDF);
+        $pdf->SetFont('Helvetica');
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->SetXY($importCoordinates[$index]['x'], $importCoordinates[$index]['y']);
+        $pdf->Write(0, $valPDF);
     }
 
-    $folder = "../../PDF_saved/MandatVente/";
+    $folder = "../../storage/sale_mandates/";
 
-    if (!file_exists(filename: $folder)) {
-        mkdir(directory: $folder, permissions: 0777, recursive: true);
+    if (!file_exists($folder)) {
+        mkdir($folder, 0777, true);
     }
 
-    $fileCount = count(value: glob(pattern: $folder . "*.pdf")) + 1;
+    $pattern = $folder . "MANDAT_DE_VENTE_" . preg_quote($importVarPDF[1], '/') . "_*.pdf";
+    $pdfFiles = glob($pattern);
+    $fileCount = count($pdfFiles) + 1;
+
     $pdfNameFile = "MANDAT_DE_VENTE_" . $importVarPDF[1] . "_" . $fileCount . ".pdf";
 
     $DBB->closeConnection();
-    $pdf->Output(dest: 'I', name: $pdfNameFile);
-    $pdf->Output(dest: 'F', name: $folder . $pdfNameFile);
+    $pdf->Output('I', $pdfNameFile);
+    $pdf->Output('F', $folder . $pdfNameFile);
 ?>

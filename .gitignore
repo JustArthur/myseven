@@ -1,7 +1,12 @@
-composer.phar
+#Librairies
 /vendor/
-.env
-php/generatePDF/data.json
-/PDF_saved/
-createUser.php
 .vscode/
+
+#Dossier de stocakge
+/storage/
+
+#Fichier de connexion BDD
+.env
+
+#Fichier de création d'un utilisateur
+register.php

@@ -1,10 +1,10 @@
 <?php
     session_start();
-    include_once '../connexionDB.php';
+    require_once 'src/config/database.php';
 
     if (!empty($_SESSION['user'])) {
-        header(header: 'Location: ../index.php');
-        exit();
+        header('Location: index.php');
+        exit;
     }
     
     if (!empty($_POST)) {
@@ -15,14 +15,14 @@
     
             $valid = true;
     
-            $identifiant = htmlspecialchars(string: $identifiant, flags: ENT_QUOTES);
+            $identifiant = htmlspecialchars($identifiant, ENT_QUOTES);
     
-            $verif_password = $DB->prepare(query: "SELECT passwordUser FROM users WHERE identifiantUser = ?");
-            $verif_password->execute(params: [$identifiant]);
+            $verif_password = $DB->prepare("SELECT passwordUser FROM users WHERE identifiantUser = ?");
+            $verif_password->execute([$identifiant]);
             $verif_password = $verif_password->fetch();
     
             if ($verif_password && isset($verif_password['passwordUser'])) {
-                if (!password_verify(password: $password, hash: $verif_password['passwordUser'])) {
+                if (!password_verify($password, $verif_password['passwordUser'])) {
                     $valid = false;
                 }
             } else {
@@ -30,22 +30,22 @@
             }
     
             if ($valid) {
-                $sql = $DB->prepare(query: "SELECT * FROM users WHERE identifiantUser = ?");
-                $sql->execute(params: [$identifiant]);
+                $sql = $DB->prepare("SELECT * FROM users WHERE identifiantUser = ?");
+                $sql->execute([$identifiant]);
                 $sql = $sql->fetch();
 
-                session_regenerate_id(delete_old_session: true);
+                session_regenerate_id(true);
     
                 $_SESSION['user'] = array(
-                    'id' => htmlspecialchars(string: $sql['idUser'], flags: ENT_QUOTES),
-                    'identifiant' => htmlspecialchars(string: $sql['identifiantUser'], flags: ENT_QUOTES)
+                    'id' => htmlspecialchars($sql['idUser'], ENT_QUOTES),
+                    'identifiant' => htmlspecialchars($sql['identifiantUser'], ENT_QUOTES)
                 );
 
-                setcookie(name: 'user_session', value: $_SESSION['user']['identifiant'], expires_or_options: time() + (86400 * 30), path: "/", domain: "", secure: false, httponly: true);
+                setcookie('user_session', $_SESSION['user']['identifiant'], time() + (86400 * 30), "/", "", false, true);
                 $DBB->closeConnection();
 
-                header(header: 'Location: ../index.php');
-                exit();
+                header('Location: index.php');
+                exit;
             }
         }
     }

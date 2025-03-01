@@ -1,6 +1,6 @@
 <?php
 
-    require_once __DIR__ . '/vendor/autoload.php';
+    require_once 'vendor/autoload.php';
 
     use Dotenv\Dotenv;
 
@@ -18,10 +18,10 @@
 
             try {
                 $dsn = "mysql:host=$dbHost;dbname=$dbName;charset=utf8mb4";
-                $this->pdo = new PDO(dsn: $dsn, username: $dbUser, password: $dbPassword);
+                $this->pdo = new PDO($dsn, $dbUser, $dbPassword);
 
-                $this->pdo->setAttribute(attribute: PDO::ATTR_ERRMODE, value: PDO::ERRMODE_EXCEPTION);
-                $this->pdo->setAttribute(attribute: PDO::ATTR_DEFAULT_FETCH_MODE, value: PDO::FETCH_ASSOC);
+                $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
             } catch (PDOException $e) {
                 echo "Erreur de connexion : " . $e->getMessage();
