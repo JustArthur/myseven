@@ -5,6 +5,13 @@
 
     header("Content-Type: application/json");
 
+    session_start();
+
+    if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
+        header('Location: ../../login.php');
+        exit();
+    }
+
     require_once '../../database.php';
 
     $DBB = new ConnexionDB();

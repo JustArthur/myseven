@@ -3,14 +3,21 @@
     ini_set('display_startup_errors', '1');
     error_reporting(E_ALL);
 
-    header(header: "Content-Type: application/json");
+    header("Content-Type: application/json");
+
+    session_start();
+
+    if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
+        header('Location: ../../login.php');
+        exit();
+    }
 
     require_once '../../database.php';
 
     $DBB = new ConnexionDB();
     $DB = $DBB->DB();
 
-    $data = json_decode(file_get_contents(filename: "php://input"), true);
+    $data = json_decode(file_get_contents("php://input"), true);
 
     if (!$data || !isset($data["oldUniqueValue"])) {
         echo json_encode(["error" => "Données invalides", "data" => $data]);

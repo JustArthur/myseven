@@ -5,26 +5,21 @@
 
     require_once 'database.php';
 
-    $tableauOnglets = [
-        'Clients',
-        'Véhicules',
-        'Générer des PDF'
-    ];
-
+    
     $DBB = new ConnexionDB();
     $DB = $DBB->DB();
-
+    
     if (isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
         session_id($_COOKIE['user_session']);
-
+        
         session_start();
-    
+        
         $identifiant = $_COOKIE['user_session'];
-
+        
         $stmt = $DB->prepare('SELECT * FROM users WHERE identifiantUser = ?');
         $stmt->execute([$identifiant]);
         $user = $stmt->fetch();
-    
+        
         if ($user) {
             $_SESSION['user'] = array(
                 'id' => htmlspecialchars($user['idUser'], ENT_QUOTES),
@@ -35,7 +30,14 @@
         }
     } else {
         header('Location: login.php');
+        exit;
     }
+    
+    $tableauOnglets = [
+        'Clients',
+        'Véhicules',
+        'Générer des PDF'
+    ];
 
     $resClient = $DB->prepare('SELECT * FROM Clients ORDER BY nom ASC');
     $resClient->execute();

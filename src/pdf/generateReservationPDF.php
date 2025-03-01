@@ -3,8 +3,10 @@
     ini_set('display_startup_errors', '1');
     error_reporting(E_ALL);
 
-    if (!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
-        header(header: 'Location: ../../login.php');
+    session_start();
+
+    if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
+        header('Location: ../../login.php');
         exit();
     }
 
