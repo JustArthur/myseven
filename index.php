@@ -113,7 +113,7 @@
                 <h2><?= $tableauOnglets[0] ?></h2>
                 <div class="input_client">
                     <input type="text" class="searchBar" id="searchBarCustomers" placeholder="Rechercher un client..." onkeyup="searchTable('customers', 'searchBarCustomers')">
-                    <a href="https://natasha.myseven.fr:8443/form/41a58574-4ede-4b92-92d0-3c7242babbaf" target="_blank">Créer un client</a>
+                    <a href="https://natasha.myseven.fr/form/41a58574-4ede-4b92-92d0-3c7242babbaf" target="_blank">Créer un client</a>
                 </div>
 
                 <div class="overflowTable">
@@ -149,7 +149,7 @@
                 <h2><?= $tableauOnglets[1] ?></h2>
                 <div class="input_vehicle">
                     <input type="text" class="searchBar" id="searchBarVehicles" placeholder="Rechercher un véhicule..." onkeyup="searchTable('vehicles', 'searchBarVehicles')">
-                    <a href="https://natasha.myseven.fr:8443/form/738b1409-78e4-492e-9094-d5a77a40f48b" target="_blank">Créer un véhicule</a>
+                    <a href="https://natasha.myseven.fr/form/738b1409-78e4-492e-9094-d5a77a40f48b" target="_blank">Créer un véhicule</a>
                 </div>
 
                 <div class="overflowTable">
