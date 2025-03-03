@@ -177,6 +177,7 @@ input[type="radio"]:checked {
 }
 
 .searchBar {
+    width: 100%;
     padding: 10px 15px;
     border-radius: var(--border-radius);
     border: 1px solid var(--gray-medium);
@@ -236,4 +237,25 @@ input[type="radio"]:checked {
 
 .overflowTable {
     overflow-x: auto;
+}
+
+.input_client,
+.input_vehicle {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+}
+
+.input_client a,
+.input_vehicle a {
+    padding: 10px 15px;
+    border-radius: var(--border-radius);
+    border: none;
+    background-color: var(--primary-color);
+    font-size: 12px;
+    text-align: center;
+    transition: background-color 0.3s;
+    color: white;
+    cursor: pointer;
+    width: 25%;
 }
