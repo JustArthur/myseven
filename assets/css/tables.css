@@ -223,7 +223,7 @@ input[type="radio"]:checked {
     font-size: 12px;
     text-align: center;
     transition: background-color 0.3s;
-    color: white;
+    color: var(--white);
     width: 100%;
     max-width: 400px;
     font-weight: 600;
@@ -232,7 +232,7 @@ input[type="radio"]:checked {
 
 .btn_list .btn-generate:hover {
     background-color: var(--primary-hover);
-    color: white;
+    color: var(--white);
 }
 
 .overflowTable {
@@ -255,7 +255,7 @@ input[type="radio"]:checked {
     font-size: 12px;
     text-align: center;
     transition: background-color 0.3s;
-    color: white;
+    color: var(--white);
     cursor: pointer;
     width: 25%;
 }
