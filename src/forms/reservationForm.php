@@ -35,7 +35,7 @@
 
             <div class="input_box">
                 <span class="label form_required">Immatriculation</span>
-                <input required type="text" disabled  value="<?= $_POST['immatCar'] ?>" class="disabled" id="customerMail">
+                <input required type="text" disabled  value="<?= $_POST['immatCar'] ?>" class="disabled" id="immatCar">
                 <input hidden type="text" name="immatCar" value="<?= $_POST['immatCar'] ?>">
             </div>
 
