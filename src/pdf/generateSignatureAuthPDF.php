@@ -19,21 +19,21 @@
     $DB = $DBB->DB();
 
 
-    $resClient = $DB->prepare('SELECT * FROM Clients WHERE email = ?');
+    $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_email = ?');
     $resClient->execute([$_POST['client']]);
     $resClient = $resClient->fetch();
 
-    $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE immatriculation = ?');
+    $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
     $resVehicule->execute([$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();
 
     $importVarPDF = [
-        $resClient['nom'] . ' ' . $resClient['prenom'],
+        $resClient['clients_nom'] . ' ' . $resClient['clients_prenom'],
         //date anniv
         //lieu naissance
-        $resClient['adresse'] . ' ' . ucfirst(string: $resClient['ville']) . ' ' . $resClient['cp'],
-        $resVehicule['marque'] . ' ' . $resVehicule['model'],
-        $resVehicule['immatriculation'],
+        $resClient['clients_rue'] . ' ' . ucfirst(string: $resClient['clients_ville']) . ' ' . $resClient['clients_cp'],
+        $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
+        $resVehicule['vehicules_immatriculation'],
         date(format: "d"),
         date(format: "m"),
         date(format: "Y")

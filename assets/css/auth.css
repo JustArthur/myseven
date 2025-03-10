@@ -13,11 +13,10 @@
 body {
     display: flex;
     flex-direction: column;
-    margin: 20px;
     height: 100vh;
+    width: 100vw;
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     align-items: center;
-    justify-content: center;
 }
 
 form {
@@ -26,7 +25,7 @@ form {
     align-items: center;
     padding: 30px;
     gap: 20px;
-    margin: 80px auto;
+    margin: 100px auto;
     max-width: 450px;
     width: 100%;
     background-color: var(--background-color);
@@ -69,6 +68,11 @@ form input[type="submit"]:hover {
 
 form input:focus {
     border-color: var(--primary-color);
+}
+
+img {
+    margin-top: 20px;
+    height: 200px;
 }
 
 @media screen and (max-width: 350px) {

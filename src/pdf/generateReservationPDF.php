@@ -18,45 +18,40 @@
     $DBB = new ConnexionDB();
     $DB = $DBB->DB();
   
-    $resClient = $DB->prepare(query: 'SELECT * FROM Clients WHERE email = ?');
+    $resClient = $DB->prepare(query: 'SELECT * FROM clients INNER JOIN agence ON clients.clients_agence_id = agence.agence_id WHERE clients.clients_email = ?');
     $resClient->execute(params: [$_POST['customerMail']]);
     $resClient = $resClient->fetch();
 
-    $resVehicule = $DB->prepare(query: 'SELECT * FROM vehicules WHERE immatriculation = ?');
+    $resVehicule = $DB->prepare(query: 'SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
     $resVehicule->execute(params: [$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();
 
     $crossToCreate = [];
 
-    switch($_POST['garantieMecanique']) {
+    switch($_POST['garantieMecaniqueType']) {
         case '3Mois':
             array_push($crossToCreate, ['x' => 116, 'y' => 125]);
-            $prixGarantie = 0;
             break;
 
         case '12Mois':
             array_push($crossToCreate, ['x' => 23, 'y' => 119]);
-            $prixGarantie = 890;
             break;
 
         case '12MoisPrestige':
             array_push($crossToCreate, ['x' => 23, 'y' => 125]);
-            $prixGarantie = 1490;
             break;
 
         case '24Mois':  
             array_push($crossToCreate, ['x' => 104, 'y' => 119]);
-            $prixGarantie = 1490;
             break;
 
         case 'refuse':
             array_push($crossToCreate, ['x' => 23, 'y' => 131]);
-            $prixGarantie = 0;
             break;
 
         default:
             array_push($crossToCreate, ['x' => 23, 'y' => 131]);
-            $prixGarantie = 0;
+            
             break;
     }
 
@@ -81,30 +76,30 @@
             break;
     }
 
-    $prixTotalHCG = $prixGarantie + $fraisMiseEnRoute + (int)$_POST['PrixVehicule'] + (int)$_POST['livraison'];
-    $fraisCG = $prixGarantie + $fraisMiseEnRoute + (int)$_POST['livraison'];
+    $prixTotalHCG = (int)$_POST['garantieMecaniqueText'] + $fraisMiseEnRoute + (int)$_POST['PrixVehicule'] + (int)$_POST['livraison'];
+    $fraisCG = (int)$_POST['garantieMecaniqueText'] + $fraisMiseEnRoute + (int)$_POST['livraison'];
 
     $importVarPDF = [
-        $resClient['nom'] . ' ' . $resClient['prenom'],
-        $resClient['adresse'],
-        $resClient['cp'],
-        $resClient['ville'],
-        $resClient['telephone'],
-        $resClient['email'],
-        $resVehicule['marque'] . ' ' . $resVehicule['model'],
-        $resVehicule['immatriculation'],
+        $resClient['clients_nom'] . ' ' . $resClient['clients_prenom'],
+        $resClient['clients_rue'],
+        $resClient['clients_cp'],
+        $resClient['clients_ville'],
+        $resClient['clients_telephone'],
+        $resClient['clients_email'],
+        $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
+        $resVehicule['vehicules_immatriculation'],
         $_POST['PrixVehicule'],
         $fraisMiseEnRoute,
-        $prixGarantie,
+        $_POST['garantieMecaniqueText'],
         $_POST['livraison'],
-        $resVehicule['marque'] . ' ' . $resVehicule['model'],
-        $resVehicule['immatriculation'],
-        $resVehicule['kilometrage'],
+        $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
+        $resVehicule['vehicules_immatriculation'],
+        $resVehicule['vehicules_kilometrage'],
         //MEC
         //Prix de reprise
         $prixTotalHCG,
         $fraisCG,
-        $resClient['agence'],
+        $resClient['agence_nom'],
         date(format: 'd/m/Y')
     ];
 

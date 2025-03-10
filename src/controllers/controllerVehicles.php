@@ -25,14 +25,14 @@
     }
 
     $oldImmat = $data["oldUniqueValue"];
-    $newImmat = $data["immatriculation"];
+    $newImmat = $data["vehicules_immatriculation"];
 
-    $fields = ["immatriculation", "marque", "model", "puissance", "type_boite", "couleur", "kilometrage"];
+    $fields = ["vehicules_immatriculation", "vehicules_marque", "vehicules_model", "vehicules_puissance", "vehicules_type_boite", "vehicules_couleur", "vehicules_kilometrage"];
     $updateFields = [];
     $params = [];
 
     if ($newImmat !== $oldImmat) {
-        $checkEmail = $DB->prepare("SELECT COUNT(*) FROM vehicules WHERE immatriculation = ?");
+        $checkEmail = $DB->prepare("SELECT COUNT(*) FROM vehicules WHERE vehicules_immatriculation = ?");
         $checkEmail->execute([$newImmat]);
         if ($checkEmail->fetchColumn() > 0) {
             echo json_encode(["error" => "Cet immatriculation est déjà utilisé."]);
@@ -47,13 +47,13 @@
         }
     }
 
-    $updateFields[] = "immatriculation = ?";
+    $updateFields[] = "vehicules_immatriculation = ?";
     $params[] = $newImmat;
     
     $params[] = $oldImmat;
 
     if (!empty($updateFields)) {
-        $sql = "UPDATE vehicules SET " . implode(", ", $updateFields) . " WHERE immatriculation = ?";
+        $sql = "UPDATE vehicules SET " . implode(", ", $updateFields) . " WHERE vehicules_immatriculation = ?";
         $stmt = $DB->prepare($sql);
         
         if ($stmt->execute($params)) {

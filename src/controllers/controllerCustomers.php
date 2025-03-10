@@ -25,9 +25,9 @@
     }
 
     $oldEmail = $data["oldUniqueValue"];
-    $newEmail = $data["email"];
+    $newEmail = $data["clients_email"];
 
-    $fields = ["nom", "prenom", "email", "telephone", "adresse", "ville", "cp", "numero_cni"];
+    $fields = ["clients_nom", "clients_prenom", "clients_email", "clients_telephone", "clients_adresse", "clients_ville", "clients_cp", "clients_numero_cni"];
     $updateFields = [];
     $params = [];
 
@@ -37,7 +37,7 @@
     }
 
     if ($newEmail !== $oldEmail) {
-        $checkEmail = $DB->prepare("SELECT COUNT(*) FROM Clients WHERE email = ?");
+        $checkEmail = $DB->prepare("SELECT COUNT(*) FROM clients WHERE clients_email = ?");
         $checkEmail->execute([$newEmail]);
         
         if ($checkEmail->fetchColumn() > 0) {
@@ -53,13 +53,13 @@
         }
     }
 
-    $updateFields[] = "email = ?";
+    $updateFields[] = "clients_email = ?";
     $params[] = $newEmail;
 
     $params[] = $oldEmail;
 
     if (!empty($updateFields)) {
-        $sql = "UPDATE Clients SET " . implode(", ", $updateFields) . " WHERE email = ?";
+        $sql = "UPDATE clients SET " . implode(", ", $updateFields) . " WHERE clients_email = ?";
         $stmt = $DB->prepare($sql);
         
         if ($stmt->execute($params)) {

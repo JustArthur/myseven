@@ -16,14 +16,15 @@
         
         $identifiant = $_COOKIE['user_session'];
         
-        $stmt = $DB->prepare('SELECT * FROM users WHERE identifiantUser = ?');
+        $stmt = $DB->prepare('SELECT * FROM utilisateurs WHERE utilisateurs_identifiant = ?');
         $stmt->execute([$identifiant]);
         $user = $stmt->fetch();
         
         if ($user) {
             $_SESSION['user'] = array(
-                'id' => htmlspecialchars($user['idUser'], ENT_QUOTES),
-                'identifiant' => htmlspecialchars($user['identifiantUser'], ENT_QUOTES)
+                'id' => htmlspecialchars($user['utilisateurs_id'], ENT_QUOTES),
+                'identifiant' => htmlspecialchars($user['utilisateurs_identifiant'], ENT_QUOTES),
+                'agence_id' => htmlspecialchars($user['utilisateurs_agence_id'], ENT_QUOTES)
             );
         } else {
             session_destroy();
@@ -39,12 +40,12 @@
         'Générer des PDF'
     ];
 
-    $resClient = $DB->prepare('SELECT * FROM Clients ORDER BY nom ASC');
-    $resClient->execute();
+    $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_agence_id = ? ORDER BY clients_nom ASC');
+    $resClient->execute([$_SESSION['user']['agence_id']]);
     $resClient = $resClient->fetchAll();
 
-    $resVehicule = $DB->prepare('SELECT * FROM vehicules ORDER BY immatriculation ASC');
-    $resVehicule->execute();
+    $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_agence_id = ? ORDER BY vehicules_immatriculation ASC');
+    $resVehicule->execute([$_SESSION['user']['agence_id']]);
     $resVehicule = $resVehicule->fetchAll();
 
     $DBB->closeConnection();
@@ -86,8 +87,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=close" />
 
     <link rel="stylesheet" href="assets/css/tables.css">
+    <link rel="stylesheet" href="assets/css/cardProfile.css">
 
     <title>Myseven - Panel Administrateur</title>
 </head>
@@ -159,6 +162,7 @@
                                 <th>Immatriculation</th>
                                 <th>Marque</th>
                                 <th>Modèle</th>
+                                <th>Année</th>
                                 <th>Puissance</th>
                                 <th>Type boite</th>
                                 <th>Couleur</th>
@@ -191,6 +195,12 @@
             </div>
         </div>
     </form>
+
+    <div id="cardItem" class="cardItem hidden">
+        <div class="cardItem-content" id="cardItem_content" >
+            
+        </div>
+    </div>
     
 
     <script>
@@ -199,25 +209,25 @@
                 $itemsCustomer = [];
                 foreach ($resClient as $client) {
                     
-                    $lastName = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $client['nom']));
-                    $firstName = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $client['prenom']));
-                    $email = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $client['email']));
-                    $phone = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $client['telephone']));
-                    $address = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $client['adresse']));
-                    $ville = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $client['ville']));
-                    $cp = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $client['cp']));
-                    $numCNI = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $client['numero_cni']));
+                    $lastName = str_replace(["\n", "\r"], " ", addslashes($client['clients_nom']));
+                    $firstName = str_replace(["\n", "\r"], " ", addslashes($client['clients_prenom']));
+                    $email = str_replace(["\n", "\r"], " ", addslashes($client['clients_email']));
+                    $phone = str_replace(["\n", "\r"], " ", addslashes($client['clients_telephone']));
+                    $rue = str_replace(["\n", "\r"], " ", addslashes($client['clients_rue']));
+                    $ville = str_replace(["\n", "\r"], " ", addslashes($client['clients_ville']));
+                    $cp = str_replace(["\n", "\r"], " ", addslashes($client['clients_cp']));
+                    $numero_cni = str_replace(["\n", "\r"], " ", addslashes($client['clients_numero_cni']));
 
                     $itemsCustomer[] = 
                     "{
-                        nom: \"$lastName\",
-                        prenom: \"$firstName\",
-                        email: \"$email\",
-                        telephone: \"$phone\",
-                        adresse: \"$address\",
-                        ville: \"$ville\",
-                        cp: \"$cp\",
-                        numero_cni: \"$numCNI\"
+                        clients_nom: \"$lastName\",
+                        clients_prenom: \"$firstName\",
+                        clients_email: \"$email\",
+                        clients_telephone: \"$phone\",
+                        clients_rue: \"$rue\",
+                        clients_ville: \"$ville\",
+                        clients_cp: \"$cp\",
+                        clients_numero_cni: \"$numero_cni\"
                     }";
                 }
                 echo implode(separator: ",\n", array: $itemsCustomer);
@@ -229,23 +239,25 @@
                 $itemsVehicule = [];
                 foreach ($resVehicule as $vehicule) {
                    
-                    $immatriculation = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $vehicule['immatriculation']));
-                    $marque = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $vehicule['marque']));
-                    $model = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $vehicule['model']));
-                    $puissance = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $vehicule['puissance']));
-                    $type_boite = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $vehicule['type_boite']));
-                    $couleur = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $vehicule['couleur']));
-                    $kilometrage = str_replace(search: ["\n", "\r"], replace: " ", subject: addslashes(string: $vehicule['kilometrage']));
+                    $immatriculation = str_replace(["\n", "\r"], " ", addslashes($vehicule['vehicules_immatriculation']));
+                    $marque = str_replace(["\n", "\r"], " ", addslashes($vehicule['vehicules_marque']));
+                    $model = str_replace(["\n", "\r"], " ", addslashes($vehicule['vehicules_model']));
+                    $annee = str_replace(["\n", "\r"], " ", addslashes($vehicule['vehicules_annee']));
+                    $puissance = str_replace(["\n", "\r"], " ", addslashes($vehicule['vehicules_puissance']));
+                    $type_boite = str_replace(["\n", "\r"], " ", addslashes($vehicule['vehicules_type_boite']));
+                    $couleur = str_replace(["\n", "\r"], " ", addslashes($vehicule['vehicules_couleur']));
+                    $kilometrage = str_replace(["\n", "\r"], " ", addslashes($vehicule['vehicules_kilometrage']));
 
                     $itemsVehicule[] = 
                     "{
-                        immatriculation: \"$immatriculation\",
-                        marque: \"$marque\",
-                        model: \"$model\",
-                        puissance: \"$puissance\",
-                        type_boite: \"$type_boite\",
-                        couleur: \"$couleur\",
-                        kilometrage: \"$kilometrage\"
+                        vehicules_immatriculation: \"$immatriculation\",
+                        vehicules_marque: \"$marque\",
+                        vehicules_model: \"$model\",
+                        vehicules_annee: \"$annee\",
+                        vehicules_puissance: \"$puissance\",
+                        vehicules_type_boite: \"$type_boite\",
+                        vehicules_couleur: \"$couleur\",
+                        vehicules_kilometrage: \"$kilometrage\"
                     }";
                 }
                 echo implode(separator: ",\n", array: $itemsVehicule);

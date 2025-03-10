@@ -2,7 +2,7 @@
     session_start();
     require_once 'database.php';
 
-    if (!empty($_SESSION['user'])) {
+    if (isset($_COOKIE['user_session']) && isset($_SESSION['user'])) {
         header('Location: index.php');
         exit;
     }
@@ -17,12 +17,12 @@
     
             $identifiant = htmlspecialchars($identifiant, ENT_QUOTES);
     
-            $verif_password = $DB->prepare("SELECT passwordUser FROM users WHERE identifiantUser = ?");
+            $verif_password = $DB->prepare("SELECT utilisateurs_password FROM utilisateurs WHERE utilisateurs_identifiant = ?");
             $verif_password->execute([$identifiant]);
             $verif_password = $verif_password->fetch();
     
-            if ($verif_password && isset($verif_password['passwordUser'])) {
-                if (!password_verify($password, $verif_password['passwordUser'])) {
+            if ($verif_password && isset($verif_password['utilisateurs_password'])) {
+                if (!password_verify($password, $verif_password['utilisateurs_password'])) {
                     $valid = false;
                 }
             } else {
@@ -30,15 +30,16 @@
             }
     
             if ($valid) {
-                $sql = $DB->prepare("SELECT * FROM users WHERE identifiantUser = ?");
+                $sql = $DB->prepare("SELECT * FROM utilisateurs WHERE utilisateurs_identifiant = ?");
                 $sql->execute([$identifiant]);
                 $sql = $sql->fetch();
 
                 session_regenerate_id(true);
     
                 $_SESSION['user'] = array(
-                    'id' => htmlspecialchars($sql['idUser'], ENT_QUOTES),
-                    'identifiant' => htmlspecialchars($sql['identifiantUser'], ENT_QUOTES)
+                    'id' => htmlspecialchars($sql['utilisateurs_id'], ENT_QUOTES),
+                    'identifiant' => htmlspecialchars($sql['utilisateurs_identifiant'], ENT_QUOTES),
+                    'agence_id' => htmlspecialchars($sql['utilisateurs_agence_id'], ENT_QUOTES),
                 );
 
                 setcookie('user_session', $_SESSION['user']['identifiant'], time() + (86400 * 30), "/", "", false, true);
@@ -62,10 +63,14 @@
     <title>Myseven - Se connecter</title>
 </head>
 <body>
+
+    <div class="logo">
+        <img src="assets/img/transakauto-logo.png" alt="Logo Myseven">
+    </div>
     <form method="POST">
         <h1>Se connecter</h1>
 
-        <input required type="text" name="identifiant" placeholder="Identifiant">
+        <input required type="text" autofocus="true" name="identifiant" placeholder="Identifiant">
         <input required type="password" name="password" placeholder="Mot de passe">
 
         <input type="submit" name="connexion" value="Se connecter">

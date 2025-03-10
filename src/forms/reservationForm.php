@@ -58,16 +58,22 @@
                 </select>
             </div>
 
-            <div class="input_box">
-                <span class="label form_required">Garantie mécanique souscrite</span>
+            <div class="input_box delaiVente">
+                <div class="spanVente">
+                    <span class="label form_required">Garantie mécanique souscrite</span>
+                </div>
 
-                <select name="garantieMecanique" id="garantieMecanique">
-                    <option selected value="refuse">Extension de garantie refusée par le client</option>
-                    <option value="3Mois">3 Mois (Inclus)</option>
-                    <option value="12Mois">12 Mois (890 €)</option>
-                    <option value="12MoisPrestige">12 Mois prestige (1490 €)</option>
-                    <option value="24Mois">24 Mois (1490 €)</option>
-                </select>
+                <div class="inputSelect">
+                    <select name="garantieMecaniqueType" id="garantieMecaniqueType">
+                        <option value="refuse">Extension de garantie refusée par le client</option>
+                        <option value="3Mois">3 mois</option>
+                        <option value="12Mois">12 Mois</option>
+                        <option value="12MoisPrestige">12 Mois prestige</option>
+                        <option value="24Mois">24 Mois</option>
+                    </select>
+
+                    <input type="number" min="1" name="garantieMecaniqueText" id="inputGarantieMecanique" class="inputPrixGarantie" placeholder="Prix de la garantie" id="garantieMecaniqueText">
+                </div>
             </div>
 
             <div class="input_box">
@@ -86,5 +92,21 @@
 
     </div>
     </main>
+
+    <script>
+
+        const garantieMecaniqueType = document.getElementById('garantieMecaniqueType');
+
+        garantieMecaniqueType.addEventListener('change', (e) => {
+            const inputGarantieMecanique = document.getElementById('inputGarantieMecanique');
+
+            if(e.target.value === 'refuse') {
+                inputGarantieMecanique.classList.remove('active')
+            } else {
+                inputGarantieMecanique.classList.add('active')
+            }
+        });
+
+    </script>
 </body>
 </html>

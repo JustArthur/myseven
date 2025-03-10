@@ -115,11 +115,15 @@ table tbody tr:hover td {
     color: var(--primary-color);
 }
 
+table tbody tr:hover td.btn_card {
+    color: var(--white);
+}
+
 table tbody tr td:last-child {
     text-align: center;
 }
 
-table tbody tr td:last-child input {
+table tbody tr td input[type="radio"] {
     cursor: pointer;
 }
 
@@ -208,6 +212,10 @@ input[type="radio"]:checked {
     background-color: var(--danger-color);
 }
 
+.login-button.deco:hover {
+    background-color: var(--danger-hover);
+}
+
 .btn_list {
     display: flex;
     flex-wrap: wrap;
@@ -252,10 +260,38 @@ input[type="radio"]:checked {
     border-radius: var(--border-radius);
     border: none;
     background-color: var(--primary-color);
-    font-size: 12px;
+    font-size: 14px;
     text-align: center;
     transition: background-color 0.3s;
     color: var(--white);
     cursor: pointer;
-    width: 25%;
+    width: max-content;
+    white-space: nowrap;
+}
+
+.input_client a:hover,
+.input_vehicle a:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn_card {
+    padding: 10px 5px;
+    border-radius: var(--border-radius);
+    border: none;
+    background-color: var(--primary-color);
+    font-size: 14px;
+    transition: background-color 0.3s;
+    color: var(--white);
+    cursor: pointer;
+    max-width: 200px;
+    min-width: 100px;
+    width: max-content;
+    white-space: nowrap;
+    text-align: center;
+    display: table-caption;
+    margin: 5px;
+}
+
+.btn_card:hover {
+    background-color: var(--primary-hover);
 }

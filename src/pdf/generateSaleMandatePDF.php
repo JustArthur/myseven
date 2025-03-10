@@ -18,13 +18,18 @@
     $DBB = new ConnexionDB();
     $DB = $DBB->DB();
 
-    $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE immatriculation = ?');
+    $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
     $resVehicule->execute([$_POST['immatricuCar']]);
     $resVehicule = $resVehicule->fetch();
 
-    $resClient = $DB->prepare('SELECT * FROM Clients WHERE email = ?');
+    $resClient = $DB->prepare('SELECT * FROM clients INNER JOIN agence ON agence.agence_id = clients.clients_agence_id WHERE clients.clients_email = ?');
     $resClient->execute([$_POST['customerMail']]);
     $resClient = $resClient->fetch();
+
+    if(empty($_POST['customerMail'] || empty($_POST['immatricuCar']))) {
+        header('Location: ../../index.php');
+        exit();
+    }
 
     $filePath = '../../storage/json_data/sale_mandate_id.json';
 
@@ -48,29 +53,29 @@
     //Valeur dans la BDD
     $importVarPDF = [
         $formattedId,
-        $resClient['nom'] . " " . $resClient['prenom'],
-        $resClient['numero_cni'],
-        $resClient['telephone'],
-        $resVehicule['immatriculation'],
-        $resVehicule['model'],
-        $resVehicule['type_boite'],
-        $resVehicule['finition'],
+        $resClient['clients_nom'] . " " . $resClient['clients_prenom'],
+        $resClient['clients_numero_cni'],
+        $resClient['clients_telephone'],
+        $resVehicule['vehicules_immatriculation'],
+        $resVehicule['vehicules_model'],
+        $resVehicule['vehicules_type_boite'],
+        $resVehicule['vehicules_finition'],
         $_POST['nbrMains'],
         $_POST['originCar'],
-        $resVehicule['frais_recent'],
-        $resVehicule['frais_prevoir'],
-        $resClient['email'],
-        $resVehicule['marque'],
-        $resVehicule['puissance'],
-        $resVehicule['couleur'],
-        $resVehicule['kilometrage'],
-        $resVehicule['date_entretien'],
+        $resVehicule['vehicules_frais_recent'],
+        $resVehicule['vehicules_frais_prevoir'],
+        $resClient['clients_email'],
+        $resVehicule['vehicules_marque'],
+        $resVehicule['vehicules_puissance'],
+        $resVehicule['vehicules_couleur'],
+        $resVehicule['vehicules_kilometrage'],
+        $resVehicule['vehicules_date_entretien'],
         $_POST['jourVisite'],
         $_POST['prixVente'],
         $_POST['raisonVente'],
         $_POST['delayVenteText'] . " " . $_POST['delayVenteType'],
         $_POST['prixVenteSouhaite'],
-        ucfirst(string: $resClient['agence']),
+        ucfirst(string: $resClient['agence_nom']),
         date(format: 'd/m/Y'),
     ];
 

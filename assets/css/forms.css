@@ -185,7 +185,16 @@ span.label.form_required::after {
 }
 
 .input_box .submit_btn:hover {
-    background-color: var(--primary-blue-dark);
+    background-color: var(--primary-hover);
+}
+
+
+.inputPrixGarantie {
+    display: none;
+}
+
+.inputPrixGarantie.active {
+    display: flex;
 }
 
 @media only screen and (max-width: 500px) {

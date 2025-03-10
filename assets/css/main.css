@@ -2,15 +2,15 @@
 
 :root {
     /* Couleurs primaires */
-    --primary-color: #007bff;
-    --primary-hover: #006ce0;
-    --primary-blue: #007bff;
-    --primary-blue-dark: #0056b3;
+    --primary-color: #D8157E;
+    --primary-hover: #ad0b62;
+    --primary-blue: #D8157E;
     --blue-60: #0060df;
     --blue-70: #003eaa;
 
     /* Couleurs secondaires */
     --danger-color: #dc3545;
+    --danger-hover: #bd2130;
     --gray-light: #f4f4f4;
     --gray-medium: #ddd;
     --gray-dark: #e9e5f3;
@@ -23,7 +23,7 @@
     --white-light-gray: #EBEBEB;
 
     /* Couleurs de fond et texte */
-    --background-color: #FFF;
+    --background-color: var(--white);
     --bg-color: #fbfcfe;
     --white: #ffffff;
     --text-color: #333;
@@ -32,7 +32,7 @@
     --error-color: #ea1f30;
 
     /* Styles et effets */
-    --border-color: #ddd;
+    --border-color: #dddddd;
     --text-opacity: 0.75;
     --border-radius: 5px;
     --font-family: "Poppins", serif;
