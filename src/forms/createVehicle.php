@@ -15,6 +15,15 @@
     if (!empty($_POST)) {
         extract(array: $_POST);
         if (isset($_POST['submit_btn'])) {
+
+            if (empty($immatriculation) || empty($brand) || empty($model) || empty($puissance) || empty($type_boite) || empty($color) || empty($finition) || empty($kilometrage) || empty($annee) || empty($date_entretien) || empty($frais_prevoir) || empty($frais_recent)) {
+                echo '
+                    <script>
+                        window.alert("Tous les champs sont obligatoires.");
+                    </script>
+                ';
+            }
+
             $DBB = new ConnexionDB();
             $DB = $DBB->DB();
 
@@ -41,10 +50,26 @@
 
                 $stmt->execute([$brand, $model, $immatriculation, $puissance, $type_boite_value, $color, $finition, $kilometrage, $annee, $date_entretien, $frais_prevoir, $frais_recent , intval($_SESSION['user']["agence_id"])]);
                         
-                header("Location: ../../index.php");
-                exit;
+                echo '
+                        <div class="pop_up">
+                            <div class="pop_content">
+                                <h1>Le véhicule à bien été créer</h1>
+
+                                <div class="input_btn">
+                                    <a href="../../index.php" class="btn yes">Retournez au menu</a>
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                            document.getElementById("body").style.overflow = "hidden";
+                        </script>
+                        ';
             } else {
-                echo "Immat déjà présent";
+                echo '
+                    <script>
+                        window.alert("L\'immatriculation est déjà utilisé");
+                    </script>
+                ';
             }
         }
     }
@@ -58,11 +83,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="../../assets/css/forms.css">
+    <link rel="stylesheet" href="../../assets/css/pop_up.css">
 
     <title>Myseven - Créer un véhicule</title>
 </head>
 
-<body>
+<body id='body'>
     <main>
 
         <div class="search-container">
@@ -89,7 +115,7 @@
                 </div>
 
                 <div class="input_box">
-                    <select name="type_boite" id="type_boite">
+                    <select required name="type_boite" id="type_boite">
                         <option value=0>-- Choisir le type de boite --</option>
                         <option value=1>Manuelle</option>
                         <option value=2>Automatique</option>

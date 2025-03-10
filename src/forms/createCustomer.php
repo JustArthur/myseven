@@ -32,7 +32,17 @@
                     break;
             }
 
-            if (isset($_FILES['fileCNI']) && $_FILES['fileCNI']['error'] == 0) {
+            $getEmail = $DB->prepare("SELECT clients_email FROM clients WHERE clients_email = ?");
+            $getEmail->execute([$email]);
+            $getEmail = $getEmail->fetch();
+
+            if($getEmail) {
+                echo '
+                    <script>
+                        window.alert("L\'adress mail est déjà utilisé");
+                    </script>
+                ';
+            } else if (isset($_FILES['fileCNI']) && $_FILES['fileCNI']['error'] == 0) {
                 $allowed = ['png', 'jpeg', 'jpg', 'pdf'];
                 $fileInfo = pathinfo($_FILES['fileCNI']['name']);
                 $fileExt = strtolower($fileInfo['extension']);
@@ -44,8 +54,22 @@
 
                     $stmt->execute([$firstName, $lastName, $email, $telephone, $numCNI, $fileContent, $adresse, $city, $cp, intval($_SESSION['user']["agence_id"]), $typeCustomerValue]);
                     
-                    header("Location: ../../index.php");
-                    exit;
+                    echo '
+                        <div class="pop_up">
+                            <div class="pop_content">
+                                <h1>Le client à bien été créer</h1>
+                                <p>Voulez-vous créer un nouveau véhicule ?</p>
+
+                                <div class="input_btn">
+                                    <a href="createVehicle.php" class="btn yes">Oui</a>
+                                    <a href="../../index.php" class="btn no">Non</a>
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                            document.getElementById("body").style.overflow = "hidden";
+                        </script>
+                        ';
                 } else {
                     echo "Invalid file type. Only PNG, JPEG, and JPG are allowed.";
                 }
@@ -64,11 +88,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="../../assets/css/forms.css">
+    <link rel="stylesheet" href="../../assets//css/pop_up.css">
 
     <title>Myseven - Créer un client</title>
 </head>
 
-<body>
+<body id="body">
     <main>
 
         <div class="search-container">
@@ -132,7 +157,6 @@
                     <input class="submit_btn" value="Créer le client" type="submit" name="submit_btn" id="submit_btn">
                 </div>
             </form>
-
         </div>
     </main>
 </body>

@@ -29,9 +29,9 @@
     $resVehicule = $resVehicule->fetch();
 
     $importVarPDF = [
-        $resClient['clients_nom'] . ' ' . $resClient['clients_prenom'],
-        $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
-        $resVehicule['vehicules_immatriculation'],
+        strtoupper($resClient['clients_nom']) . ' ' . strtoupper($resClient['clients_prenom']),
+        strtoupper($resVehicule['vehicules_marque']) . ' ' . strtoupper($resVehicule)['vehicules_model'],
+        strtoupper($resVehicule['vehicules_immatriculation']),
         $prixNetVendeur,
         date("d"),
         date("m"),

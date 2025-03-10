@@ -28,15 +28,15 @@
     $resVehicule = $resVehicule->fetch();
 
     $importVarPDF = [
-        $resClient['clients_nom'] . ' ' . $resClient['clients_prenom'],
+        strtoupper($resClient['clients_nom'] . ' ' . $resClient['clients_prenom']),
         //date anniv
         //lieu naissance
-        $resClient['clients_rue'] . ' ' . ucfirst(string: $resClient['clients_ville']) . ' ' . $resClient['clients_cp'],
-        $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
-        $resVehicule['vehicules_immatriculation'],
-        date(format: "d"),
-        date(format: "m"),
-        date(format: "Y")
+        strtoupper($resClient['clients_rue'] . ' ' . ucfirst($resClient['clients_ville']) . ' ' . $resClient['clients_cp']),
+        strtoupper($resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model']),
+        strtoupper($resVehicule['vehicules_immatriculation']),
+        strtoupper(date("d")),
+        strtoupper(date("m")),
+        strtoupper(date("Y"))
     ];
 
     $pdf = new \setasign\Fpdi\Fpdi();

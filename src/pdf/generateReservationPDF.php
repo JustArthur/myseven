@@ -80,27 +80,27 @@
     $fraisCG = (int)$_POST['garantieMecaniqueText'] + $fraisMiseEnRoute + (int)$_POST['livraison'];
 
     $importVarPDF = [
-        $resClient['clients_nom'] . ' ' . $resClient['clients_prenom'],
-        $resClient['clients_rue'],
-        $resClient['clients_cp'],
-        $resClient['clients_ville'],
-        $resClient['clients_telephone'],
+        strtoupper($resClient['clients_nom']) . ' ' . strtoupper($resClient['clients_prenom']),
+        strtoupper($resClient['clients_rue']),
+        strtoupper($resClient['clients_cp']),
+        strtoupper($resClient['clients_ville']),
+        strtoupper($resClient['clients_telephone']),
         $resClient['clients_email'],
-        $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
-        $resVehicule['vehicules_immatriculation'],
-        $_POST['PrixVehicule'],
-        $fraisMiseEnRoute,
-        $_POST['garantieMecaniqueText'],
-        $_POST['livraison'],
-        $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
-        $resVehicule['vehicules_immatriculation'],
-        $resVehicule['vehicules_kilometrage'],
+        strtoupper($resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model']),
+        strtoupper($resVehicule['vehicules_immatriculation']),
+        strtoupper($_POST['PrixVehicule']),
+        strtoupper($fraisMiseEnRoute),
+        strtoupper($_POST['garantieMecaniqueText']),
+        strtoupper($_POST['livraison']),
+        strtoupper($resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model']),
+        strtoupper($resVehicule['vehicules_immatriculation']),
+        strtoupper($resVehicule['vehicules_kilometrage']),
         //MEC
         //Prix de reprise
-        $prixTotalHCG,
-        $fraisCG,
-        $resClient['agence_nom'],
-        date(format: 'd/m/Y')
+        strtoupper($prixTotalHCG),
+        strtoupper($fraisCG),
+        strtoupper($resClient['agence_nom']),
+        strtoupper(date('d/m/Y'))
     ];
 
     $pdf = new \setasign\Fpdi\Fpdi();
