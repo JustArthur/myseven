@@ -80,8 +80,8 @@
                 <span class="label form_required">Expertise souhaitée</span>
 
                 <select name="expertiseSouhaitee" id="expertiseSouhaitee">
-                    <option value="Oui">Oui</option>
                     <option value="Non">Non</option>
+                    <option value="Oui">Oui</option>
                 </select>
             </div>
 
