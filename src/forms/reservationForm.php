@@ -26,36 +26,42 @@
 
     <div class="search-container">
         <h2>Générer un bon de réservation</h2>
-        <form class="gap" id="form_pdf" action="../pdf/generateReservationPDF.php" method="POST">
+        <form id="form_pdf" action="../pdf/generateReservationPDF.php" method="POST">
             <div class="input_box">
                 <span class="label form_required">Adresse-mail du client</span>
                 <input required type="email" disabled  value="<?= $_POST['client'] ?>" class="disabled" id="customerMail">
                 <input hidden type="text" name="customerMail" value="<?= $_POST['client'] ?>">
+
+                <p class="text_error">Ce champ est requis</p>
             </div>
 
             <div class="input_box">
                 <span class="label form_required">Immatriculation</span>
                 <input required type="text" disabled  value="<?= $_POST['immatCar'] ?>" class="disabled" id="immatCar">
                 <input hidden type="text" name="immatCar" value="<?= $_POST['immatCar'] ?>">
+
+                <p class="text_error">Ce champ est requis</p>
             </div>
 
             <div class="input_box">
                 <span class="label form_required">Prix véhicule seul</span>
                 <input required type="number" name="PrixVehicule" id="prixVehicule">
+
+                <p class="text_error">Ce champ est requis</p>
             </div>
 
             <div class="input_box">
                 <span class="label form_required">Livraison</span>
                 <input required type="number" name="livraison" id="livraison">
+
+                <p class="text_error">Ce champ est requis</p>
             </div>
 
             <div class="input_box">
-                <span class="label form_required">Frais de mise à la route et de courtage</span>
+                <span class="label">Frais de mise à la route et de courtage</span>
+                <input type="number" name="fraisMiseEnRoute" id="fraisMiseEnRoute">
 
-                <select name="fraisMiseEnRoute" id="fraisMiseEnRoute">
-                    <option value="Oui">Oui (690 €)</option>
-                    <option value="Non">Non</option>
-                </select>
+                <p class="text_error">Ce champ est requis</p>
             </div>
 
             <div class="input_box delaiVente">
@@ -74,14 +80,16 @@
 
                     <input type="number" min="1" name="garantieMecaniqueText" id="inputGarantieMecanique" class="inputPrixGarantie" placeholder="Prix de la garantie" id="garantieMecaniqueText">
                 </div>
+
+                <p class="text_error">Ce champ est requis</p>
             </div>
 
             <div class="input_box">
                 <span class="label form_required">Expertise souhaitée</span>
 
                 <select name="expertiseSouhaitee" id="expertiseSouhaitee">
-                    <option value="Oui">Oui</option>
                     <option value="Non">Non</option>
+                    <option value="Oui">Oui</option>
                 </select>
             </div>
 
@@ -93,6 +101,7 @@
     </div>
     </main>
 
+    <script src="../../assets/js/errorMessages.js"></script>
     <script>
 
         const garantieMecaniqueType = document.getElementById('garantieMecaniqueType');

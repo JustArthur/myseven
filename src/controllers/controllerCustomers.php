@@ -15,7 +15,7 @@
     require_once '../../database.php';
 
     $DBB = new ConnexionDB();
-    $DB = $DBB->DB();
+    $DB = $DBB->openConnection();
 
     $data = json_decode(file_get_contents("php://input"), true);
 

@@ -8,6 +8,9 @@
     if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
         header('Location: ../../login.php');
         exit();
+    } else if (empty($_POST['customerMail']) || empty($_POST['immatricuCar'])) {
+        header('Location: ../../index.php');
+        exit();
     }
 
     require_once '../../vendor/setasign/fpdf/fpdf.php';
@@ -16,7 +19,7 @@
     require_once '../../database.php';
 
     $DBB = new ConnexionDB();
-    $DB = $DBB->DB();
+    $DB = $DBB->openConnection();
 
     $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
     $resVehicule->execute([$_POST['immatricuCar']]);
@@ -25,11 +28,6 @@
     $resClient = $DB->prepare('SELECT * FROM clients INNER JOIN agence ON agence.agence_id = clients.clients_agence_id WHERE clients.clients_email = ?');
     $resClient->execute([$_POST['customerMail']]);
     $resClient = $resClient->fetch();
-
-    if(empty($_POST['customerMail'] || empty($_POST['immatricuCar']))) {
-        header('Location: ../../index.php');
-        exit();
-    }
 
     $filePath = '../../storage/json_data/sale_mandate_id.json';
 
@@ -53,30 +51,30 @@
     //Valeur dans la BDD
     $importVarPDF = [
         $formattedId,
-        strtoupper($resClient['clients_nom']) . " " . strtoupper($resClient['clients_prenom']),
-        strtoupper($resClient['clients_numero_cni']),
-        strtoupper($resClient['clients_telephone']),
-        strtoupper($resVehicule['vehicules_immatriculation']),
-        strtoupper($resVehicule['vehicules_model']),
-        strtoupper($resVehicule['vehicules_type_boite']),
-        strtoupper($resVehicule['vehicules_finition']),
-        strtoupper($_POST['nbrMains']),
-        strtoupper($_POST['originCar']),
-        strtoupper($resVehicule['vehicules_frais_recent']),
-        strtoupper($resVehicule['vehicules_frais_prevoir']),
+        $resClient['clients_nom'] . " " . $resClient['clients_prenom'],
+        $resClient['clients_numero_cni'],
+        $resClient['clients_telephone'],
+        $resVehicule['vehicules_immatriculation'],
+        $resVehicule['vehicules_model'],
+        $resVehicule['vehicules_type_boite'],
+        $resVehicule['vehicules_finition'],
+        $_POST['nbrMains'],
+        $_POST['originCar'],
+        $resVehicule['vehicules_frais_recent'],
+        $resVehicule['vehicules_frais_prevoir'],
         $resClient['clients_email'],
-        strtoupper($resVehicule['vehicules_marque']),
-        strtoupper($resVehicule['vehicules_puissance']),
-        strtoupper($resVehicule['vehicules_couleur']),
-        strtoupper($resVehicule['vehicules_kilometrage']),
-        strtoupper($resVehicule['vehicules_date_entretien']),
-        strtoupper($_POST['jourVisite']),
-        strtoupper($_POST['prixVente']),
-        strtoupper($_POST['raisonVente']),
-        strtoupper($_POST['delayVenteText'] . " " . $_POST['delayVenteType']),
-        strtoupper($_POST['prixVenteSouhaite']),
-        strtoupper(ucfirst($resClient['agence_nom'])),
-        strtoupper(date('d/m/Y')),
+        $resVehicule['vehicules_marque'],
+        $resVehicule['vehicules_puissance'],
+        $resVehicule['vehicules_couleur'],
+        $resVehicule['vehicules_kilometrage'],
+        $resVehicule['vehicules_date_entretien'],
+        $_POST['jourVisite'],
+        $_POST['prixVente'],
+        $_POST['raisonVente'],
+        $_POST['delayVenteText'] . " " . $_POST['delayVenteType'],
+        $_POST['prixVenteSouhaite'],
+        ucfirst($resClient['agence_nom']),
+        date('d/m/Y'),
     ];
 
     $importCoordinates = [
@@ -119,6 +117,7 @@
         $pdf->SetFont('Helvetica');
         $pdf->SetTextColor(0, 0, 0);
         $pdf->SetXY($importCoordinates[$index]['x'], $importCoordinates[$index]['y']);
+        $valPDF = mb_convert_encoding($valPDF, 'windows-1252', 'UTF-8');
         $pdf->Write(0, $valPDF);
     }
 
@@ -128,7 +127,7 @@
         mkdir($folder, 0777, true);
     }
 
-    $pattern = $folder . "MANDAT_DE_VENTE_" . preg_quote($importVarPDF[1], '/') . "_*.pdf";
+    $pattern = $folder . "MANDAT_DE_VENTE_" . $importVarPDF[1] . "_*.pdf";
     $pdfFiles = glob($pattern);
     $fileCount = count($pdfFiles) + 1;
 

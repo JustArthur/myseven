@@ -4,10 +4,10 @@
     error_reporting(E_ALL);
 
     require_once 'database.php';
-
+    require_once 'src/functions/selectSQL.php';
     
     $DBB = new ConnexionDB();
-    $DB = $DBB->DB();
+    $DB = $DBB->openConnection();
     
     if (isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
         session_id($_COOKIE['user_session']);
@@ -15,10 +15,9 @@
         session_start();
         
         $identifiant = $_COOKIE['user_session'];
-        
-        $stmt = $DB->prepare('SELECT * FROM utilisateurs WHERE utilisateurs_identifiant = ?');
-        $stmt->execute([$identifiant]);
-        $user = $stmt->fetch();
+
+        $user = selectAllUsersInfoWhereId($identifiant, $DB);
+        $user = $user->fetch();
         
         if ($user) {
             $_SESSION['user'] = array(
@@ -40,12 +39,10 @@
         'Générer des PDF'
     ];
 
-    $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_agence_id = ? ORDER BY clients_nom ASC');
-    $resClient->execute([$_SESSION['user']['agence_id']]);
+    $resClient = selectAllClientWhereAgence($_SESSION['user']['agence_id'], $DB);
     $resClient = $resClient->fetchAll();
 
-    $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_agence_id = ? ORDER BY vehicules_immatriculation ASC');
-    $resVehicule->execute([$_SESSION['user']['agence_id']]);
+    $resVehicule = selectAllVehicleWhereAgence($_SESSION['user']['agence_id'], $DB);
     $resVehicule = $resVehicule->fetchAll();
 
     $DBB->closeConnection();
@@ -117,7 +114,7 @@
                 <div class="input_client">
                     <input type="text" class="searchBar" id="searchBarCustomers" placeholder="Rechercher un client..." onkeyup="searchTable('customers', 'searchBarCustomers')">
                     <!-- <a href="https://natasha.myseven.fr/form/41a58574-4ede-4b92-92d0-3c7242babbaf" target="_blank">Créer un client</a> -->
-                    <a href="./src/forms/createCustomer.php">Créer un client</a>
+                    <a href="./src/forms/customerForm.php">Créer un client</a>
                 </div>
 
                 <div class="overflowTable">
@@ -154,7 +151,7 @@
                 <div class="input_vehicle">
                     <input type="text" class="searchBar" id="searchBarVehicles" placeholder="Rechercher un véhicule..." onkeyup="searchTable('vehicles', 'searchBarVehicles')">
                     <!-- <a href="https://natasha.myseven.fr/form/738b1409-78e4-492e-9094-d5a77a40f48b" target="_blank">Créer un véhicule</a> -->
-                    <a href="./src/forms/createVehicle.php">Créer un véhicule</a>
+                    <a href="./src/forms/vehicleForm.php">Créer un véhicule</a>
                 </div>
 
                 <div class="overflowTable">
@@ -200,7 +197,7 @@
 
     <div id="cardItem" class="cardItem hidden">
         <div class="cardItem-content" id="cardItem_content" >
-            
+            <!-- INSERT AVEC JS -->
         </div>
     </div>
     
@@ -241,14 +238,14 @@
                 $itemsVehicule = [];
                 foreach ($resVehicule as $vehicule) {
                    
-                    $immatriculation = str_replace(["\n", "\r"], " ", addslashes($vehicule['vehicules_immatriculation']));
-                    $marque = str_replace(["\n", "\r"], " ", addslashes($vehicule['vehicules_marque']));
-                    $model = str_replace(["\n", "\r"], " ", addslashes($vehicule['vehicules_model']));
-                    $annee = str_replace(["\n", "\r"], " ", addslashes($vehicule['vehicules_annee']));
-                    $puissance = str_replace(["\n", "\r"], " ", addslashes($vehicule['vehicules_puissance']));
-                    $type_boite = str_replace(["\n", "\r"], " ", addslashes($vehicule['vehicules_type_boite']));
-                    $couleur = str_replace(["\n", "\r"], " ", addslashes($vehicule['vehicules_couleur']));
-                    $kilometrage = str_replace(["\n", "\r"], " ", addslashes($vehicule['vehicules_kilometrage']));
+                    $immatriculation = str_replace(['\n', '\r'], ' ', addslashes($vehicule['vehicules_immatriculation']));
+                    $marque = str_replace(['\n', '\r'], ' ', addslashes($vehicule['vehicules_marque']));
+                    $model = str_replace(['\n', '\r'], ' ', addslashes($vehicule['vehicules_model']));
+                    $annee = str_replace(['\n', '\r'], ' ', addslashes($vehicule['vehicules_annee']));
+                    $puissance = str_replace(['\n', '\r'], ' ', addslashes($vehicule['vehicules_puissance']));
+                    $type_boite = str_replace(['\n', '\r'], ' ', addslashes($vehicule['vehicules_type_boite']));
+                    $couleur = str_replace(['\n', '\r'], ' ', addslashes($vehicule['vehicules_couleur']));
+                    $kilometrage = str_replace(['\n', '\r'], ' ', addslashes($vehicule['vehicules_kilometrage']));
 
                     $itemsVehicule[] = 
                     "{

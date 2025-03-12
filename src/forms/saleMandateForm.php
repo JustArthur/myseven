@@ -32,7 +32,7 @@
                 <input required type="email" disabled  value="<?= $_POST['client'] ?>" class="disabled" id="customerMail">
                 <input hidden type="text" name="customerMail" value="<?= $_POST['client'] ?>">
 
-                <p class="text_error">debug</p>
+                <p class="text_error">Ce champ est requis</p>
             </div>
 
             <div class="input_box">
@@ -40,7 +40,7 @@
                 <input required type="text" disabled name="immatricuCar" value="<?= $_POST['immatCar'] ?>" class="disabled" id="immatricuCar">
                 <input hidden type="text" name="immatricuCar" value="<?= $_POST['immatCar'] ?>">
 
-                <p class="text_error">debug</p>
+                <p class="text_error">Ce champ est requis</p>
             </div>
 
             <div class="input_box">

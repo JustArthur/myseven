@@ -8,6 +8,9 @@
     if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
         header('Location: ../../login.php');
         exit();
+    } else if (empty($_POST['client']) || empty($_POST['immatCar'])) {
+        header('Location: ../../index.php');
+        exit();
     }
 
     require_once '../../vendor/setasign/fpdf/fpdf.php';
@@ -16,7 +19,7 @@
     require_once '../../database.php';
 
     $DBB = new ConnexionDB();
-    $DB = $DBB->DB();
+    $DB = $DBB->openConnection();
 
 
     $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_email = ?');
@@ -28,15 +31,15 @@
     $resVehicule = $resVehicule->fetch();
 
     $importVarPDF = [
-        strtoupper($resClient['clients_nom'] . ' ' . $resClient['clients_prenom']),
+        $resClient['clients_nom'] . ' ' . $resClient['clients_prenom'],
         //date anniv
         //lieu naissance
-        strtoupper($resClient['clients_rue'] . ' ' . ucfirst($resClient['clients_ville']) . ' ' . $resClient['clients_cp']),
-        strtoupper($resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model']),
-        strtoupper($resVehicule['vehicules_immatriculation']),
-        strtoupper(date("d")),
-        strtoupper(date("m")),
-        strtoupper(date("Y"))
+        $resClient['clients_rue'] . ' ' . ucfirst($resClient['clients_ville']) . ' ' . $resClient['clients_cp'],
+        $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
+        $resVehicule['vehicules_immatriculation'],
+        date("d"),
+        date("m"),
+        date("Y")
     ];
 
     $pdf = new \setasign\Fpdi\Fpdi();
@@ -63,6 +66,7 @@
         $pdf->SetFont('Helvetica');
         $pdf->SetTextColor(0, 0, 0);
         $pdf->SetXY($importCoordinates[$index]['x'], $importCoordinates[$index]['y']);
+        $valPDF = mb_convert_encoding($valPDF, 'windows-1252', 'UTF-8');
         $pdf->Write(0, $valPDF);
     }
 
@@ -72,7 +76,7 @@
         mkdir($folder, 0777, true);
     }
 
-    $pattern = $folder . "PROCURATION_DE_SIGNATURE_" . preg_quote($importVarPDF[0], '/') . "_*.pdf";
+    $pattern = $folder . "PROCURATION_DE_SIGNATURE_" . $importVarPDF[0] . "_*.pdf";
     $pdfFiles = glob($pattern);
     $fileCount = count($pdfFiles) + 1;
 

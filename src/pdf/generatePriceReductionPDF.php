@@ -8,6 +8,9 @@
     if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
         header('Location: ../../login.php');
         exit();
+    } else if (empty($_POST['client']) || empty($_POST['immatCar'])) {
+        header('Location: ../../index.php');
+        exit();
     }
 
     require_once '../../vendor/setasign/fpdf/fpdf.php';
@@ -16,9 +19,9 @@
     require_once '../../database.php';
 
     $DBB = new ConnexionDB();
-    $DB = $DBB->DB();
+    $DB = $DBB->openConnection();
 
-    $prixNetVendeur = 1000;
+    $prixNetVendeur = 1000; /// ATTENTION A CHANGER
     
     $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_email = ?');
     $resClient->execute([$_POST['client']]);
@@ -29,9 +32,9 @@
     $resVehicule = $resVehicule->fetch();
 
     $importVarPDF = [
-        strtoupper($resClient['clients_nom']) . ' ' . strtoupper($resClient['clients_prenom']),
-        strtoupper($resVehicule['vehicules_marque']) . ' ' . strtoupper($resVehicule)['vehicules_model'],
-        strtoupper($resVehicule['vehicules_immatriculation']),
+        $resClient['clients_nom'] . ' ' . $resClient['clients_prenom'],
+        $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
+        $resVehicule['vehicules_immatriculation'],
         $prixNetVendeur,
         date("d"),
         date("m"),
@@ -60,6 +63,7 @@
         $pdf->SetFont('Helvetica');
         $pdf->SetTextColor(0, 0, 0);
         $pdf->SetXY($importCoordinates[$index]['x'], $importCoordinates[$index]['y']);
+        $valPDF = mb_convert_encoding($valPDF, 'windows-1252', 'UTF-8');
         $pdf->Write(0, $valPDF);
     }
 
@@ -69,7 +73,7 @@
         mkdir($folder, 0777, true);
     }
 
-    $pattern = $folder . "ACCORD_DE_BAISSE_DU_PRIX_NET_VENDEUR_" . preg_quote($importVarPDF[0], '/') . "_*.pdf";
+    $pattern = $folder . "ACCORD_DE_BAISSE_DU_PRIX_NET_VENDEUR_" . $importVarPDF[0] . "_*.pdf";
     $pdfFiles = glob($pattern);
     $fileCount = count($pdfFiles) + 1;
 

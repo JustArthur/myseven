@@ -5,7 +5,7 @@
 #Dossier de stocakge
 /storage/
 
-#Fichier de connexion BDD
+#Fichier Environement
 .env
 
 #Fichier de création d'un utilisateur

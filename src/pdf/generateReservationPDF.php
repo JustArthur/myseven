@@ -8,6 +8,9 @@
     if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
         header('Location: ../../login.php');
         exit();
+    } else if (empty($_POST['customerMail']) || empty($_POST['immatCar'])) {
+        header('Location: ../../index.php');
+        exit();
     }
 
     require_once '../../vendor/setasign/fpdf/fpdf.php';
@@ -15,8 +18,9 @@
 
     require_once '../../database.php';
 
+
     $DBB = new ConnexionDB();
-    $DB = $DBB->DB();
+    $DB = $DBB->openConnection();
   
     $resClient = $DB->prepare(query: 'SELECT * FROM clients INNER JOIN agence ON clients.clients_agence_id = agence.agence_id WHERE clients.clients_email = ?');
     $resClient->execute(params: [$_POST['customerMail']]);
@@ -51,18 +55,6 @@
 
         default:
             array_push($crossToCreate, ['x' => 23, 'y' => 131]);
-            
-            break;
-    }
-
-    switch($_POST['fraisMiseEnRoute']) {
-        case 'Oui':
-            array_push($crossToCreate, ['x' => 24, 'y' => 158.5]);
-            $fraisMiseEnRoute = 690;
-            break;
-
-        default:
-            $fraisMiseEnRoute = 0;
             break;
     }
 
@@ -76,31 +68,30 @@
             break;
     }
 
-    $prixTotalHCG = (int)$_POST['garantieMecaniqueText'] + $fraisMiseEnRoute + (int)$_POST['PrixVehicule'] + (int)$_POST['livraison'];
+    $fraisMiseEnRoute = isset($_POST['fraisMiseEnRoute']) && !empty($_POST['fraisMiseEnRoute']) ? $_POST['fraisMiseEnRoute'] : 0;
+    array_push($crossToCreate, ['x' => 24, 'y' => 158.5]);
+
+    $prixTotalHCG = (int)$_POST['garantieMecaniqueText'] + (int)$fraisMiseEnRoute + (int)$_POST['PrixVehicule'] + (int)$_POST['livraison'];
     $fraisCG = (int)$_POST['garantieMecaniqueText'] + $fraisMiseEnRoute + (int)$_POST['livraison'];
 
     $importVarPDF = [
-        strtoupper($resClient['clients_nom']) . ' ' . strtoupper($resClient['clients_prenom']),
-        strtoupper($resClient['clients_rue']),
-        strtoupper($resClient['clients_cp']),
-        strtoupper($resClient['clients_ville']),
-        strtoupper($resClient['clients_telephone']),
+        $resClient['clients_nom'] . ' ' . $resClient['clients_prenom'],
+        $resClient['clients_rue'],
+        $resClient['clients_cp'],
+        $resClient['clients_ville'],
+        $resClient['clients_telephone'],
         $resClient['clients_email'],
-        strtoupper($resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model']),
-        strtoupper($resVehicule['vehicules_immatriculation']),
-        strtoupper($_POST['PrixVehicule']),
-        strtoupper($fraisMiseEnRoute),
-        strtoupper($_POST['garantieMecaniqueText']),
-        strtoupper($_POST['livraison']),
-        strtoupper($resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model']),
-        strtoupper($resVehicule['vehicules_immatriculation']),
-        strtoupper($resVehicule['vehicules_kilometrage']),
-        //MEC
-        //Prix de reprise
-        strtoupper($prixTotalHCG),
-        strtoupper($fraisCG),
-        strtoupper($resClient['agence_nom']),
-        strtoupper(date('d/m/Y'))
+        $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
+        $resVehicule['vehicules_immatriculation'],
+        $fraisMiseEnRoute,
+        $_POST['PrixVehicule'],
+        $fraisMiseEnRoute,
+        $_POST['garantieMecaniqueText'],
+        $_POST['livraison'],
+        $prixTotalHCG,
+        $fraisCG,
+        $resClient['agence_nom'],
+        date('d/m/Y')
     ];
 
     $pdf = new \setasign\Fpdi\Fpdi();
@@ -120,15 +111,11 @@
         ['x' => 130, 'y' => 72], //email
         ['x' => 42, 'y' => 97], //marque model
         ['x' => 42, 'y' => 103], //immat
+        ['x' => 28, 'y' => 158.5], //frais mise à la route (croix)
         ['x' => 41, 'y' => 189.5], //prix véhicule
         ['x' => 47, 'y' => 196.5], //frais mise à la route
         ['x' => 47, 'y' => 203.5], //graentie méca
         ['x' => 29, 'y' => 210], //Livraison
-        ['x' => 143, 'y' => 191], //marque model
-        ['x' => 140, 'y' => 196], //immat
-        ['x' => 136, 'y' => 201], //kilometrage
-        //MEC
-        //Prix de reprise
         ['x' => 65, 'y' => 217], //Prix total HCG
         ['x' => 65, 'y' => 223], //Frais CG
         ['x' => 20, 'y' => 264], //Agence
@@ -146,12 +133,13 @@
         $pdf->SetFont('Helvetica');
         $pdf->SetTextColor(r: 0, g: 0, b: 0);
         $pdf->SetXY($importCoordinates[$index]['x'], $importCoordinates[$index]['y']);
+        $valPDF = mb_convert_encoding($valPDF, 'windows-1252', 'UTF-8');
         $pdf->Write(0, $valPDF);
     }
 
     $folder = "../../storage/reservations/";
 
-    $pattern = $folder . "BON_RESERVATION_" . preg_quote($importVarPDF[0], '/') . "_*.pdf";
+    $pattern = $folder . "BON_RESERVATION_" . $importVarPDF[0] . "_*.pdf";
     $pdfFiles = glob($pattern);
     $fileCount = count($pdfFiles) + 1;
 

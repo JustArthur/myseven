@@ -67,8 +67,11 @@
                             </div>
                         </div>
                         <script>
-                            document.getElementById("body").style.overflow = "hidden";
+                            document.addEventListener("DOMContentLoaded", function() {
+                                document.getElementById("body").style.overflow = "hidden";
+                            });
                         </script>
+
                         ';
                 } else {
                     echo "Invalid file type. Only PNG, JPEG, and JPG are allowed.";

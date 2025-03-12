@@ -64,6 +64,10 @@ form.gap {
     padding: 0;
 }
 
+.input_box:last-child {
+    margin-top: 30px;
+}
+
 .wrapper span.label,
 .input_box span {
     display: block;
