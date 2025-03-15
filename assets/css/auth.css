@@ -42,6 +42,16 @@ form h1 {
     text-align: center;
 }
 
+form .error_message {
+    color: var(--error-color);
+    background: var(--error-color-20);
+    width: 100%;
+    text-align: center;
+    padding: 10px 5px;
+    border: 1px solid var(--error-color);
+    border-radius: 5px;
+}
+
 form input {
     width: 100%;
     padding: 12px;

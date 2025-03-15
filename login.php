@@ -1,6 +1,14 @@
 <?php
+    ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
+    error_reporting(E_ALL);
+
     session_start();
+    
     require_once 'database.php';
+    require_once 'src/functions/selectSQL.php';
+
+    $error_message = "";
 
     if (isset($_COOKIE['user_session']) && isset($_SESSION['user'])) {
         header('Location: index.php');
@@ -11,35 +19,35 @@
         extract(array: $_POST);
         if (isset($_POST['connexion'])) {
             $DBB = new ConnexionDB();
-            $DB = $DBB->DB();
+            $DBB->openConnection();
     
             $valid = true;
     
             $identifiant = htmlspecialchars($identifiant, ENT_QUOTES);
     
-            $verif_password = $DB->prepare("SELECT utilisateurs_password FROM utilisateurs WHERE utilisateurs_identifiant = ?");
-            $verif_password->execute([$identifiant]);
+            $verif_password = selectAllUsersInfoWhereId(htmlspecialchars($identifiant, ENT_QUOTES), $DBB->openConnection());
             $verif_password = $verif_password->fetch();
     
             if ($verif_password && isset($verif_password['utilisateurs_password'])) {
                 if (!password_verify($password, $verif_password['utilisateurs_password'])) {
                     $valid = false;
+                    $error_message = "Identifiant ou mot passe incorect";
                 }
             } else {
                 $valid = false;
+                $error_message = "Identifiant ou mot passe incorect";
             }
     
             if ($valid) {
-                $sql = $DB->prepare("SELECT * FROM utilisateurs WHERE utilisateurs_identifiant = ?");
-                $sql->execute([$identifiant]);
-                $sql = $sql->fetch();
+                $getUser = selectAllUsersInfoWhereId(htmlspecialchars($identifiant, ENT_QUOTES), $DBB->openConnection());
+                $getUser = $getUser->fetch();
 
                 session_regenerate_id(true);
     
                 $_SESSION['user'] = array(
-                    'id' => htmlspecialchars($sql['utilisateurs_id'], ENT_QUOTES),
-                    'identifiant' => htmlspecialchars($sql['utilisateurs_identifiant'], ENT_QUOTES),
-                    'agence_id' => htmlspecialchars($sql['utilisateurs_agence_id'], ENT_QUOTES),
+                    'id' => htmlspecialchars($getUser['utilisateurs_id'], ENT_QUOTES),
+                    'identifiant' => htmlspecialchars($getUser['utilisateurs_identifiant'], ENT_QUOTES),
+                    'agence_id' => htmlspecialchars($getUser['utilisateurs_agence_id'], ENT_QUOTES),
                 );
 
                 setcookie('user_session', $_SESSION['user']['identifiant'], time() + (86400 * 30), "/", "", false, true);
@@ -69,6 +77,8 @@
     </div>
     <form method="POST">
         <h1>Se connecter</h1>
+
+        <?php if($error_message != "") {echo "<div class='error_message'>" . $error_message . "</div>"; } ?>
 
         <input required type="text" autofocus="true" name="identifiant" placeholder="Identifiant">
         <input required type="password" name="password" placeholder="Mot de passe">

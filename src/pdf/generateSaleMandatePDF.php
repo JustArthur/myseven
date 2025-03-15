@@ -8,6 +8,9 @@
     if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
         header('Location: ../../login.php');
         exit();
+    } else if (empty($_POST['customerMail']) || empty($_POST['immatricuCar'])) {
+        header('Location: ../../index.php');
+        exit();
     }
 
     require_once '../../vendor/setasign/fpdf/fpdf.php';
@@ -16,7 +19,7 @@
     require_once '../../database.php';
 
     $DBB = new ConnexionDB();
-    $DB = $DBB->DB();
+    $DB = $DBB->openConnection();
 
     $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
     $resVehicule->execute([$_POST['immatricuCar']]);
@@ -25,11 +28,6 @@
     $resClient = $DB->prepare('SELECT * FROM clients INNER JOIN agence ON agence.agence_id = clients.clients_agence_id WHERE clients.clients_email = ?');
     $resClient->execute([$_POST['customerMail']]);
     $resClient = $resClient->fetch();
-
-    if(empty($_POST['customerMail'] || empty($_POST['immatricuCar']))) {
-        header('Location: ../../index.php');
-        exit();
-    }
 
     $filePath = '../../storage/json_data/sale_mandate_id.json';
 
@@ -75,8 +73,8 @@
         $_POST['raisonVente'],
         $_POST['delayVenteText'] . " " . $_POST['delayVenteType'],
         $_POST['prixVenteSouhaite'],
-        ucfirst(string: $resClient['agence_nom']),
-        date(format: 'd/m/Y'),
+        ucfirst($resClient['agence_nom']),
+        date('d/m/Y'),
     ];
 
     $importCoordinates = [
@@ -119,6 +117,7 @@
         $pdf->SetFont('Helvetica');
         $pdf->SetTextColor(0, 0, 0);
         $pdf->SetXY($importCoordinates[$index]['x'], $importCoordinates[$index]['y']);
+        $valPDF = mb_convert_encoding($valPDF, 'windows-1252', 'UTF-8');
         $pdf->Write(0, $valPDF);
     }
 
@@ -128,7 +127,7 @@
         mkdir($folder, 0777, true);
     }
 
-    $pattern = $folder . "MANDAT_DE_VENTE_" . preg_quote($importVarPDF[1], '/') . "_*.pdf";
+    $pattern = $folder . "MANDAT_DE_VENTE_" . $importVarPDF[1] . "_*.pdf";
     $pdfFiles = glob($pattern);
     $fileCount = count($pdfFiles) + 1;
 

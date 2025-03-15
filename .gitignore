@@ -3,9 +3,9 @@
 .vscode/
 
 #Dossier de stocakge
-/storage/
+/storage
 
-#Fichier de connexion BDD
+#Fichier Environement
 .env
 
 #Fichier de création d'un utilisateur

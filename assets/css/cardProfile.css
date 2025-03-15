@@ -16,12 +16,12 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    width: 90%;
+    height: 90%;
     gap: 20px;
     background-color: var(--background-color);
     padding: 20px;
     border-radius: 10px;
-    width: 80%;
-    max-width: 500px;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
 }
 

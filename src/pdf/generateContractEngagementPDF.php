@@ -8,7 +8,7 @@
     if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
         header('Location: ../../login.php');
         exit();
-    } else if (empty($_POST['client']) || empty($_POST['immatCar'])) {
+    } else if (empty($_POST['customerMail']) || empty($_POST['immatCar'])) {
         header('Location: ../../index.php');
         exit();
     }
@@ -21,8 +21,8 @@
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
     
-    $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_email = ?');
-    $resClient->execute([$_POST['client']]);
+    $resClient = $DB->prepare('SELECT * FROM clients INNER JOIN agence ON agence.agence_id = clients.clients_agence_id WHERE clients.clients_email = ?');
+    $resClient->execute([$_POST['customerMail']]);
     $resClient = $resClient->fetch();
 
     $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
@@ -33,28 +33,28 @@
         $resClient['clients_nom'] . ' ' . $resClient['clients_prenom'],
         $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
         $resVehicule['vehicules_immatriculation'],
+        $resClient['agence_nom'],
         $_POST['netVendeur'],
-        date("d"),
-        date("m"),
-        date("Y")
+        $resClient['agence_nom'],
+        date('d/m/Y')
     ];
 
     $pdf = new \setasign\Fpdi\Fpdi();
 
-    $pageCount = $pdf->setSourceFile('../../documents/price_reduction_agreement.pdf');
+    $pageCount = $pdf->setSourceFile('../../documents/contract_engagement.pdf');
     $pageId = $pdf->importPage(1, \setasign\Fpdi\PdfReader\PageBoundaries::MEDIA_BOX);
 
     $pdf->addPage();
     $pdf->useImportedPage($pageId, 5, 10, 200);
 
     $importCoordinates = [
-        ['x' => 52, 'y' => 91],  // nom prénom
-        ['x' => 70, 'y' => 102],  // marque model
-        ['x' => 45, 'y' => 112],  // immat
-        ['x' => 118, 'y' => 123],  // prix net vendeur
-        ['x' => 55, 'y' => 161],  // day
-        ['x' => 68, 'y' => 161],  // month
-        ['x' => 80, 'y' => 161]  // year
+        ['x' => 52, 'y' => 167], //Nom prénom
+        ['x' => 140, 'y' => 167], //Marque Model
+        ['x' => 50, 'y' => 176], //Immatriculation
+        ['x' => 30, 'y' => 185], //Agence
+        ['x' => 123, 'y' => 185], //Montant Net
+        ['x' => 118, 'y' => 253], //Agence
+        ['x' => 158, 'y' => 253], //Date
     ];
 
     foreach ($importVarPDF as $index => $valPDF) {
@@ -65,17 +65,17 @@
         $pdf->Write(0, $valPDF);
     }
 
-    $folder = "../../storage/price_reduction/";
+    $folder = "../../storage/contract_engagement/";
 
     if(!file_exists($folder)) {
         mkdir($folder, 0777, true);
     }
 
-    $pattern = $folder . "ACCORD_DE_BAISSE_DU_PRIX_NET_VENDEUR_" . $importVarPDF[0] . "_*.pdf";
+    $pattern = $folder . "MANDAT_ENGAGEMENT_" . $importVarPDF[0] . "_*.pdf";
     $pdfFiles = glob($pattern);
     $fileCount = count($pdfFiles) + 1;
 
-    $pdfNameFile = "ACCORD_DE_BAISSE_DU_PRIX_NET_VENDEUR_" . $importVarPDF[0] . "_" . $fileCount . ".pdf";
+    $pdfNameFile = "MANDAT_ENGAGEMENT_" . $importVarPDF[0] . "_" . $fileCount . ".pdf";
 
     $DBB->closeConnection();
     $pdf->Output('I', $pdfNameFile);

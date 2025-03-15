@@ -23,92 +23,91 @@
 </head>
 <body>
     <main>
+        <div class="search-container">
+            <h2>Générer un mandat de vente</h2>
+            <form id="form_pdf" action="../pdf/generateSaleMandatePDF.php" method="POST">
+                <div class="input_box">
+                    <span class="label form_required">Adresse-mail du client</span>
+                    <input required type="email" disabled  value="<?= $_POST['client'] ?>" class="disabled" id="customerMail">
+                    <input hidden type="text" name="customerMail" value="<?= $_POST['client'] ?>">
 
-    <div class="search-container">
-        <h2>Générer un mandat de vente</h2>
-        <form id="form_pdf" action="../pdf/generateSaleMandatePDF.php" method="POST">
-            <div class="input_box">
-                <span class="label form_required">Adresse-mail du client</span>
-                <input required type="email" disabled  value="<?= $_POST['client'] ?>" class="disabled" id="customerMail">
-                <input hidden type="text" name="customerMail" value="<?= $_POST['client'] ?>">
-
-                <p class="text_error">debug</p>
-            </div>
-
-            <div class="input_box">
-                <span class="label form_required">Immatriculation</span>
-                <input required type="text" disabled name="immatricuCar" value="<?= $_POST['immatCar'] ?>" class="disabled" id="immatricuCar">
-                <input hidden type="text" name="immatricuCar" value="<?= $_POST['immatCar'] ?>">
-
-                <p class="text_error">debug</p>
-            </div>
-
-            <div class="input_box">
-                <span class="label form_required">Origine du véhicule</span>
-                <input required type="text" name="originCar" id="originCar">
-
-                <p class="text_error hidden">Ce champ est requis</p>
-            </div>
-
-            <div class="input_box">
-                <span class="label form_required">Nombre de mains</span>
-                <input required type="text" name="nbrMains" id="nbrMains">
-
-                <p class="text_error hidden">Ce champ est requis</p>
-            </div>
-
-            <div class="input_box">
-                <span class="label form_required">Jour de la visite</span>
-                <input required type="date" max="<?= date('Y-m-d') ?>" name="jourVisite" id="jourVisite">
-
-                <p class="text_error hidden">Ce champ est requis</p>
-            </div>
-
-            <div class="input_box">
-                <span class="label form_required">Raison de la vente</span>
-                <input required type="text" name="raisonVente" id="raisonVente">
-
-                <p class="text_error hidden">Ce champ est requis</p>
-            </div>
-
-            <div class="input_box">
-                <span class="label form_required">Prix de vente NET souhaité</span>
-                <input required type="text" name="prixVenteSouhaite" id="inputEuroVenteSouhaite">
-
-                <p class="text_error hidden">Ce champ est requis</p>
-            </div>
-
-            <div class="input_box">
-                <span class="label form_required">Prix de vente constaté sur le marché</span>
-                <input required type="text" name="prixVente" id="inputEuroPrixVente">
-
-                <p class="text_error hidden">Ce champ est requis</p>
-            </div>
-
-            <div class="input_box delaiVente">
-                <div class="spanVente">
-                    <span class="label form_required">Delai de vente</span>
+                    <p class="text_error">Ce champ est requis</p>
                 </div>
 
-                <div class="inputSelect">
-                    <input required type="number" min="1" name="delayVenteText" id="delayVenteText">
+                <div class="input_box">
+                    <span class="label form_required">Immatriculation</span>
+                    <input required type="text" disabled name="immatricuCar" value="<?= $_POST['immatCar'] ?>" class="disabled" id="immatricuCar">
+                    <input hidden type="text" name="immatricuCar" value="<?= $_POST['immatCar'] ?>">
 
-                    <select name="delayVenteType" id="delayVenteType">
-                        <option value="Jour(s)">Jour(s)</option>
-                        <option value="Mois">Mois</option>
-                        <option value="An(s)">An(s)</option>
-                    </select>
+                    <p class="text_error">Ce champ est requis</p>
                 </div>
 
-                <p class="text_error hidden">Ce champ est requis</p>
-            </div>
+                <div class="input_box">
+                    <span class="label form_required">Origine du véhicule</span>
+                    <input required type="text" name="originCar" id="originCar">
 
-            <div class="input_box">
-                <input class="submit_btn" value="Générer le mandat de vente en PDF" type="submit" name="submit_btn" id="submit_btn">
-            </div>
-        </form>
+                    <p class="text_error hidden">Ce champ est requis</p>
+                </div>
 
-    </div>
+                <div class="input_box">
+                    <span class="label form_required">Nombre de mains</span>
+                    <input required type="text" name="nbrMains" id="nbrMains">
+
+                    <p class="text_error hidden">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box">
+                    <span class="label form_required">Jour de la visite</span>
+                    <input required type="date" max="<?= date('Y-m-d') ?>" name="jourVisite" id="jourVisite">
+
+                    <p class="text_error hidden">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box">
+                    <span class="label form_required">Raison de la vente</span>
+                    <input required type="text" name="raisonVente" id="raisonVente">
+
+                    <p class="text_error hidden">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box">
+                    <span class="label form_required">Prix de vente NET souhaité</span>
+                    <input required type="text" name="prixVenteSouhaite" id="inputEuroVenteSouhaite">
+
+                    <p class="text_error hidden">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box">
+                    <span class="label form_required">Prix de vente constaté sur le marché</span>
+                    <input required type="text" name="prixVente" id="inputEuroPrixVente">
+
+                    <p class="text_error hidden">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box delaiVente">
+                    <div class="spanVente">
+                        <span class="label form_required">Delai de vente</span>
+                    </div>
+
+                    <div class="inputSelect">
+                        <input required type="number" min="1" name="delayVenteText" id="delayVenteText">
+
+                        <select name="delayVenteType" id="delayVenteType">
+                            <option value="Jour(s)">Jour(s)</option>
+                            <option value="Mois">Mois</option>
+                            <option value="An(s)">An(s)</option>
+                        </select>
+                    </div>
+
+                    <p class="text_error hidden">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box">
+                    <input class="submit_btn" value="Générer le mandat de vente en PDF" type="submit" name="submit_btn" id="submit_btn">
+                </div>
+            </form>
+
+        </div>
     </main>
 
     <script src="../../assets/js/errorMessages.js"></script>
