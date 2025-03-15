@@ -1,4 +1,12 @@
-composer.phar
+#Librairies
 /vendor/
+.vscode/
+
+#Dossier de stocakge
+/storage
+
+#Fichier Environement
 .env
-php/data.json
+
+#Fichier de création d'un utilisateur
+register.php
