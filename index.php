@@ -54,7 +54,8 @@
             'generateMandatVente' => 'src/forms/saleMandateForm.php',
             'generateProcurationSignature' => 'src/pdf/generateSignatureAuthPDF.php',
             'generateBonReservation' => 'src/forms/reservationForm.php',
-            'generateAccordBaissePrix' => 'src/pdf/generatePriceReductionPDF.php'
+            'generateAccordBaissePrix' => 'src/forms/priceReductionForm.php',
+            'generateContractEngagement' => 'src/forms/contractEngagementForm.php'
         ];
 
         if (empty($selectedCustomers) || empty($selectedVehicles)) {
@@ -113,7 +114,6 @@
                 <h2><?= $tableauOnglets[0] ?></h2>
                 <div class="input_client">
                     <input type="text" class="searchBar" id="searchBarCustomers" placeholder="Rechercher un client..." onkeyup="searchTable('customers', 'searchBarCustomers')">
-                    <!-- <a href="https://natasha.myseven.fr/form/41a58574-4ede-4b92-92d0-3c7242babbaf" target="_blank">Créer un client</a> -->
                     <a href="./src/forms/customerForm.php">Créer un client</a>
                 </div>
 
@@ -150,7 +150,6 @@
                 <h2><?= $tableauOnglets[1] ?></h2>
                 <div class="input_vehicle">
                     <input type="text" class="searchBar" id="searchBarVehicles" placeholder="Rechercher un véhicule..." onkeyup="searchTable('vehicles', 'searchBarVehicles')">
-                    <!-- <a href="https://natasha.myseven.fr/form/738b1409-78e4-492e-9094-d5a77a40f48b" target="_blank">Créer un véhicule</a> -->
                     <a href="./src/forms/vehicleForm.php">Créer un véhicule</a>
                 </div>
 
@@ -187,6 +186,7 @@
                 <h2><?= $tableauOnglets[2] ?></h2>
                 <div class="btn_list">
                     <button type="submit" name="generateMandatVente" target="_blank" class="btn-generate action-link">Mandat de vente</button>
+                    <button type="submit" name="generateContractEngagement" target="_blank" class="btn-generate action-link">Mandat d'engagement</button>
                     <button type="submit" name="generateProcurationSignature" target="_blank" class="btn-generate action-link">Procuration signature</button>
                     <button type="submit" name="generateBonReservation" target="_blank" class="btn-generate action-link">Bon de réservation</button>
                     <button type="submit" name="generateAccordBaissePrix" target="_blank" class="btn-generate action-link">Accord de baisse du prix net vendeur</button>

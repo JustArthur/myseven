@@ -3,7 +3,7 @@
 .vscode/
 
 #Dossier de stocakge
-/storage/
+/storage
 
 #Fichier Environement
 .env
