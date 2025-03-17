@@ -30,10 +30,18 @@
     $resVehicule->execute([$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();
 
+    $dateParts = explode('-', $resClient['clients_anniversaire']);
+    $year = $dateParts[0];
+    $month = $dateParts[1];
+    $day = $dateParts[2];
+
+
     $importVarPDF = [
         $resClient['clients_nom'] . ' ' . $resClient['clients_prenom'],
-        //date anniv
-        //lieu naissance
+        $day,
+        $month,
+        $year,
+        $resClient['clients_lieu_naissance'],
         $resClient['clients_rue'] . ' ' . ucfirst($resClient['clients_ville']) . ' ' . $resClient['clients_cp'],
         $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
         $resVehicule['vehicules_immatriculation'],
@@ -52,8 +60,10 @@
 
     $importCoordinates = [
         ['x' => 52, 'y' => 87],  // nom prénom
-        //date anniv
-        //lieu naissance
+        ['x' => 39, 'y' => 96],  // jour anniv
+        ['x' => 47, 'y' => 96],  // jour mois
+        ['x' => 55, 'y' => 96],  // jour annee
+        ['x' => 72, 'y' => 96],  // lieu naissance
         ['x' => 48, 'y' => 104],  // adresse
         ['x' => 58, 'y' => 147],  // marque model
         ['x' => 50, 'y' => 155],  // immat
