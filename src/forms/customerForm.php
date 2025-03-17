@@ -54,25 +54,25 @@
 
                     $stmt->execute([$firstName, $lastName, $email, $telephone, $birthday, $lieuNaissance, $numCNI, $fileContent, $adresse, $city, $cp, intval($_SESSION['user']["agence_id"]), $typeCustomerValue]);
                     
-                    // echo '
-                    //     <div class="pop_up">
-                    //         <div class="pop_content">
-                    //             <h1>Le client à bien été créer</h1>
-                    //             <p>Voulez-vous créer un nouveau véhicule ?</p>
+                    echo '
+                        <div class="pop_up">
+                            <div class="pop_content">
+                                <h1>Le client à bien été créer</h1>
+                                <p>Voulez-vous créer un nouveau véhicule ?</p>
 
-                    //             <div class="input_btn">
-                    //                 <a href="createVehicle.php" class="btn yes">Oui</a>
-                    //                 <a href="../../index.php" class="btn no">Non</a>
-                    //             </div>
-                    //         </div>
-                    //     </div>
-                    //     <script>
-                    //         document.addEventListener("DOMContentLoaded", function() {
-                    //             document.getElementById("body").style.overflow = "hidden";
-                    //         });
-                    //     </script>
+                                <div class="input_btn">
+                                    <a href="createVehicle.php" class="btn yes">Oui</a>
+                                    <a href="../../index.php" class="btn no">Non</a>
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function() {
+                                document.getElementById("body").style.overflow = "hidden";
+                            });
+                        </script>
 
-                    //     ';
+                        ';
                 } else {
                     echo "Invalid file type. Only PNG, JPEG, and JPG are allowed.";
                 }
