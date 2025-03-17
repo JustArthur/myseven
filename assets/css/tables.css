@@ -233,7 +233,7 @@ input[type="radio"]:checked {
     transition: background-color 0.3s;
     color: var(--white);
     width: 100%;
-    max-width: 400px;
+    max-width: 350px;
     font-weight: 600;
     cursor: pointer;
 }

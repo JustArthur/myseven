@@ -238,7 +238,7 @@ const cardShow = (tableName, realIndex) => {
         const vehicle = window[tableName][realIndex];
         cardItemContent.innerHTML = `
             <span onclick="openCloseCard(${tableName}, ${realIndex})" class="material-symbols-outlined">close</span>
-            <h2>Informations du client</h2>
+            <h2>Informations du véhicule</h2>
             <p><strong>Marque : </strong> ${vehicle.vehicules_marque}</p>
             <p><strong>Model : </strong> ${vehicle.vehicules_model}</p>
             <p><strong>Annee : </strong> ${vehicle.vehicules_annee}</p>
