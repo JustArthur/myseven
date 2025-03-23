@@ -15,7 +15,6 @@
 
     require_once '../../vendor/setasign/fpdf/fpdf.php';
     require_once '../../vendor/setasign/fpdi/src/autoload.php';
-
     require_once '../../database.php';
 
 
@@ -24,14 +23,22 @@
   
     $resClient = $DB->prepare('SELECT * FROM clients INNER JOIN agence ON clients.clients_agence_id = agence.agence_id WHERE clients.clients_email = ?');
     $resClient->execute(params: [$_POST['customerMail']]);
+    $resClient = $DB->prepare('SELECT * FROM clients INNER JOIN agence ON clients.clients_agence_id = agence.agence_id WHERE clients.clients_email = ?');
+    $resClient->execute([$_POST['customerMail']]);
     $resClient = $resClient->fetch();
 
     $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
     $resVehicule->execute(params: [$_POST['immatCar']]);
+    $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
+    $resVehicule->execute([$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();
 
     $resAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
     $resAgence->execute(params: [$resClient['clients_agence_id']]);
+    $resAgence = $resAgence->fetch();
+
+    $resAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
+    $resAgence->execute([$resClient['clients_agence_id']]);
     $resAgence = $resAgence->fetch();
 
     $crossToCreate = [];
@@ -55,9 +62,13 @@
 
         case 'refuse':
             array_push($crossToCreate, ['x' => 98, 'y' => 106]);
+            $_POST['garantieMecaniqueText'] = 0;
+            array_push($crossToCreate, ['x' => 98, 'y' => 106]);
             break;
 
         default:
+            array_push($crossToCreate, ['x' => 98, 'y' => 106]);
+            $_POST['garantieMecaniqueText'] = 0;
             array_push($crossToCreate, ['x' => 98, 'y' => 106]);
             break;
     }
@@ -65,9 +76,25 @@
     switch($_POST['expertiseSouhaitee']) {
         case 'Oui':
             array_push($crossToCreate, ['x' => 50, 'y' => 173.5]);
+            array_push($crossToCreate, ['x' => 50, 'y' => 173.5]);
             break;
 
         default:
+            array_push($crossToCreate, ['x' => 60, 'y' => 173.5]);
+            break;
+    }
+
+    switch($_POST['depot_arrhes_select']) {
+        case 'empBank':
+            array_push($crossToCreate, ['x' => 103, 'y' => 189]);
+            break;
+
+        case 'virBank':
+            array_push($crossToCreate, ['x' => 103, 'y' => 196]);
+            break;
+
+        case 'cheqEsp':
+            array_push($crossToCreate, ['x' => 103, 'y' => 202.5]);
             array_push($crossToCreate, ['x' => 60, 'y' => 173.5]);
             break;
     }
@@ -88,9 +115,11 @@
 
     $fraisMiseEnRoute = isset($_POST['fraisMiseEnRoute']) && !empty($_POST['fraisMiseEnRoute']) ? $_POST['fraisMiseEnRoute'] : 0;
     array_push($crossToCreate, ['x' => 18.5, 'y' => 148]);
+    array_push($crossToCreate, ['x' => 18.5, 'y' => 148]);
 
     $prixTotalHCG = (int)$_POST['garantieMecaniqueText'] + (int)$fraisMiseEnRoute + (int)$_POST['PrixVehicule'] + (int)$_POST['livraison'];
     $fraisCG = (int)$_POST['garantieMecaniqueText'] + $fraisMiseEnRoute + (int)$_POST['livraison'];
+    $_POST['miseCircu'] = date('d/m/Y', strtotime($_POST['miseCircu']));
 
     $importVarPDF = [
         $resClient['clients_nom'] . ' ' . $resClient['clients_prenom'],
@@ -112,7 +141,9 @@
         $_POST['depot_arrhes_input'],
         $resAgence['agence_iban'],
         $resAgence['agence_bic'],
+        $_POST['miseCircu']
     ];
+
 
     $pdf = new \setasign\Fpdi\Fpdi();
 
@@ -130,6 +161,16 @@
         ['x' => 85, 'y' => 71], //telephone
         ['x' => 130, 'y' => 71], //email
         ['x' => 48, 'y' => 88], //marque model
+        ['x' => 42, 'y' => 93.5], //immat
+        ['x' => 41, 'y' => 183], //prix véhicule
+        ['x' => 38, 'y' => 190], //frais mise à la route
+        ['x' => 36, 'y' => 196], //graentie méca
+        ['x' => 29, 'y' => 202], //Livraison
+        ['x' => 89, 'y' => 64], //cp
+        ['x' => 115, 'y' => 64], //ville
+        ['x' => 85, 'y' => 71], //telephone
+        ['x' => 130, 'y' => 71], //email
+        ['x' => 48, 'y' => 88], //marque model
         ['x' => 42, 'y' => 94], //immat
         ['x' => 41, 'y' => 183], //prix véhicule
         ['x' => 38, 'y' => 190], //frais mise à la route
@@ -137,6 +178,12 @@
         ['x' => 29, 'y' => 202], //Livraison
         ['x' => 65, 'y' => 217], //Prix total HCG
         ['x' => 65, 'y' => 223], //Frais CG
+        ['x' => 20, 'y' => 263.5], //Agence
+        ['x' => 70, 'y' => 263.5], // Date
+        ['x' => 167, 'y' => 183], // Montant arrhes
+        ['x' => 128, 'y' => 149], // IBAN
+        ['x' => 128, 'y' => 153], // BIC
+        ['x' => 130, 'y' => 93.5], // Mise en circulation
         ['x' => 20, 'y' => 263.5], //Agence
         ['x' => 70, 'y' => 263.5], // Date
         ['x' => 167, 'y' => 183], // Montant arrhes

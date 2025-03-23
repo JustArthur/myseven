@@ -21,7 +21,7 @@
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
     
-    $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_email = ?');
+    $resClient = $DB->prepare('SELECT * FROM clients INNER JOIN agence ON clients.clients_agence_id = agence.agence_id WHERE clients.clients_email = ?');
     $resClient->execute([$_POST['client']]);
     $resClient = $resClient->fetch();
 
@@ -34,6 +34,8 @@
         $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
         $resVehicule['vehicules_immatriculation'],
         $_POST['netVendeur'],
+        $resClient['agence_nom'],
+        $resClient['agence_nom'],
         date("d"),
         date("m"),
         date("Y")
@@ -48,13 +50,15 @@
     $pdf->useImportedPage($pageId, 5, 10, 200);
 
     $importCoordinates = [
-        ['x' => 52, 'y' => 91],  // nom prénom
-        ['x' => 70, 'y' => 102],  // marque model
-        ['x' => 45, 'y' => 112],  // immat
+        ['x' => 53, 'y' => 90.5],  // nom prénom
+        ['x' => 70, 'y' => 101.5],  // marque model
+        ['x' => 45, 'y' => 111.5],  // immat
         ['x' => 118, 'y' => 123],  // prix net vendeur
-        ['x' => 55, 'y' => 161],  // day
-        ['x' => 68, 'y' => 161],  // month
-        ['x' => 80, 'y' => 161]  // year
+        ['x' => 82, 'y' => 134],  // agence
+        ['x' => 22, 'y' => 161],  // agence
+        ['x' => 68, 'y' => 161],  // day
+        ['x' => 78, 'y' => 161],  // month
+        ['x' => 88, 'y' => 161]  // year
     ];
 
     foreach ($importVarPDF as $index => $valPDF) {

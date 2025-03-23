@@ -27,7 +27,7 @@
     $oldImmat = $data["oldUniqueValue"];
     $newImmat = $data["vehicules_immatriculation"];
 
-    $fields = ["vehicules_immatriculation", "vehicules_marque", "vehicules_model", "vehicules_puissance", "vehicules_type_boite", "vehicules_couleur", "vehicules_kilometrage"];
+    $fields = ["vehicules_immatriculation", "vehicules_marque", "vehicules_model", "vehicules_annee", "vehicules_puissance", "vehicules_type_boite", "vehicules_couleur", "vehicules_kilometrage"];
     $updateFields = [];
     $params = [];
 

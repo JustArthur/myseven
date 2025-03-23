@@ -52,6 +52,16 @@ form .error_message {
     border-radius: 5px;
 }
 
+form .error_message.error {
+    color: var(--error-color);
+    background: var(--error-color-20);
+}
+
+form .error_message.success {
+    color: var(--success-color);
+    background: var(--success-color-20);
+}
+
 form input {
     width: 100%;
     padding: 12px;

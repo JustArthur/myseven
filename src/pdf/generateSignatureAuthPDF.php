@@ -15,14 +15,13 @@
 
     require_once '../../vendor/setasign/fpdf/fpdf.php';
     require_once '../../vendor/setasign/fpdi/src/autoload.php';
-
     require_once '../../database.php';
 
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
 
 
-    $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_email = ?');
+    $resClient = $DB->prepare('SELECT * FROM clients INNER JOIN agence ON clients.clients_agence_id = agence.agence_id WHERE clients.clients_email = ?');
     $resClient->execute([$_POST['client']]);
     $resClient = $resClient->fetch();
 
@@ -43,8 +42,10 @@
         $year,
         $resClient['clients_lieu_naissance'],
         $resClient['clients_rue'] . ' ' . ucfirst($resClient['clients_ville']) . ' ' . $resClient['clients_cp'],
+        $resClient['agence_nom'],
         $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
         $resVehicule['vehicules_immatriculation'],
+        $resClient['agence_nom'],
         date("d"),
         date("m"),
         date("Y")
@@ -60,16 +61,16 @@
 
     $importCoordinates = [
         ['x' => 52, 'y' => 87],  // nom prénom
-        ['x' => 39, 'y' => 96],  // jour anniv
-        ['x' => 47, 'y' => 96],  // jour mois
-        ['x' => 55, 'y' => 96],  // jour annee
-        ['x' => 72, 'y' => 96],  // lieu naissance
+        //date anniv
+        //lieu naissance
         ['x' => 48, 'y' => 104],  // adresse
+        ['x' => 81, 'y' => 121],  // Agence
         ['x' => 58, 'y' => 147],  // marque model
-        ['x' => 50, 'y' => 155],  // immat
-        ['x' => 51, 'y' => 199],  // day
-        ['x' => 59, 'y' => 199],  // month
-        ['x' => 67, 'y' => 199]  // year
+        ['x' => 52, 'y' => 155],  // immat
+        ['x' => 28, 'y' => 199],  // agence
+        ['x' => 66, 'y' => 199],  // day
+        ['x' => 74, 'y' => 199],  // month
+        ['x' => 82, 'y' => 199]  // year
     ];
 
     foreach ($importVarPDF as $index => $valPDF) {

@@ -8,17 +8,35 @@
     require_once 'database.php';
     require_once 'src/functions/selectSQL.php';
 
-    $error_message = "";
+    $DBB = new ConnexionDB();
 
-    if (isset($_COOKIE['user_session']) && isset($_SESSION['user'])) {
-        header('Location: index.php');
-        exit;
+    $error_message = [];
+
+    if (isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
+        session_id($_COOKIE['user_session']);
+        
+        $identifiant = $_COOKIE['user_session'];
+
+        $DB = $DBB->openConnection();
+        $user = selectAllUsersInfoWhereId($identifiant, $DB);
+        $user = $user->fetch();
+        
+        if ($user) {
+            $_SESSION['user'] = [
+                'id' => htmlspecialchars($user['utilisateurs_id'], ENT_QUOTES),
+                'identifiant' => htmlspecialchars($user['utilisateurs_identifiant'], ENT_QUOTES),
+                'agence_id' => htmlspecialchars($user['utilisateurs_agence_id'], ENT_QUOTES),
+                'role' => htmlspecialchars($user['utilisateurs_role'], ENT_QUOTES)
+            ];
+        } else {
+            session_destroy();
+        }
     }
     
     if (!empty($_POST)) {
         extract(array: $_POST);
         if (isset($_POST['connexion'])) {
-            $DBB = new ConnexionDB();
+            
             $DBB->openConnection();
     
             $valid = true;
@@ -31,11 +49,17 @@
             if ($verif_password && isset($verif_password['utilisateurs_password'])) {
                 if (!password_verify($password, $verif_password['utilisateurs_password'])) {
                     $valid = false;
-                    $error_message = "Identifiant ou mot passe incorect";
+                    $error_message = [
+                        'type' => 'error',
+                        'message' => 'Identifiant ou mot passe incorect'
+                    ];
                 }
             } else {
                 $valid = false;
-                $error_message = "Identifiant ou mot passe incorect";
+                $error_message = [
+                    'type' => 'error',
+                    'message' => 'Identifiant ou mot passe incorect'
+                ];
             }
     
             if ($valid) {
@@ -44,11 +68,12 @@
 
                 session_regenerate_id(true);
     
-                $_SESSION['user'] = array(
+                $_SESSION['user'] = [
                     'id' => htmlspecialchars($getUser['utilisateurs_id'], ENT_QUOTES),
                     'identifiant' => htmlspecialchars($getUser['utilisateurs_identifiant'], ENT_QUOTES),
                     'agence_id' => htmlspecialchars($getUser['utilisateurs_agence_id'], ENT_QUOTES),
-                );
+                    'role' => htmlspecialchars($getUser['utilisateurs_role'], ENT_QUOTES)
+                ];
 
                 setcookie('user_session', $_SESSION['user']['identifiant'], time() + (86400 * 30), "/", "", false, true);
                 $DBB->closeConnection();
@@ -78,7 +103,7 @@
     <form method="POST">
         <h1>Se connecter</h1>
 
-        <?php if($error_message != "") {echo "<div class='error_message'>" . $error_message . "</div>"; } ?>
+        <?php if(!empty($error_message)) {echo "<div class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>"; } ?>
 
         <input required type="text" autofocus="true" name="identifiant" placeholder="Identifiant">
         <input required type="password" name="password" placeholder="Mot de passe">

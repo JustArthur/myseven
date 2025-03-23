@@ -5,36 +5,21 @@
 
     require_once 'database.php';
     require_once 'src/functions/selectSQL.php';
+    require_once 'src/functions/generateTable.php';
     
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
-    
-    if (isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
-        session_id($_COOKIE['user_session']);
-        
-        session_start();
-        
-        $identifiant = $_COOKIE['user_session'];
 
-        $user = selectAllUsersInfoWhereId($identifiant, $DB);
-        $user = $user->fetch();
-        
-        if ($user) {
-            $_SESSION['user'] = array(
-                'id' => htmlspecialchars($user['utilisateurs_id'], ENT_QUOTES),
-                'identifiant' => htmlspecialchars($user['utilisateurs_identifiant'], ENT_QUOTES),
-                'agence_id' => htmlspecialchars($user['utilisateurs_agence_id'], ENT_QUOTES)
-            );
-        } else {
-            session_destroy();
-        }
-    } else {
+    session_start();
+
+    if (!isset($_SESSION['user'])) {
         header('Location: login.php');
-        exit;
+        exit();
     }
     
     $tableauOnglets = [
-        'Clients',
+        'Clients acheteur',
+        'Clients vendeur',
         'Véhicules',
         'Générer des PDF'
     ];
@@ -48,6 +33,24 @@
     } else {
         $resClient = selectAllClientWhereAgence($_SESSION['user']['agence_id'], $DB);
         $resClient = $resClient->fetchAll();
+    $resAgence = selectAllAgence($DB);
+    $resAgence = $resAgence->fetchAll();
+
+    if($_SESSION['user']['role'] == 1) {
+        $resClientVendeur = selectAllClientVendeur($DB);
+        $resClientVendeur = $resClientVendeur->fetchAll();
+
+        $resClientAcheteur = selectAllClientAcheteur($DB);
+        $resClientAcheteur = $resClientAcheteur->fetchAll();
+
+        $resVehicule = selectAllVehicle($DB);
+        $resVehicule = $resVehicule->fetchAll();
+    } else {
+        $resClientVendeur = selectAllClientVendeurWhereAgence($_SESSION['user']['agence_id'], $DB);
+        $resClientVendeur = $resClientVendeur->fetchAll();
+
+        $resClientAcheteur = selectAllClientVendeurWhereAgence($_SESSION['user']['agence_id'], $DB);
+        $resClientAcheteur = $resClientAcheteur->fetchAll();
 
         $resVehicule = selectAllVehicleWhereAgence($_SESSION['user']['agence_id'], $DB);
         $resVehicule = $resVehicule->fetchAll();
@@ -73,10 +76,11 @@
         } else {
             foreach ($routes as $key => $file) {
                 if (isset($_POST[$key])) {
+                    
                     echo "
                         <form style='display:none' id='postForm' action='$file' target='_blank' method='POST'>
-                            <input type='hidden' name='client' value='" . htmlspecialchars(string: $selectedCustomers) . "'>
-                            <input type='hidden' name='immatCar' value='" . htmlspecialchars(string: $selectedVehicles) . "'>
+                            <input type='hidden' name='client' value='" . htmlspecialchars($selectedCustomers) . "'>
+                            <input type='hidden' name='immatCar' value='" . htmlspecialchars($selectedVehicles) . "'>
                         </form>
                         <script>document.getElementById('postForm').submit();</script>
                     ";
@@ -117,18 +121,26 @@
                 <?php } ?>
             </div>
 
-            <!-- Clients -->
+            <!-- Clients Acheteur -->
             <div class="content" id="tab1">
                 <h2><?= $tableauOnglets[0] ?></h2>
                 <div class="input_client">
-                    <input type="text" class="searchBar" id="searchBarCustomers" placeholder="Rechercher un client..." onkeyup="searchTable('customers', 'searchBarCustomers')">
+                    <input type="text" class="searchBar" id="searchBarCustomersBuy" placeholder="Rechercher un client..." onkeyup="searchTable('CustomersBuy', 'searchBarCustomersBuy')">
+                    <?php if($_SESSION['user']['role'] == 1) { ?>
+                        <select class="inputSelect" name="selectAgenceBuy" id="selectAgenceBuy" onchange="window.selectAgence('CustomersBuy', 'selectAgenceBuy')">
+                            <option value="All">Toute les agences</option>
+                            <?php foreach($resAgence as $agence) { ?>
+                                <option value="<?= $agence['agence_id'] ?>"><?= $agence['agence_nom'] ?></option>
+                            <?php } ?>
+                        </select>
+                    <?php } ?>
                     <a href="./src/forms/customerForm.php">Créer un client</a>
                 </div>
 
                 <div class="overflowTable">
-                    <table class="table" id="customersTable">
-                        <thead class="table-head" id="customersTableHead">
-                            <tr class="table-row" id="customersTableHeadRow">
+                    <table class="table" id="CustomersBuyTable">
+                        <thead class="table-head" id="CustomersBuyTableHead">
+                            <tr class="table-row" id="CustomersBuyTableHeadRow">
                                 <th>Nom</th>
                                 <th>Prénom</th>
                                 <th>Adresse-mail</th>
@@ -137,34 +149,84 @@
                                 <th>Ville</th>
                                 <th>Code postale</th>
                                 <th>Numéro CNI</th>
-                                <th></th>
                             </tr>
                         </thead>
-                        <tbody class="table-body" id="CustomersTableBody">
+                        <tbody class="table-body" id="CustomersBuyTableBody">
                             <!-- INSERT AVEC JS -->
                         </tbody>
                     </table>
                 </div>
 
-                <div class="pagination visible" id="paginationCustomers">
-                    <a onclick="prevPage('Customers')">Page précédente</a>
-                    <a onclick="nextPage('Customers')">Page suivante</a>
-                    <span id="pageInfoCustomers"></span>
+                <div class="pagination visible" id="paginationCustomersBuy">
+                    <a onclick="prevPage('CustomersBuy')">Page précédente</a>
+                    <a onclick="nextPage('CustomersBuy')">Page suivante</a>
+                    <span id="pageInfoCustomersBuy"></span>
+                </div>
+            </div>
+
+            <!-- Clients Vendeur -->
+            <div class="content" id="tab2">
+                <h2><?= $tableauOnglets[1] ?></h2>
+                <div class="input_client">
+                    <input type="text" class="searchBar" id="searchBarCustomersSell" placeholder="Rechercher un client..." onkeyup="searchTable('CustomersSell', 'searchBarCustomersSell')">
+                    <?php if($_SESSION['user']['role'] == 1) { ?>
+                        <select class="inputSelect" name="selectAgenceSell" id="selectAgenceSell" onchange="window.selectAgence('CustomersSell', 'selectAgenceSell')">
+                            <option value="All">Toute les agences</option>
+                            <?php foreach($resAgence as $agence) { ?>
+                                <option value="<?= $agence['agence_id'] ?>"><?= $agence['agence_nom'] ?></option>
+                            <?php } ?>
+                        </select>
+                    <?php } ?>
+                    <a href="./src/forms/customerForm.php">Créer un client</a>
+                </div>
+
+                <div class="overflowTable">
+                    <table class="table" id="CustomersSellTable">
+                        <thead class="table-head" id="CustomersSellTableHead">
+                            <tr class="table-row" id="CustomersSellTableHeadRow">
+                                <th>Nom</th>
+                                <th>Prénom</th>
+                                <th>Adresse-mail</th>
+                                <th>Téléphone</th>
+                                <th>Numéro et rue</th>
+                                <th>Ville</th>
+                                <th>Code postale</th>
+                                <th>Numéro CNI</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body" id="CustomersSellTableBody">
+                            <!-- INSERT AVEC JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination visible" id="paginationCustomersSell">
+                    <a onclick="prevPage('CustomersSell')">Page précédente</a>
+                    <a onclick="nextPage('CustomersSell')">Page suivante</a>
+                    <span id="pageInfoCustomersSell"></span>
                 </div>
             </div>
 
             <!-- Véhicules -->
-            <div class="content" id="tab2">
-                <h2><?= $tableauOnglets[1] ?></h2>
+            <div class="content" id="tab3">
+                <h2><?= $tableauOnglets[2] ?></h2>
                 <div class="input_vehicle">
-                    <input type="text" class="searchBar" id="searchBarVehicles" placeholder="Rechercher un véhicule..." onkeyup="searchTable('vehicles', 'searchBarVehicles')">
+                    <input type="text" class="searchBar" id="searchBarVehicles" placeholder="Rechercher un véhicule..." onkeyup="searchTable('Vehicles', 'searchBarVehicles')">
+                    <?php if($_SESSION['user']['role'] == 1) { ?>
+                        <select class="inputSelect" name="selectAgenceVehicles" id="selectAgenceVehicles" onchange="window.selectAgence('Vehicles', 'selectAgenceVehicles')">
+                            <option value="All">Toute les agences</option>
+                            <?php foreach($resAgence as $agence) { ?>
+                                <option value="<?= $agence['agence_id'] ?>"><?= $agence['agence_nom'] ?></option>
+                            <?php } ?>
+                        </select>
+                    <?php } ?>
                     <a href="./src/forms/vehicleForm.php">Créer un véhicule</a>
                 </div>
 
                 <div class="overflowTable">
-                    <table class="table" id="vehicleTable">
-                        <thead class="table-head" id="vehicleTableHead">
-                            <tr class="table-row" id="vehicleTableHeadRow">
+                    <table class="table" id="VehiclesTable">
+                        <thead class="table-head" id="VehiclesTableHead">
+                            <tr class="table-row" id="VehiclesTableHeadRow">
                                 <th>Immatriculation</th>
                                 <th>Marque</th>
                                 <th>Modèle</th>
@@ -173,7 +235,6 @@
                                 <th>Type boite</th>
                                 <th>Couleur</th>
                                 <th>Kilomètrage</th>
-                                <th></th>
                             </tr>
                         </thead>
                         <tbody class="table-body" id="VehiclesTableBody">
@@ -190,8 +251,8 @@
             </div>
 
 
-            <div class="content" id="tab3">
-                <h2><?= $tableauOnglets[2] ?></h2>
+            <div class="content" id="tab4">
+                <h2><?= $tableauOnglets[3] ?></h2>
                 <div class="btn_list">
                     <button type="submit" name="generateMandatVente" target="_blank" class="btn-generate action-link">Mandat de vente</button>
                     <button type="submit" name="generateContractEngagement" target="_blank" class="btn-generate action-link">Mandat d'engagement</button>
@@ -209,67 +270,10 @@
         </div>
     </div>
     
-
     <script>
-        const rowsCustomers = [
-            <?php
-                $itemsCustomer = [];
-                foreach ($resClient as $client) {
-                    
-                    $lastName = str_replace(["\n", "\r"], " ", addslashes($client['clients_nom']));
-                    $firstName = str_replace(["\n", "\r"], " ", addslashes($client['clients_prenom']));
-                    $email = str_replace(["\n", "\r"], " ", addslashes($client['clients_email']));
-                    $phone = str_replace(["\n", "\r"], " ", addslashes($client['clients_telephone']));
-                    $rue = str_replace(["\n", "\r"], " ", addslashes($client['clients_rue']));
-                    $ville = str_replace(["\n", "\r"], " ", addslashes($client['clients_ville']));
-                    $cp = str_replace(["\n", "\r"], " ", addslashes($client['clients_cp']));
-                    $numero_cni = str_replace(["\n", "\r"], " ", addslashes($client['clients_numero_cni']));
-
-                    $itemsCustomer[] = 
-                    "{
-                        clients_nom: \"$lastName\",
-                        clients_prenom: \"$firstName\",
-                        clients_email: \"$email\",
-                        clients_telephone: \"$phone\",
-                        clients_rue: \"$rue\",
-                        clients_ville: \"$ville\",
-                        clients_cp: \"$cp\",
-                        clients_numero_cni: \"$numero_cni\"
-                    }";
-                }
-                echo implode(separator: ",\n", array: $itemsCustomer);
-            ?>
-        ];
-
-        const rowsVehicles = [
-            <?php
-                $itemsVehicule = [];
-                foreach ($resVehicule as $vehicule) {
-                   
-                    $immatriculation = str_replace(['\n', '\r'], ' ', addslashes($vehicule['vehicules_immatriculation']));
-                    $marque = str_replace(['\n', '\r'], ' ', addslashes($vehicule['vehicules_marque']));
-                    $model = str_replace(['\n', '\r'], ' ', addslashes($vehicule['vehicules_model']));
-                    $annee = str_replace(['\n', '\r'], ' ', addslashes($vehicule['vehicules_annee']));
-                    $puissance = str_replace(['\n', '\r'], ' ', addslashes($vehicule['vehicules_puissance']));
-                    $type_boite = str_replace(['\n', '\r'], ' ', addslashes($vehicule['vehicules_type_boite']));
-                    $couleur = str_replace(['\n', '\r'], ' ', addslashes($vehicule['vehicules_couleur']));
-                    $kilometrage = str_replace(['\n', '\r'], ' ', addslashes($vehicule['vehicules_kilometrage']));
-
-                    $itemsVehicule[] = 
-                    "{
-                        vehicules_immatriculation: \"$immatriculation\",
-                        vehicules_marque: \"$marque\",
-                        vehicules_model: \"$model\",
-                        vehicules_annee: \"$annee\",
-                        vehicules_puissance: \"$puissance\",
-                        vehicules_type_boite: \"$type_boite\",
-                        vehicules_couleur: \"$couleur\",
-                        vehicules_kilometrage: \"$kilometrage\"
-                    }";
-                }
-                echo implode(separator: ",\n", array: $itemsVehicule);
-            ?>
-        ];
+        const rowsCustomersSell = [<?= generateRows($resClientVendeur, $customerFields) ?>];
+        const rowsCustomersBuy = [<?= generateRows($resClientAcheteur, $customerFields) ?>];
+        const rowsVehicles = [<?= generateRows($resVehicule, $vehicleFields) ?>];
 
         document.getElementById("bigForm").addEventListener("keypress", function (e) {
             if (e.key === "Enter") {

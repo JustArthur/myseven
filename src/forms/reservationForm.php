@@ -26,11 +26,11 @@
 
     <div class="search-container">
         <h2>Générer un bon de réservation</h2>
-        <form id="form_pdf" target="_blank" action="../pdf/generateReservationPDF.php" method="POST">
+        <form id="form_pdf" action="../pdf/generateReservationPDF.php" method="POST">
             <div class="input_box">
                 <span class="label form_required">Adresse-mail du client</span>
                 <input required type="email" disabled  value="<?= $_POST['client'] ?>" class="disabled" id="customerMail">
-                <input hidden type="text" name="customerMail" value="<?= $_POST['client'] ?>">
+                <input hidden="true" type="text" name="customerMail" value="<?= $_POST['client'] ?>">
 
                 <p class="text_error">Ce champ est requis</p>
             </div>
@@ -38,7 +38,7 @@
             <div class="input_box">
                 <span class="label form_required">Immatriculation</span>
                 <input required type="text" disabled  value="<?= $_POST['immatCar'] ?>" class="disabled" id="immatCar">
-                <input hidden type="text" name="immatCar" value="<?= $_POST['immatCar'] ?>">
+                <input hidden="true" type="text" name="immatCar" value="<?= $_POST['immatCar'] ?>">
 
                 <p class="text_error">Ce champ est requis</p>
             </div>
@@ -46,6 +46,13 @@
             <div class="input_box">
                 <span class="label form_required">Prix véhicule seul</span>
                 <input required type="number" name="PrixVehicule" id="prixVehicule">
+
+                <p class="text_error">Ce champ est requis</p>
+            </div>
+
+            <div class="input_box">
+                <span class="label form_required">Date de mise en circulation</span>
+                <input required type="date" name="miseCircu" id="miseCircu">
 
                 <p class="text_error">Ce champ est requis</p>
             </div>
@@ -108,6 +115,26 @@
                     </select>
 
                     <input type="number" min="1" name="depot_arrhes_input" placeholder="Montant" id="depot_arrhes_input">
+                </div>
+
+                <p class="text_error">Ce champ est requis</p>
+
+                <p class="text_error">Ce champ est requis</p>
+            </div>
+
+            <div class="input_box delaiVente">
+                <div class="spanVente">
+                    <span class="label form_required">Dépot arrhes</span>
+                </div>
+
+                <div class="inputSelect">
+                    <select name="depot_arrhes_select" id="depot_arrhes_select">
+                        <option value="empBank">Empreinte Bancaire</option>
+                        <option value="virBank">Virement Bancaire</option>
+                        <option value="cheqEsp">Chèque ou Espèce</option>
+                    </select>
+
+                    <input required type="number" min="1" name="depot_arrhes_input" placeholder="Montant" id="depot_arrhes_input">
                 </div>
 
                 <p class="text_error">Ce champ est requis</p>

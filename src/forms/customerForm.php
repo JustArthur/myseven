@@ -61,7 +61,7 @@
                                 <p>Voulez-vous créer un nouveau véhicule ?</p>
 
                                 <div class="input_btn">
-                                    <a href="createVehicle.php" class="btn yes">Oui</a>
+                                    <a href="vehicleForm.php" class="btn yes">Oui</a>
                                     <a href="../../index.php" class="btn no">Non</a>
                                 </div>
                             </div>
