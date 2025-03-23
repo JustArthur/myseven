@@ -49,12 +49,6 @@
         return $sql;
     }
 
-    function selectAllVehicle($DB) {
-        $sql = $DB->prepare('SELECT * FROM vehicules ORDER BY vehicules_immatriculation ASC');
-        $sql->execute();
-
-        return $sql;
-    }
 
     function selectAllVehicleWhereAgence($userAgenceId, $DB) {
         $sql = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_agence_id = ? ORDER BY vehicules_immatriculation ASC');

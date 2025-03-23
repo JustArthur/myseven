@@ -50,15 +50,15 @@
     $pdf->useImportedPage($pageId, 5, 10, 200);
 
     $importCoordinates = [
-        ['x' => 53, 'y' => 90.5],  // nom prénom
-        ['x' => 70, 'y' => 101.5],  // marque model
-        ['x' => 45, 'y' => 111.5],  // immat
+        ['x' => 52, 'y' => 91],  // nom prénom
+        ['x' => 70, 'y' => 102],  // marque model
+        ['x' => 45, 'y' => 112],  // immat
         ['x' => 118, 'y' => 123],  // prix net vendeur
-        ['x' => 82, 'y' => 134],  // agence
-        ['x' => 22, 'y' => 161],  // agence
+        ['x' => 83, 'y' => 134],  // agence
+        ['x' => 23, 'y' => 161],  // agence
         ['x' => 68, 'y' => 161],  // day
-        ['x' => 78, 'y' => 161],  // month
-        ['x' => 88, 'y' => 161]  // year
+        ['x' => 78.5, 'y' => 161],  // month
+        ['x' => 91, 'y' => 161]  // year
     ];
 
     foreach ($importVarPDF as $index => $valPDF) {

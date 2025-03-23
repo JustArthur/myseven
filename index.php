@@ -24,15 +24,6 @@
         'Générer des PDF'
     ];
 
-    if($_SESSION['user']['agence_id'] == 4) {
-        $resClient = selectAllClient($DB);
-        $resClient = $resClient->fetchAll();
-
-        $resVehicule = selectAllVehicle($DB);
-        $resVehicule = $resVehicule->fetchAll();
-    } else {
-        $resClient = selectAllClientWhereAgence($_SESSION['user']['agence_id'], $DB);
-        $resClient = $resClient->fetchAll();
     $resAgence = selectAllAgence($DB);
     $resAgence = $resAgence->fetchAll();
 

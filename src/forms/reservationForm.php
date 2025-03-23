@@ -114,26 +114,6 @@
                         <option value="cheqEsp">Chèque ou Espèce</option>
                     </select>
 
-                    <input type="number" min="1" name="depot_arrhes_input" placeholder="Montant" id="depot_arrhes_input">
-                </div>
-
-                <p class="text_error">Ce champ est requis</p>
-
-                <p class="text_error">Ce champ est requis</p>
-            </div>
-
-            <div class="input_box delaiVente">
-                <div class="spanVente">
-                    <span class="label form_required">Dépot arrhes</span>
-                </div>
-
-                <div class="inputSelect">
-                    <select name="depot_arrhes_select" id="depot_arrhes_select">
-                        <option value="empBank">Empreinte Bancaire</option>
-                        <option value="virBank">Virement Bancaire</option>
-                        <option value="cheqEsp">Chèque ou Espèce</option>
-                    </select>
-
                     <input required type="number" min="1" name="depot_arrhes_input" placeholder="Montant" id="depot_arrhes_input">
                 </div>
 

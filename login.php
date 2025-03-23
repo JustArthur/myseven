@@ -12,7 +12,7 @@
 
     $error_message = [];
 
-    if (isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
+    if (!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
         session_id($_COOKIE['user_session']);
         
         $identifiant = $_COOKIE['user_session'];

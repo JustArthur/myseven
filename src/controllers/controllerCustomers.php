@@ -27,7 +27,7 @@
     $oldEmail = $data["oldUniqueValue"];
     $newEmail = $data["clients_email"];
 
-    $fields = ["clients_nom", "clients_prenom", "clients_email", "clients_telephone", "clients_adresse", "clients_ville", "clients_cp", "clients_numero_cni"];
+    $fields = ["clients_nom", "clients_prenom", "clients_email", "clients_telephone", "clients_rue", "clients_ville", "clients_cp", "clients_numero_cni"];
     $updateFields = [];
     $params = [];
 

@@ -61,14 +61,16 @@
 
     $importCoordinates = [
         ['x' => 52, 'y' => 87],  // nom prénom
-        //date anniv
-        //lieu naissance
+        ['x' => 39, 'y' => 96],  // jour anniv
+        ['x' => 47, 'y' => 96],  // mois anniv
+        ['x' => 55, 'y' => 96],  // annee anniv
+        ['x' => 72, 'y' => 96],  // lieu naissance
         ['x' => 48, 'y' => 104],  // adresse
-        ['x' => 81, 'y' => 121],  // Agence
+        ['x' => 82, 'y' => 121],  // agence
         ['x' => 58, 'y' => 147],  // marque model
-        ['x' => 52, 'y' => 155],  // immat
-        ['x' => 28, 'y' => 199],  // agence
-        ['x' => 66, 'y' => 199],  // day
+        ['x' => 50, 'y' => 155],  // immat
+        ['x' => 27, 'y' => 199],  // agence
+        ['x' => 65, 'y' => 199],  // day
         ['x' => 74, 'y' => 199],  // month
         ['x' => 82, 'y' => 199]  // year
     ];

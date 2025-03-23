@@ -86,7 +86,7 @@ const updateTable = (rows, tableName) => {
             const lastIndexValue = tableName === "Vehicles" ? row.vehicules_agence_id : row.clients_agence_id;
             const lastIndex = tableName === "Vehicles" ? "vehicules_agence_id" : "clients_agence_id";
             return `
-                <tr data-index="${realIndex}" onclick="selectRow(this, '${tableName}')">
+                <tr data-index="${realIndex}" onclick="editCell(this, '${tableName}')">
                     ${Object.keys(row).filter(field => field !== lastIndex).map(field => {
                         return `<td ondblclick="editCell(this, '${field}', ${realIndex}, '${tableName}')">${row[field]}</td>`;
                     }).join('')}
@@ -144,10 +144,6 @@ const editCell = (td, field, index, tableName) => {
 
     editingCell = td;
     input.focus();
-
-    setTimeout(() => {
-        input.select();
-    }, 0);
 
     const validateInput = (field, value) => {
         if (value === "") return false;
@@ -214,9 +210,7 @@ const editCell = (td, field, index, tableName) => {
 };
 
 const updateDatabase = (item, oldUniqueValue, tableName) => {
-    const controllerFile = (tableName === "CustomersSell" || tableName === "CustomersBuy") 
-        ? "controllerCustomers.php" 
-        : "controllerVehicles.php";
+    const controllerFile = (tableName === "CustomersSell" || tableName === "CustomersBuy") ? "controllerCustomers.php" : "controllerVehicles.php";
 
     fetch(`src/controllers/${controllerFile}`, {
         method: "POST",

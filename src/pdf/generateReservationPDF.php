@@ -189,6 +189,7 @@
         ['x' => 167, 'y' => 183], // Montant arrhes
         ['x' => 128, 'y' => 149], // IBAN
         ['x' => 128, 'y' => 153], // BIC
+        ['x' => 130, 'y' => 93.5] // Mise en circulation
     ];
 
     foreach ($crossToCreate as $index) {
