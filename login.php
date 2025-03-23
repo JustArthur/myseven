@@ -12,9 +12,9 @@
 
     $error_message = [];
 
-    if (!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
-        session_id($_COOKIE['user_session']);
-        
+    if (isset($_SESSION['user']) && !isset($_COOKIE['user_session'])) {
+        setcookie('user_session', $_SESSION['user']['identifiant'], time() + (86400 * 30), "/", "", false, true);
+    } elseif (isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
         $identifiant = $_COOKIE['user_session'];
 
         $DB = $DBB->openConnection();
@@ -90,6 +90,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"/>
 
     <link rel="stylesheet" href="assets/css/auth.css">
 
@@ -101,14 +102,22 @@
         <img src="assets/img/transakauto-logo.png" alt="Logo Myseven">
     </div>
     <form method="POST">
-        <h1>Se connecter</h1>
-
         <?php if(!empty($error_message)) {echo "<div class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>"; } ?>
 
-        <input required type="text" autofocus="true" name="identifiant" placeholder="Identifiant">
-        <input required type="password" name="password" placeholder="Mot de passe">
+        <div class="input_box">
+            <span class="label">Identifiant</span>
+            <input required type="text" name="identifiant" id="identifiant">
+        </div>
+
+        <div class="input_box">
+            <span class="label">Mot de passe</span>
+            <input required type="password" name="password" id="password">
+            <span onclick="showPassword()" id="showPassword" class="material-symbols-outlined icon">visibility</span>
+        </div>
 
         <input type="submit" name="connexion" value="Se connecter">
     </form>
+
+    <script src="assets/js/showPassword.js"></script>
 </body>
 </html>

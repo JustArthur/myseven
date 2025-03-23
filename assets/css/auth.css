@@ -8,6 +8,7 @@
     text-decoration: none;
     font-family: var(--font-family);
     outline: none;
+    user-select: none;
 }
 
 body {
@@ -120,9 +121,18 @@ select:focus {
 
 .input_box {
     width: 100%;
+    position: relative;
 }
 
-.input_box span {
+.input_box .icon {
+    position: absolute;
+    right: 15px;
+    top: 55%;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.input_box span:not(.icon) {
     display: block;
     text-align: left;
     font-size: 14px;
