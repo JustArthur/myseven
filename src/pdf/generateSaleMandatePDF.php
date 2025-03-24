@@ -29,6 +29,10 @@
     $resClient->execute([$_POST['customerMail']]);
     $resClient = $resClient->fetch();
 
+    $resUser = $DB->prepare('SELECT * FROM utilisateurs WHERE utilisateurs_id = ?');
+    $resUser->execute([$_SESSION['user']['id']]);
+    $resUser = $resUser->fetch();
+
     $filePath = '../../storage/json_data/sale_mandate_id.json';
 
     $directory = dirname($filePath);
@@ -51,6 +55,7 @@
     //Valeur dans la BDD
     $importVarPDF = [
         $formattedId,
+        $resUser['utilisateurs_nom'] . " " . $resUser['utilisateurs_prenom'],
         $resClient['clients_nom'] . " " . $resClient['clients_prenom'],
         $resClient['clients_numero_cni'],
         $resClient['clients_telephone'],
@@ -78,29 +83,30 @@
     ];
 
     $importCoordinates = [
-        ['x' => 33, 'y' => 55],
-        ['x' => 56, 'y' => 63],
-        ['x' => 65, 'y' => 79],
-        ['x' => 40, 'y' => 87],
-        ['x' => 70, 'y' => 97],
-        ['x' => 43, 'y' => 106],
-        ['x' => 43, 'y' => 115],
-        ['x' => 63, 'y' => 124],
-        ['x' => 60, 'y' => 134],
-        ['x' => 63, 'y' => 143],
-        ['x' => 55, 'y' => 152],
-        ['x' => 55, 'y' => 160],
-        ['x' => 122, 'y' => 87],
-        ['x' => 127, 'y' => 97],
-        ['x' => 120, 'y' => 105],
-        ['x' => 125, 'y' => 115],
-        ['x' => 122, 'y' => 124],
-        ['x' => 152, 'y' => 134],
-        ['x' => 134, 'y' => 143],
-        ['x' => 107, 'y' => 173],
-        ['x' => 60, 'y' => 181],
-        ['x' => 150, 'y' => 182],
-        ['x' => 80, 'y' => 193],
+        ['x' => 33, 'y' => 55], //ID
+        ['x' => 132, 'y' => 55], //Collaborateur
+        ['x' => 56, 'y' => 63], //Nom prénom
+        ['x' => 65, 'y' => 79], //numCNI
+        ['x' => 40, 'y' => 87], //tel
+        ['x' => 70, 'y' => 97], //immat
+        ['x' => 43, 'y' => 106], //model
+        ['x' => 43, 'y' => 115], //type boite
+        ['x' => 63, 'y' => 124], //finition
+        ['x' => 60, 'y' => 134], //nbr Mains
+        ['x' => 63, 'y' => 143], //orginCar
+        ['x' => 55, 'y' => 152], //frais recent
+        ['x' => 55, 'y' => 160], //frais prevoir
+        ['x' => 122, 'y' => 87], //email
+        ['x' => 127, 'y' => 97], //marque
+        ['x' => 120, 'y' => 106], //puissance
+        ['x' => 125, 'y' => 115], //couleur
+        ['x' => 122, 'y' => 124], //kilometrage
+        ['x' => 152, 'y' => 134], //date entretien
+        ['x' => 134, 'y' => 143], //jourvisite
+        ['x' => 107, 'y' => 173], //prix vente
+        ['x' => 60, 'y' => 181], //raison vente
+        ['x' => 150, 'y' => 182], //delay vente
+        ['x' => 80, 'y' => 193], //prix Vente Souhaite
         ['x' => 32, 'y' => 255],
         ['x' => 75, 'y' => 255]
     ];
