@@ -58,6 +58,13 @@
             </div>
 
             <div class="input_box">
+                <span class="label form_required">Frais de carte grise</span>
+                <input required type="number" name="fraisGC" id="fraisGC">
+
+                <p class="text_error">Ce champ est requis</p>
+            </div>
+
+            <div class="input_box">
                 <span class="label form_required">Livraison</span>
                 <input required type="number" name="livraison" id="livraison">
 
