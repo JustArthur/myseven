@@ -11,6 +11,7 @@
     }
 
     require_once '../../database.php';
+    require_once '../functions/createFolderNextCloud.php';
 
     if (!empty($_POST)) {
         extract(array: $_POST);
@@ -49,6 +50,13 @@
                     $stmt = $DB->prepare("INSERT INTO vehicules (vehicules_marque, vehicules_model, vehicules_immatriculation, vehicules_puissance, vehicules_type_boite, vehicules_couleur, vehicules_finition, vehicules_kilometrage, vehicules_annee, vehicules_date_entretien, vehicules_frais_prevoir, vehicules_frais_recent, vehicules_agence_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
                     $stmt->execute([$brand, $model, $immatriculation, $puissance, $type_boite_value, $color, $finition, $kilometrage, $annee, $date_entretien, $frais_prevoir, $frais_recent , intval($_SESSION['user']["agence_id"])]);
+
+                    $getAgence = $DB->prepare('SELECT * FROM agences WHERE agence_id = ?');
+                    $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
+                    $getAgence = $getAgence->fetch();
+
+                    $folderToCreate = strtoupper($brand) . '/' . strtoupper($model) . '-' . strtoupper($immatriculation) . '/';
+                    createNextcloudFolder($getAgence['agence_path_vehicule'], $folderToCreate);
                             
                     echo '
                             <div class="pop_up">
@@ -174,14 +182,14 @@
 
                 <div class="input_box">
                     <span class="label form_required">Frais à prévoir</span>
-                    <input required type="number" id="frais_prevoir" name="frais_prevoir">
+                    <input required type="text" id="frais_prevoir" name="frais_prevoir">
 
                     <p class="text_error hidden">Ce champ est requis</p>
                 </div>
 
                 <div class="input_box">
                     <span class="label form_required">Frais récent</span>
-                    <input required type="number" id="frais_recent" name="frais_recent">
+                    <input required type="text" id="frais_recent" name="frais_recent">
 
                     <p class="text_error hidden">Ce champ est requis</p>
                 </div>

@@ -147,7 +147,7 @@
 
     $pdf = new \setasign\Fpdi\Fpdi();
 
-    $pageCount = $pdf->setSourceFile('../../documents/reservation_contract_2.pdf');
+    $pageCount = $pdf->setSourceFile('../../documents/reservation_contract.pdf');
     $pageId = $pdf->importPage(1, \setasign\Fpdi\PdfReader\PageBoundaries::MEDIA_BOX);
 
     $pdf->addPage();
