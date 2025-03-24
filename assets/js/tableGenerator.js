@@ -86,7 +86,7 @@ const updateTable = (rows, tableName) => {
             const lastIndexValue = tableName === "Vehicles" ? row.vehicules_agence_id : row.clients_agence_id;
             const lastIndex = tableName === "Vehicles" ? "vehicules_agence_id" : "clients_agence_id";
             return `
-                <tr data-index="${realIndex}" onclick="editCell(this, '${tableName}')">
+                <tr data-index="${realIndex}" onclick="selectRow(this, '${tableName}')">
                     ${Object.keys(row).filter(field => field !== lastIndex).map(field => {
                         return `<td ondblclick="editCell(this, '${field}', ${realIndex}, '${tableName}')">${row[field]}</td>`;
                     }).join('')}
