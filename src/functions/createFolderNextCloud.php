@@ -16,7 +16,6 @@
         $password = $_ENV['NEXT_CLOUD_PASSWORD'];
 
         $brandFolderUrl = $nextcloudUrl . $baseFolder . urlencode($brand) . "/";
-        echo $brandFolderUrl ."<br>";
 
         function createFolder($url, $username, $password) {
             $ch = curl_init();
@@ -27,12 +26,10 @@
             curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-
             curl_exec($ch);
+    
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
-
-            echo "HTTP Code : " . $httpCode . "<br>";
 
             return ($httpCode == 201 || $httpCode == 207);
         }

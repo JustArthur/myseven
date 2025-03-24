@@ -11,6 +11,7 @@
     }
 
     require_once '../../database.php';
+    require_once '../functions/createFolderNextCloud.php';
 
     if (!empty($_POST)) {
         extract(array: $_POST);
@@ -39,7 +40,7 @@
             if($getEmail) {
                 echo '
                     <script>
-                        window.alert("L\'adress mail est déjà utilisé");
+                        window.alert("L\'adresse mail est déjà utilisé");
                     </script>
                 ';
             } else if (isset($_FILES['fileCNI']) && $_FILES['fileCNI']['error'] == 0) {
@@ -53,26 +54,38 @@
                     $stmt = $DB->prepare("INSERT INTO clients (clients_nom, clients_prenom, clients_email, clients_telephone, clients_anniversaire, clients_lieu_naissance, clients_numero_cni, clients_copie_cni, clients_rue, clients_ville, clients_cp, clients_agence_id, clients_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
                     $stmt->execute([$firstName, $lastName, $email, $telephone, $birthday, $lieuNaissance, $numCNI, $fileContent, $adresse, $city, $cp, intval($_SESSION['user']["agence_id"]), $typeCustomerValue]);
-                    
-                    echo '
-                        <div class="pop_up">
-                            <div class="pop_content">
-                                <h1>Le client à bien été créer</h1>
-                                <p>Voulez-vous créer un nouveau véhicule ?</p>
 
-                                <div class="input_btn">
-                                    <a href="vehicleForm.php" class="btn yes">Oui</a>
-                                    <a href="../../index.php" class="btn no">Non</a>
+                    $getAgence = $DB->prepare('SELECT * FROM agences WHERE agence_id = ?');
+                    $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
+                    $getAgence = $getAgence->fetch();
+
+                    $folderToCreate = strtoupper($firstName) . '-' . strtoupper($lastName) . '/';
+                    createNextcloudFolder($getAgence['agence_path_client'], $folderToCreate);
+                    
+                    if($typeCustomerValue == "Acheteur") {
+                        header('Location: ../../index.php');
+                        exit();
+                    } else {
+                        echo '
+                            <div class="pop_up">
+                                <div class="pop_content">
+                                    <h1>Le client à bien été créer</h1>
+                                    <p>Voulez-vous créer un nouveau véhicule ?</p>
+    
+                                    <div class="input_btn">
+                                        <a href="vehicleForm.php" class="btn yes">Oui</a>
+                                        <a href="../../index.php" class="btn no">Non</a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <script>
-                            document.addEventListener("DOMContentLoaded", function() {
-                                document.getElementById("body").style.overflow = "hidden";
-                            });
-                        </script>
-
-                        ';
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function() {
+                                    document.getElementById("body").style.overflow = "hidden";
+                                });
+                            </script>
+    
+                            ';
+                    }
                 } else {
                     echo "Invalid file type. Only PNG, JPEG, and JPG are allowed.";
                 }
