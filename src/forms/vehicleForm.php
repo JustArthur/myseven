@@ -56,7 +56,7 @@
                     $getAgence = $getAgence->fetch();
 
                     $folderToCreate = strtoupper($brand) . '/' . strtoupper($model) . '-' . strtoupper($immatriculation) . '/';
-                    createNextcloudFolder($getAgence['agence_path_vehicule'], $folderToCreate);
+                    createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreate);
                             
                     echo '
                             <div class="pop_up">

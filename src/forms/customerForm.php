@@ -60,7 +60,7 @@
                     $getAgence = $getAgence->fetch();
 
                     $folderToCreate = strtoupper($firstName) . '-' . strtoupper($lastName) . '/';
-                    createNextcloudFolder($getAgence['agence_path_client'], $folderToCreate);
+                    createNextcloudFolder($getAgence['agence_path_clients'], $folderToCreate);
                     
                     if($typeCustomerValue == "Acheteur") {
                         header('Location: ../../index.php');
