@@ -44,6 +44,4 @@
             return "Erreur 2";
         }
     }
-
-    echo createNextcloudFolder("/Automate/Véhicules/", "CITROEN");
 ?>
