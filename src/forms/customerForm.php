@@ -55,7 +55,7 @@
 
                     $stmt->execute([$firstName, $lastName, $email, $telephone, $birthday, $lieuNaissance, $numCNI, $fileContent, $adresse, $city, $cp, intval($_SESSION['user']["agence_id"]), $typeCustomerValue]);
 
-                    $getAgence = $DB->prepare('SELECT * FROM agences WHERE agence_id = ?');
+                    $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
                     $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
                     $getAgence = $getAgence->fetch();
 
