@@ -118,7 +118,7 @@
     array_push($crossToCreate, ['x' => 18.5, 'y' => 148]);
 
     $prixTotalHCG = (int)$_POST['garantieMecaniqueText'] + (int)$fraisMiseEnRoute + (int)$_POST['PrixVehicule'] + (int)$_POST['livraison'];
-    $fraisCG = (int)$_POST['garantieMecaniqueText'] + $fraisMiseEnRoute + (int)$_POST['livraison'];
+    // $fraisCG = (int)$_POST['garantieMecaniqueText'] + $fraisMiseEnRoute + (int)$_POST['livraison'];
     $_POST['miseCircu'] = date('d/m/Y', strtotime($_POST['miseCircu']));
 
     $importVarPDF = [
@@ -135,7 +135,7 @@
         $_POST['garantieMecaniqueText'],
         $_POST['livraison'],
         $prixTotalHCG,
-        $fraisCG,
+        $_POST['fraisGC'],
         $resClient['agence_nom'],
         date('d/m/Y'),
         $_POST['depot_arrhes_input'],
@@ -166,16 +166,6 @@
         ['x' => 38, 'y' => 190], //frais mise à la route
         ['x' => 36, 'y' => 196], //graentie méca
         ['x' => 29, 'y' => 202], //Livraison
-        ['x' => 89, 'y' => 64], //cp
-        ['x' => 115, 'y' => 64], //ville
-        ['x' => 85, 'y' => 71], //telephone
-        ['x' => 130, 'y' => 71], //email
-        ['x' => 48, 'y' => 88], //marque model
-        ['x' => 42, 'y' => 94], //immat
-        ['x' => 41, 'y' => 183], //prix véhicule
-        ['x' => 38, 'y' => 190], //frais mise à la route
-        ['x' => 36, 'y' => 196], //graentie méca
-        ['x' => 29, 'y' => 202], //Livraison
         ['x' => 65, 'y' => 217], //Prix total HCG
         ['x' => 65, 'y' => 223], //Frais CG
         ['x' => 20, 'y' => 263.5], //Agence
@@ -184,12 +174,6 @@
         ['x' => 128, 'y' => 149], // IBAN
         ['x' => 128, 'y' => 153], // BIC
         ['x' => 130, 'y' => 93.5], // Mise en circulation
-        ['x' => 20, 'y' => 263.5], //Agence
-        ['x' => 70, 'y' => 263.5], // Date
-        ['x' => 167, 'y' => 183], // Montant arrhes
-        ['x' => 128, 'y' => 149], // IBAN
-        ['x' => 128, 'y' => 153], // BIC
-        ['x' => 130, 'y' => 93.5] // Mise en circulation
     ];
 
     foreach ($crossToCreate as $index) {
