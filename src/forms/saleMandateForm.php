@@ -25,7 +25,7 @@
     <main>
         <div class="search-container">
             <h2>Générer un mandat de vente</h2>
-            <form id="form_pdf" action="../pdf/generateSaleMandatePDF.php" method="POST">
+            <form id="form_pdf" target="_blank" action="../pdf/generateSaleMandatePDF.php" method="POST">
                 <div class="input_box">
                     <span class="label form_required">Adresse-mail du client</span>
                     <input required type="email" disabled  value="<?= $_POST['client'] ?>" class="disabled" id="customerMail">
@@ -58,10 +58,20 @@
 
                 <div class="input_box">
                     <span class="label form_required">Jour de la visite</span>
-                    <input required type="date" max="<?= date('Y-m-d') ?>" name="jourVisite" id="jourVisite">
+                    <select required name="jourVisite" id="jourVisite">
+                        <option value="Lundi">Lundi</option>
+                        <option value="Mardi">Mardi</option>
+                        <option value="Mercredi">Mercredi</option>
+                        <option value="Jeudi">Jeudi</option>
+                        <option value="Vendredi">Vendredi</option>
+                        <option value="Samedi">Samedi</option>
+                        <option value="Dimanche">Dimanche</option>
+                    </select>
 
                     <p class="text_error hidden">Ce champ est requis</p>
                 </div>
+
+                
 
                 <div class="input_box">
                     <span class="label form_required">Raison de la vente</span>

@@ -25,7 +25,7 @@
 <main>
         <div class="search-container">
             <h2>Générer l'accord de baisse du prix</h2>
-            <form id="form_pdf" action="../pdf/generatePriceReductionPDF.php" method="POST">
+            <form id="form_pdf" target="_blank" action="../pdf/generatePriceReductionPDF.php" method="POST">
                 <div class="input_box">
                     <span class="label form_required">Adresse-mail du client</span>
                     <input required type="email" disabled  value="<?= $_POST['client'] ?>" class="disabled" id="client">

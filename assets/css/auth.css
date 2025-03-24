@@ -8,6 +8,7 @@
     text-decoration: none;
     font-family: var(--font-family);
     outline: none;
+    user-select: none;
 }
 
 body {
@@ -52,6 +53,16 @@ form .error_message {
     border-radius: 5px;
 }
 
+form .error_message.error {
+    color: var(--error-color);
+    background: var(--error-color-20);
+}
+
+form .error_message.success {
+    color: var(--success-color);
+    background: var(--success-color-20);
+}
+
 form input {
     width: 100%;
     padding: 12px;
@@ -83,6 +94,51 @@ form input:focus {
 img {
     margin-top: 20px;
     height: 200px;
+}
+
+.search input,
+.input_box input,
+select {
+    width: 100%;
+    border: 1px solid var(--gray-30);
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--secondary-text);
+    font-weight: 400;
+    padding: 12px;
+    background-color: var(--white);
+}
+
+select, option {
+    font-family: var(--font-family);
+}
+
+.search input:focus,
+.input_box input:focus,
+select:focus {
+    border: 1px solid var(--blue-60);
+}
+
+.input_box {
+    width: 100%;
+    position: relative;
+}
+
+.input_box .icon {
+    position: absolute;
+    right: 15px;
+    top: 55%;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.input_box span:not(.icon) {
+    display: block;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--secondary-text);
+    padding-bottom: 6px;
 }
 
 @media screen and (max-width: 350px) {

@@ -27,14 +27,14 @@
     $oldImmat = $data["oldUniqueValue"];
     $newImmat = $data["vehicules_immatriculation"];
 
-    $fields = ["vehicules_immatriculation", "vehicules_marque", "vehicules_model", "vehicules_puissance", "vehicules_type_boite", "vehicules_couleur", "vehicules_kilometrage"];
+    $fields = ["vehicules_immatriculation", "vehicules_marque", "vehicules_model", "vehicules_annee", "vehicules_puissance", "vehicules_type_boite", "vehicules_couleur", "vehicules_kilometrage"];
     $updateFields = [];
     $params = [];
 
     if ($newImmat !== $oldImmat) {
-        $checkEmail = $DB->prepare("SELECT COUNT(*) FROM vehicules WHERE vehicules_immatriculation = ?");
-        $checkEmail->execute([$newImmat]);
-        if ($checkEmail->fetchColumn() > 0) {
+        $checkImmat = $DB->prepare("SELECT COUNT(*) FROM vehicules WHERE vehicules_immatriculation = ?");
+        $checkImmat->execute([$newImmat]);
+        if ($checkImmat->fetchColumn() > 0) {
             echo json_encode(["error" => "Cet immatriculation est déjà utilisé."]);
             exit;
         }

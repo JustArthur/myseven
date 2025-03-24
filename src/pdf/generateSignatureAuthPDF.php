@@ -15,14 +15,13 @@
 
     require_once '../../vendor/setasign/fpdf/fpdf.php';
     require_once '../../vendor/setasign/fpdi/src/autoload.php';
-
     require_once '../../database.php';
 
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
 
 
-    $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_email = ?');
+    $resClient = $DB->prepare('SELECT * FROM clients INNER JOIN agence ON clients.clients_agence_id = agence.agence_id WHERE clients.clients_email = ?');
     $resClient->execute([$_POST['client']]);
     $resClient = $resClient->fetch();
 
@@ -30,13 +29,23 @@
     $resVehicule->execute([$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();
 
+    $dateParts = explode('-', $resClient['clients_anniversaire']);
+    $year = $dateParts[0];
+    $month = $dateParts[1];
+    $day = $dateParts[2];
+
+
     $importVarPDF = [
         $resClient['clients_nom'] . ' ' . $resClient['clients_prenom'],
-        //date anniv
-        //lieu naissance
+        $day,
+        $month,
+        $year,
+        $resClient['clients_lieu_naissance'],
         $resClient['clients_rue'] . ' ' . ucfirst($resClient['clients_ville']) . ' ' . $resClient['clients_cp'],
+        $resClient['agence_nom'],
         $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
         $resVehicule['vehicules_immatriculation'],
+        $resClient['agence_nom'],
         date("d"),
         date("m"),
         date("Y")
@@ -52,14 +61,18 @@
 
     $importCoordinates = [
         ['x' => 52, 'y' => 87],  // nom prénom
-        //date anniv
-        //lieu naissance
+        ['x' => 39, 'y' => 96],  // jour anniv
+        ['x' => 47, 'y' => 96],  // mois anniv
+        ['x' => 55, 'y' => 96],  // annee anniv
+        ['x' => 72, 'y' => 96],  // lieu naissance
         ['x' => 48, 'y' => 104],  // adresse
+        ['x' => 82, 'y' => 121],  // agence
         ['x' => 58, 'y' => 147],  // marque model
         ['x' => 50, 'y' => 155],  // immat
-        ['x' => 51, 'y' => 199],  // day
-        ['x' => 59, 'y' => 199],  // month
-        ['x' => 67, 'y' => 199]  // year
+        ['x' => 27, 'y' => 199],  // agence
+        ['x' => 65, 'y' => 199],  // day
+        ['x' => 74, 'y' => 199],  // month
+        ['x' => 82, 'y' => 199]  // year
     ];
 
     foreach ($importVarPDF as $index => $valPDF) {

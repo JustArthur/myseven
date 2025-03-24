@@ -15,6 +15,23 @@ const initPagination = (tableName) => {
     }
 };
 
+window.selectAgence = (tableName, AgenceId) => {
+    const selectedAgenceId = document.getElementById(AgenceId).value;
+
+    let filteredRows;
+    if (selectedAgenceId === "All") {
+        filteredRows = window[tableName];
+    } else {
+        filteredRows = window[tableName].filter(row => {
+            const agenceField = tableName === "Vehicles" ? "vehicules_agence_id" : "clients_agence_id";
+            return row[agenceField] == selectedAgenceId;
+        });
+    }
+
+    currentPage = 1;
+    updateTable(filteredRows, tableName);
+};
+
 const searchTable = (tableName, searchBarId) => {
     const searchTerm = document.getElementById(searchBarId).value.toLowerCase();
     const pagination = document.getElementById(`pagination${tableName}`);
@@ -63,19 +80,19 @@ const updateTable = (rows, tableName) => {
     tbody.innerHTML = rows
         .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
         .map((row) => {
-            const uniqueKey = tableName === "Customers" ? "clients_email" : "vehicules_immatriculation";
+            const uniqueKey = tableName === "Vehicles" ? "vehicules_immatriculation" : "clients_email";
+            const typeValue = tableName === "Vehicles" ? "selectedVehicles" : "selectedCustomers";
             const realIndex = rows.findIndex(r => r[uniqueKey] === row[uniqueKey]);
+            const lastIndexValue = tableName === "Vehicles" ? row.vehicules_agence_id : row.clients_agence_id;
+            const lastIndex = tableName === "Vehicles" ? "vehicules_agence_id" : "clients_agence_id";
             return `
-                <tr data-index="${realIndex} onclick="selectRow(this, '${tableName}')">
-                    ${Object.keys(row).map(field => {
-                        if (field !== 'email') {
-                            return `<td ondblclick="editCell(this, '${field}', ${realIndex}, '${tableName}')">${row[field]}</td>`;
-                        } else {
-                            return `<td ondblclick="editCell(this, '${field}', ${realIndex}, '${tableName}')">${row[field]}</td>`;
-                        }
+                <tr data-index="${realIndex}" onclick="selectRow(this, '${tableName}')">
+                    ${Object.keys(row).filter(field => field !== lastIndex).map(field => {
+                        return `<td ondblclick="editCell(this, '${field}', ${realIndex}, '${tableName}')">${row[field]}</td>`;
                     }).join('')}
                     <td class="btn_card" onclick="openCloseCard('${tableName}', ${realIndex})">Voir</td>
-                    <td><input type="radio" name="selected${tableName}" value="${row[uniqueKey]}"></td>
+                    <td><input type="radio" name="${typeValue}" value="${row[uniqueKey]}"></td>
+                    <td><input type="text" value="${lastIndexValue}" hidden="true"></td>
                 </tr>
             `;
         }).join('');
@@ -122,15 +139,11 @@ const editCell = (td, field, index, tableName) => {
     td.innerHTML = "";
     td.appendChild(input);
 
-    const uniqueKey = tableName === "Customers" ? "clients_email" : "vehicules_immatriculation";
+    const uniqueKey = tableName === "Vehicles" ? "vehicules_immatriculation" : "clients_email";
     const oldUniqueValue = window[tableName][index][uniqueKey];
 
     editingCell = td;
     input.focus();
-
-    setTimeout(() => {
-        input.select();
-    }, 0);
 
     const validateInput = (field, value) => {
         if (value === "") return false;
@@ -197,7 +210,9 @@ const editCell = (td, field, index, tableName) => {
 };
 
 const updateDatabase = (item, oldUniqueValue, tableName) => {
-    fetch(`src/controllers/controller${tableName}.php`, {
+    const controllerFile = (tableName === "CustomersSell" || tableName === "CustomersBuy") ? "controllerCustomers.php" : "controllerVehicles.php";
+
+    fetch(`src/controllers/${controllerFile}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -220,7 +235,7 @@ const openCloseCard = (tableName, realIndex) => {
 const cardShow = (tableName, realIndex) => {
     const cardItemContent = document.getElementById("cardItem_content");
 
-    if(tableName === "Customers") {
+    if(tableName === "CustomersSell" || tableName === "CustomersBuy") {
         const customer = window[tableName][realIndex];
         cardItemContent.innerHTML = `
             <span onclick="openCloseCard(${tableName}, ${realIndex})" class="material-symbols-outlined">close</span>
@@ -238,7 +253,7 @@ const cardShow = (tableName, realIndex) => {
         const vehicle = window[tableName][realIndex];
         cardItemContent.innerHTML = `
             <span onclick="openCloseCard(${tableName}, ${realIndex})" class="material-symbols-outlined">close</span>
-            <h2>Informations du client</h2>
+            <h2>Informations du véhicule</h2>
             <p><strong>Marque : </strong> ${vehicle.vehicules_marque}</p>
             <p><strong>Model : </strong> ${vehicle.vehicules_model}</p>
             <p><strong>Annee : </strong> ${vehicle.vehicules_annee}</p>
@@ -257,5 +272,6 @@ const initTable = (tableName, rows) => {
     updateTable(rows, tableName);
 };
 
-initTable("Customers", rowsCustomers);
+initTable("CustomersSell", rowsCustomersSell);
+initTable("CustomersBuy", rowsCustomersBuy);
 initTable("Vehicles", rowsVehicles);
