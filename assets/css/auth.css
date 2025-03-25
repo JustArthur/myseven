@@ -43,26 +43,6 @@ form h1 {
     text-align: center;
 }
 
-form .error_message {
-    color: var(--error-color);
-    background: var(--error-color-20);
-    width: 100%;
-    text-align: center;
-    padding: 10px 5px;
-    border: 1px solid var(--error-color);
-    border-radius: 5px;
-}
-
-form .error_message.error {
-    color: var(--error-color);
-    background: var(--error-color-20);
-}
-
-form .error_message.success {
-    color: var(--success-color);
-    background: var(--success-color-20);
-}
-
 form input {
     width: 100%;
     padding: 12px;
@@ -116,7 +96,7 @@ select, option {
 .search input:focus,
 .input_box input:focus,
 select:focus {
-    border: 1px solid var(--blue-60);
+    border: 1px solid var(--primary-color);
 }
 
 .input_box {
@@ -139,6 +119,45 @@ select:focus {
     font-weight: 600;
     color: var(--secondary-text);
     padding-bottom: 6px;
+}
+
+.error_message {
+    color: var(--error-color);
+    background: var(--error-color-20);
+    width: 100%;
+    text-align: center;
+    padding: 10px 5px;
+    border: 1px solid var(--error-color);
+    border-radius: 5px;
+}
+
+.error_message.error {
+    color: var(--error-color);
+    background: var(--error-color-20);
+}
+
+.error_message.success {
+    color: var(--success-color);
+    background: var(--success-color-20);
+}
+
+.input_box p.text_error {
+    color: var(--error-color);
+    text-align: left;
+    font-size: 12px;
+    font-weight: 400;
+    padding-top: 6px;
+    padding-bottom: 9px;
+    visibility: hidden;
+}
+
+.input_box p.show {
+    visibility: visible;
+}
+
+span.label.form_required::after {
+    content: " *";
+    color: var(--error-color);
 }
 
 @media screen and (max-width: 350px) {

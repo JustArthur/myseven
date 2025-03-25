@@ -105,12 +105,12 @@
         <?php if(!empty($error_message)) {echo "<div class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>"; } ?>
 
         <div class="input_box">
-            <span class="label">Identifiant</span>
+            <span class="label form_required">Identifiant</span>
             <input required type="text" name="identifiant" id="identifiant">
         </div>
 
         <div class="input_box">
-            <span class="label">Mot de passe</span>
+            <span class="label form_required">Mot de passe</span>
             <input required type="password" name="password" id="password">
             <span onclick="showPassword()" id="showPassword" class="material-symbols-outlined icon">visibility</span>
         </div>

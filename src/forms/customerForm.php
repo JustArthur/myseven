@@ -10,6 +10,22 @@
         exit();
     }
 
+    $error_message = [];
+    $selectedAcheteur = "";
+    $selectedVendeur = "";
+    $selectedDefault = "selected";
+    $valid = true;
+
+    switch($_GET['customerType']) {
+        case 1:
+            $selectedAcheteur = "selected";
+            break;
+        
+        case 2:
+            $selectedVendeur = "selected";
+            break;
+    }
+
     require_once '../../database.php';
     require_once '../functions/createFolderNextCloud.php';
 
@@ -29,6 +45,7 @@
                     break;
 
                 default:
+                    $valid = false;
                     $typeCustomerValue = "null";
                     break;
             }
@@ -38,59 +55,87 @@
             $getEmail = $getEmail->fetch();
 
             if($getEmail) {
-                echo '
-                    <script>
-                        window.alert("L\'adresse mail est déjà utilisé");
-                    </script>
-                ';
-            } else if (isset($_FILES['fileCNI']) && $_FILES['fileCNI']['error'] == 0) {
-                $allowed = ['png', 'jpeg', 'jpg', 'pdf'];
-                $fileInfo = pathinfo($_FILES['fileCNI']['name']);
-                $fileExt = strtolower($fileInfo['extension']);
+                $valid = false;
+                $error_message = [
+                    'type' => 'error',
+                    'message' => 'L\'adresse mail est déjà utilisée.'
+                ];
+            }
+            
+            if (empty($firstName) || empty($lastName) || empty($email) || empty($telephone) || empty($birthday) || empty($lieuNaissance) || empty($numCNI) || empty($adresse) || empty($city) || empty($cp) || $typeCustomerValue == "null") {
+                $valid = false;
+                $error_message = [
+                    'type' => 'error',
+                    'message' => 'Tous les champs sont requis.'
+                ];
+            }
 
-                if (in_array($fileExt, $allowed)) {
-                    $fileContent = file_get_contents($_FILES['fileCNI']['tmp_name']);
-
-                    $stmt = $DB->prepare("INSERT INTO clients (clients_nom, clients_prenom, clients_email, clients_telephone, clients_anniversaire, clients_lieu_naissance, clients_numero_cni, clients_copie_cni, clients_rue, clients_ville, clients_cp, clients_agence_id, clients_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-                    $stmt->execute([$firstName, $lastName, $email, $telephone, $birthday, $lieuNaissance, $numCNI, $fileContent, $adresse, $city, $cp, intval($_SESSION['user']["agence_id"]), $typeCustomerValue]);
-
-                    $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
-                    $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
-                    $getAgence = $getAgence->fetch();
-
-                    $folderToCreate = strtoupper($firstName) . '-' . strtoupper($lastName) . '/';
-                    createNextcloudFolder($getAgence['agence_path_clients'], $folderToCreate);
-                    
-                    if($typeCustomerValue == "Acheteur") {
-                        header('Location: ../../index.php');
-                        exit();
+            if($valid) {
+                if (isset($_FILES['fileCNI']) && $_FILES['fileCNI']['error'] == 0) {
+                    $allowed = ['png', 'jpeg', 'jpg', 'pdf'];
+                    $fileInfo = pathinfo($_FILES['fileCNI']['name']);
+                    $fileExt = strtolower($fileInfo['extension']);
+    
+                    if (in_array($fileExt, $allowed)) {
+                        $fileContent = file_get_contents($_FILES['fileCNI']['tmp_name']);
+    
+                        $stmt = $DB->prepare("INSERT INTO clients (clients_nom, clients_prenom, clients_email, clients_telephone, clients_anniversaire, clients_lieu_naissance, clients_numero_cni, clients_copie_cni, clients_rue, clients_ville, clients_cp, clients_agence_id, clients_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        $stmt->execute([$firstName, $lastName, $email, $telephone, $birthday, $lieuNaissance, $numCNI, $fileContent, $adresse, $city, $cp, intval($_SESSION['user']["agence_id"]), $typeCustomerValue]);
+    
+                        if ($stmt->rowCount() > 0) {
+                            $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
+                            $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
+                            $getAgence = $getAgence->fetch();
+        
+                            $folderToCreate = strtoupper($firstName) . '-' . strtoupper($lastName) . '/';
+                            if(createNextcloudFolder($getAgence['agence_path_clients'], $folderToCreate)) {;
+                                if($typeCustomerValue == "Acheteur") {
+                                    header('Location: ../../index.php');
+                                    exit();
+                                } else {
+                                    echo '
+                                        <div class="pop_up">
+                                            <div class="pop_content">
+                                                <h1>Le client à bien été créer</h1>
+                                                <p>Voulez-vous créer un nouveau véhicule ?</p>
+                
+                                                <div class="input_btn">
+                                                    <a href="vehicleForm.php" class="btn yes">Oui</a>
+                                                    <a href="../../index.php" class="btn no">Non</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <script>
+                                            document.addEventListener("DOMContentLoaded", function() {
+                                                document.getElementById("body").style.overflow = "hidden";
+                                            });
+                                        </script>
+                                    ';
+                                }
+                            } else {
+                                $error_message = [
+                                    'type' => 'error',
+                                    'message' => 'Impossible de créer le dossier client dans le Nextcloud.'
+                                ];
+                            }
+                        } else {
+                            $error_message = [
+                                'type' => 'error',
+                                'message' => 'Impossible de créer le client.'
+                            ];
+                        }                    
                     } else {
-                        echo '
-                            <div class="pop_up">
-                                <div class="pop_content">
-                                    <h1>Le client à bien été créer</h1>
-                                    <p>Voulez-vous créer un nouveau véhicule ?</p>
-    
-                                    <div class="input_btn">
-                                        <a href="vehicleForm.php" class="btn yes">Oui</a>
-                                        <a href="../../index.php" class="btn no">Non</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <script>
-                                document.addEventListener("DOMContentLoaded", function() {
-                                    document.getElementById("body").style.overflow = "hidden";
-                                });
-                            </script>
-    
-                            ';
+                        $error_message = [
+                            'type' => 'error',
+                            'message' => 'Fichier invalide. Seuls les fichiers PNG, JPEG et JPG sont autorisés.'
+                        ];
                     }
                 } else {
-                    echo "Invalid file type. Only PNG, JPEG, and JPG are allowed.";
+                    $error_message = [
+                        'type' => 'error',
+                        'message' => 'Fichier CNI trop volumineux 2Mo maximum.'
+                    ];
                 }
-            } else {
-                echo "Error uploading file.";
             }
         }
     }
@@ -104,7 +149,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="../../assets/css/forms.css">
-    <link rel="stylesheet" href="../../assets//css/pop_up.css">
+    <link rel="stylesheet" href="../../assets/css/pop_up.css">
 
     <title>Myseven - Créer un client</title>
 </head>
@@ -114,77 +159,104 @@
 
         <div class="search-container">
             <h2>Créer un client</h2>
-            <form class="gap" id="form_pdf" method="POST" enctype="multipart/form-data">
+            <form id="form_pdf" method="POST" enctype="multipart/form-data">
+                <?php if(!empty($error_message)) {echo "<div class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>"; } ?>
+
                 <div class="input_box">
                     <span class="label form_required">Nom de famille</span>
-                    <input required name="firstName" type="text" id="firstName">
+                    <input required="true" type="text" name="firstName" id="firstName">
+
+                    <p class="text_error hidden">Ce champ est requis.</p>
                 </div>
 
                 <div class="input_box">
                     <span class="label form_required">Prénom</span>
-                    <input required name="lastName" type="text" id="lastName">
+                    <input required="true" type="text" name="lastName" id="lastName" min="0">
+
+                    <p class="text_error hidden">Ce champ est requis.</p>
                 </div>
 
                 <div class="input_box">
                     <span class="label form_required">Adresse mail</span>
-                    <input required name="email" type="email" id="email">
+                    <input required="true" type="email" name="email" id="email" min="0">
+
+                    <p class="text_error hidden">Ce champ est requis.</p>
                 </div>
 
                 <div class="input_box">
                     <span class="label form_required">Numéro de téléphone</span>
-                    <input required name="telephone" min="0" type="number" id="telephone">
+                    <input required="true" type="number" name="telephone" id="telephone" min="0">
+
+                    <p class="text_error hidden">Ce champ est requis.</p>
                 </div>
 
                 <div class="input_box">
                     <span class="label form_required">Date de naissance</span>
-                    <input required name="birthday" max="<?php echo date('Y-m-d'); ?>" type="date" id="birthday">
+                    <input required="true" type="date" name="birthday" id="birthday" max="<?php echo date('Y-m-d'); ?>">
+
+                    <p class="text_error hidden">Ce champ est incorect.</p>
                 </div>
 
                 <div class="input_box">
                     <span class="label form_required">Lieu de naissance</span>
-                    <input required name="lieuNaissance" type="text" id="lieuNaissance">
+                    <input required="true" type="text" name="lieuNaissance" id="lieuNaissance" min="0">
+
+                    <p class="text_error hidden">Ce champ est requis.</p>
                 </div>
 
                 <div class="input_box">
                     <span class="label form_required">Numéro CNI</span>
-                    <input required type="number" id="numCNI" name="numCNI">
+                    <input required="true" type="number" id="numCNI" name="numCNI" min="0">
+
+                    <p class="text_error hidden">Ce champ est requis.</p>
                 </div>
 
                 <div class="input_box">
                     <span class="label form_required">Ajouter la CNI (png, jpg, jpeg, pdf)</span>
-                    <input required type="file" id="fileCNI" name="fileCNI">
+                    <input required="true" type="file" id="fileCNI" name="fileCNI">
+
+                    <p class="text_error hidden">Ce champ est requis.</p>
                 </div>
 
                 <div class="input_box">
                     <span class="label form_required">Adresse</span>
-                    <input required type="text" id="adresse" name="adresse">
+                    <input required="true" type="text" id="adresse" name="adresse" min="0">
+
+                    <p class="text_error hidden">Ce champ est requis.</p>
                 </div>
 
                 <div class="input_box">
                     <span class="label form_required">Ville</span>
-                    <input required type="text" id="city" name="city">
+                    <input required="true" type="text" id="city" name="city" min="0">
+
+                    <p class="text_error hidden">Ce champ est requis.</p>
                 </div>
 
                 <div class="input_box">
                     <span class="label form_required">Code Postal</span>
-                    <input required type="number" id="cp" name="cp">
+                    <input required="true" type="number" id="cp" name="cp" min="0">
+
+                    <p class="text_error hidden">Ce champ est requis.</p>
                 </div>
 
                 <div class="input_box">
                     <span class="label form_required">Type de client</span>
-                    <select required name="typeCustomer">
-                        <option value=0>-- Choisir le type de client --</option>
-                        <option value=1>Acheteur</option>
-                        <option value=2>Vendeur</option>
+                    <select required="true" id="typeCustomer" name="typeCustomer">
+                        <optgroup label="Choisir le type de client">
+                            <option <?= $selectedAcheteur ?> value=1>Acheteur</option>
+                            <option <?= $selectedVendeur ?> value=2>Vendeur</option>
+                        </optgroup>
                     </select>
                 </div>
 
                 <div class="input_box">
-                    <input class="submit_btn" value="Créer le client" type="submit" name="submit_btn" id="submit_btn">
+                    <input class="submit_btn" type="submit" name="submit_btn" id="submit_btn" value="Créer le client">
                 </div>
             </form>
         </div>
     </main>
+
+    <script src="../../assets/js/errorMessages.js"></script>
 </body>
 
 </html>
