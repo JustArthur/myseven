@@ -8,6 +8,7 @@
     if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
         header('Location: ../../login.php');
         exit();
+        
     } else if (empty($_POST['customerMail']) || empty($_POST['immatricuCar'])) {
         header('Location: ../../index.php');
         exit();

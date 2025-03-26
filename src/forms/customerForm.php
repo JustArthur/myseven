@@ -80,7 +80,7 @@
                         $fileContent = file_get_contents($_FILES['fileCNI']['tmp_name']);
     
                         $stmt = $DB->prepare("INSERT INTO clients (clients_nom, clients_prenom, clients_email, clients_telephone, clients_anniversaire, clients_lieu_naissance, clients_numero_cni, clients_copie_cni, clients_rue, clients_ville, clients_cp, clients_agence_id, clients_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                        $stmt->execute([$firstName, $lastName, $email, $telephone, $birthday, $lieuNaissance, $numCNI, $fileContent, $adresse, $city, $cp, intval($_SESSION['user']["agence_id"]), $typeCustomerValue]);
+                        $stmt->execute([$firstName, $lastName, strtolower($email), $telephone, $birthday, $lieuNaissance, $numCNI, $fileContent, $adresse, $city, $cp, intval($_SESSION['user']["agence_id"]), $typeCustomerValue]);
     
                         if ($stmt->rowCount() > 0) {
                             $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
@@ -88,9 +88,16 @@
                             $getAgence = $getAgence->fetch();
         
                             $folderToCreate = strtoupper($firstName) . '-' . strtoupper($lastName) . '/';
-                            if(createNextcloudFolder($getAgence['agence_path_clients'], $folderToCreate)) {;
+                            if(createNextcloudFolder($getAgence['agence_path_client'], $folderToCreate)) {;
                                 if($typeCustomerValue == "Acheteur") {
-                                    header('Location: ../../index.php');
+                                    echo '
+                                        <form id="redirectForm" action="saleMandateForm.php" method="POST">
+                                            <input type="hidden" name="client" value="' . strtolower($email) .'">
+                                        </form>
+                                        <script>
+                                            document.getElementById("redirectForm").submit();
+                                        </script>
+                                    ';
                                     exit();
                                 } else {
                                     echo '
@@ -127,13 +134,13 @@
                     } else {
                         $error_message = [
                             'type' => 'error',
-                            'message' => 'Fichier invalide. Seuls les fichiers PNG, JPEG et JPG sont autorisés.'
+                            'message' => 'Fichier CNI invalide. Seuls les fichiers PDF, PNG, JPEG et JPG sont autorisés.'
                         ];
                     }
                 } else {
                     $error_message = [
                         'type' => 'error',
-                        'message' => 'Fichier CNI trop volumineux 2Mo maximum.'
+                        'message' => 'Fichier CNI trop volumineux. 2Mo maximum.'
                     ];
                 }
             }
@@ -142,7 +149,7 @@
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
     <meta charset="UTF-8">
@@ -160,7 +167,7 @@
         <div class="search-container">
             <h2>Créer un client</h2>
             <form id="form_pdf" method="POST" enctype="multipart/form-data">
-                <?php if(!empty($error_message)) {echo "<div class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>"; } ?>
+                <?php if(!empty($error_message)) {echo "<div style=margin-bottom: 30px;' class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>"; } ?>
 
                 <div class="input_box">
                     <span class="label form_required">Nom de famille</span>

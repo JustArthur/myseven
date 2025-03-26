@@ -99,7 +99,7 @@
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
     <meta charset="UTF-8">
@@ -117,7 +117,7 @@
         <div class="search-container">
             <h2>Créer un véhicule</h2>
             <form id="form_pdf" method="POST" enctype="multipart/form-data">
-                <?php if(!empty($error_message)) {echo "<div class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>"; } ?>
+                <?php if(!empty($error_message)) {echo "<div style=margin-bottom: 30px;' class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>"; } ?>
 
                 <div class="input_box">
                     <span class="label form_required">Immatriculation</span>
