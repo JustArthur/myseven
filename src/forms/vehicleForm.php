@@ -52,7 +52,7 @@
                     $stmt->execute([$brand, $model, $immatriculation, $puissance, $type_boite_value, $color, $finition, $kilometrage, $annee, $date_entretien, $frais_prevoir, $frais_recent , intval($_SESSION['user']["agence_id"])]);
 
                     if ($stmt->rowCount() > 0) {
-                        $getAgence = $DB->prepare('SELECT * FROM agences WHERE agence_id = ?');
+                        $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
                         $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
                         $getAgence = $getAgence->fetch();
 

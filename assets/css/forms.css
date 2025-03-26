@@ -221,6 +221,10 @@ span.label.form_required::after {
     background: var(--success-color-20);
 }
 
+.disabled {
+    cursor: not-allowed;
+}
+
 select optgroup {
     font-family: var(--font-family)
 }
