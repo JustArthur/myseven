@@ -8,11 +8,15 @@
     if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
         header('Location: ../../login.php');
         exit();
-    } 
+    }
+
+    if(empty($_POST['client'])) { header('Location: ../../index.php'); exit(); }
+    if(empty($_POST['immatCar'])) { $_POST['immatCar'] = $_GET['vehicle_immat'] ?? ''; }
+
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,7 +32,7 @@
             <form id="form_pdf" target="_blank" action="../pdf/generateSaleMandatePDF.php" method="POST">
                 <div class="input_box">
                     <span class="label form_required">Adresse-mail du client</span>
-                    <input required type="email" disabled  value="<?= $_POST['client'] ?>" class="disabled" id="customerMail">
+                    <input required type="email" disabled name="customerMail"  value="<?= $_POST['client'] ?>" class="disabled" id="customerMail">
                     <input hidden type="text" name="customerMail" value="<?= $_POST['client'] ?>">
 
                     <p class="text_error">Ce champ est requis</p>
@@ -36,8 +40,8 @@
 
                 <div class="input_box">
                     <span class="label form_required">Immatriculation</span>
-                    <input required type="text" disabled name="immatricuCar" value="<?= $_POST['immatCar'] ?>" class="disabled" id="immatricuCar">
-                    <input hidden type="text" name="immatricuCar" value="<?= $_POST['immatCar'] ?>">
+                    <input required type="text" name="immatricuCar" value="<?= $_POST['immatCar'] ?>" id="immatricuCar">
+                    <!-- <input hidden type="text" name="immatricuCar" value="<?= $_POST['immatCar'] ?>"> -->
 
                     <p class="text_error">Ce champ est requis</p>
                 </div>

@@ -186,6 +186,7 @@ input[type="radio"]:checked {
     border-radius: var(--border-radius);
     border: 1px solid var(--gray-medium);
     background: var(--background-color);
+    text-overflow: ellipsis;
 }
 
 .searchBar:focus {
@@ -269,6 +270,7 @@ input[type="radio"]:checked {
     white-space: nowrap;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .input_client a:hover,
@@ -299,7 +301,8 @@ input[type="radio"]:checked {
 }
 
 select {
-    width: max-content;
+    width: 100%;
+    max-width: max-content;
     border: 1px solid var(--gray-30);
     border-radius: 6px;
     font-size: 14px;
@@ -308,8 +311,33 @@ select {
     padding: 12px;
     background-color: var(--white);
     font-family: var(--font-family);
+    text-overflow: ellipsis;
 }
 
 select option {
     font-family: var(--font-family);
+}
+
+@media only screen and (max-width: 670px) {
+    form {
+        margin: 10px;
+    }
+
+    .input_client,
+    .input_vehicle {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .input_client a,
+    .input_vehicle a {
+        width: 100%;
+        white-space: wrap;
+    }
+
+    .input_client select,
+    .input_vehicle select {
+        max-width: 100%;
+    }
 }

@@ -7,9 +7,9 @@
         return $sql;
     }
 
-    function selectAllUsersInfoWhereId($userId, $DB) {
+    function selectAllUsersInfoWhereId($userIdendifiant, $DB) {
         $sql = $DB->prepare('SELECT * FROM utilisateurs WHERE utilisateurs_identifiant = ?');
-        $sql->execute([$userId]);
+        $sql->execute([$userIdendifiant]);
         
         return $sql;
     }

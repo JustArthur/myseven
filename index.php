@@ -12,7 +12,7 @@
 
     session_start();
 
-    if (!isset($_SESSION['user'])) {
+    if (empty($_SESSION['user']) && !empty($_COOKIE['user_session'])) {
         header('Location: login.php');
         exit();
     }
@@ -116,16 +116,18 @@
             <div class="content" id="tab1">
                 <h2><?= $tableauOnglets[0] ?></h2>
                 <div class="input_client">
-                    <input type="text" class="searchBar" id="searchBarCustomersBuy" placeholder="Rechercher un client..." onkeyup="searchTable('CustomersBuy', 'searchBarCustomersBuy')">
+                    <input type="text" class="searchBar" id="searchBarCustomersBuy" placeholder="Rechercher un client acheteur..." onkeyup="searchTable('CustomersBuy', 'searchBarCustomersBuy')">
                     <?php if($_SESSION['user']['role'] == 1) { ?>
                         <select class="inputSelect" name="selectAgenceBuy" id="selectAgenceBuy" onchange="window.selectAgence('CustomersBuy', 'selectAgenceBuy')">
-                            <option value="All">Toute les agences</option>
-                            <?php foreach($resAgence as $agence) { ?>
-                                <option value="<?= $agence['agence_id'] ?>"><?= $agence['agence_nom'] ?></option>
-                            <?php } ?>
+                            <optgroup label="Choisir l'agence pour trier les clients acheteurs"></optgroup>
+                                <option value="All">Toute les agences</option>
+                                <?php foreach($resAgence as $agence) { ?>
+                                    <option value="<?= $agence['agence_id'] ?>"><?= $agence['agence_nom'] ?></option>
+                                <?php } ?>
+                            </optgroup>
                         </select>
                     <?php } ?>
-                    <a href="./src/forms/customerForm.php">Créer un client</a>
+                    <a href="./src/forms/customerForm.php?customerType=1">Créer un client acheteur</a>
                 </div>
 
                 <div class="overflowTable">
@@ -159,16 +161,18 @@
             <div class="content" id="tab2">
                 <h2><?= $tableauOnglets[1] ?></h2>
                 <div class="input_client">
-                    <input type="text" class="searchBar" id="searchBarCustomersSell" placeholder="Rechercher un client..." onkeyup="searchTable('CustomersSell', 'searchBarCustomersSell')">
+                    <input type="text" class="searchBar" id="searchBarCustomersSell" placeholder="Rechercher un client vendeur..." onkeyup="searchTable('CustomersSell', 'searchBarCustomersSell')">
                     <?php if($_SESSION['user']['role'] == 1) { ?>
                         <select class="inputSelect" name="selectAgenceSell" id="selectAgenceSell" onchange="window.selectAgence('CustomersSell', 'selectAgenceSell')">
+                        <optgroup label="Choisir l'agence pour trier les clients vendeurs">
                             <option value="All">Toute les agences</option>
                             <?php foreach($resAgence as $agence) { ?>
                                 <option value="<?= $agence['agence_id'] ?>"><?= $agence['agence_nom'] ?></option>
                             <?php } ?>
+                        </optgroup>
                         </select>
                     <?php } ?>
-                    <a href="./src/forms/customerForm.php">Créer un client</a>
+                    <a href="./src/forms/customerForm.php?customerType=2">Créer un client vendeur</a>
                 </div>
 
                 <div class="overflowTable">
@@ -205,10 +209,12 @@
                     <input type="text" class="searchBar" id="searchBarVehicles" placeholder="Rechercher un véhicule..." onkeyup="searchTable('Vehicles', 'searchBarVehicles')">
                     <?php if($_SESSION['user']['role'] == 1) { ?>
                         <select class="inputSelect" name="selectAgenceVehicles" id="selectAgenceVehicles" onchange="window.selectAgence('Vehicles', 'selectAgenceVehicles')">
-                            <option value="All">Toute les agences</option>
-                            <?php foreach($resAgence as $agence) { ?>
-                                <option value="<?= $agence['agence_id'] ?>"><?= $agence['agence_nom'] ?></option>
-                            <?php } ?>
+                            <optgroup label="Choisir l'agence pour trier les véhicules">
+                                <option value="All">Toute les agences</option>
+                                <?php foreach($resAgence as $agence) { ?>
+                                    <option value="<?= $agence['agence_id'] ?>"><?= $agence['agence_nom'] ?></option>
+                                <?php } ?>
+                            </optgroup>
                         </select>
                     <?php } ?>
                     <a href="./src/forms/vehicleForm.php">Créer un véhicule</a>

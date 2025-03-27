@@ -141,7 +141,8 @@
         $_POST['depot_arrhes_input'],
         $resAgence['agence_iban'],
         $resAgence['agence_bic'],
-        $_POST['miseCircu']
+        $_POST['miseCircu'],
+        $resAgence['agence_nom']
     ];
 
 
@@ -156,15 +157,15 @@
     $importCoordinates = [
         ['x' => 103, 'y' => 51], //nom prénom
         ['x' => 93, 'y' => 58], //adresse
-        ['x' => 89, 'y' => 64], //cp
-        ['x' => 115, 'y' => 64], //ville
+        ['x' => 94, 'y' => 64], //cp
+        ['x' => 122, 'y' => 64], //ville
         ['x' => 85, 'y' => 71], //telephone
         ['x' => 130, 'y' => 71], //email
         ['x' => 48, 'y' => 88], //marque model
         ['x' => 42, 'y' => 93.5], //immat
         ['x' => 41, 'y' => 183], //prix véhicule
-        ['x' => 38, 'y' => 190], //frais mise à la route
-        ['x' => 36, 'y' => 196], //graentie méca
+        ['x' => 45, 'y' => 190], //frais mise à la route
+        ['x' => 45, 'y' => 196], //graentie méca
         ['x' => 29, 'y' => 202], //Livraison
         ['x' => 65, 'y' => 217], //Prix total HCG
         ['x' => 65, 'y' => 223], //Frais CG
@@ -174,6 +175,7 @@
         ['x' => 128, 'y' => 149], // IBAN
         ['x' => 128, 'y' => 153], // BIC
         ['x' => 130, 'y' => 93.5], // Mise en circulation
+        ['x' => 133, 'y' => 270.5] // Agence
     ];
 
     foreach ($crossToCreate as $index) {
