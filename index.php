@@ -18,9 +18,9 @@
     }
     
     $tableauOnglets = [
-        'Clients acheteur',
         'Clients vendeur',
         'Véhicules',
+        'Clients acheteur',
         'Générer des PDF'
     ];
 
@@ -112,54 +112,9 @@
                 <?php } ?>
             </div>
 
-            <!-- Clients Acheteur -->
+            <!-- Clients Vendeur -->
             <div class="content" id="tab1">
                 <h2><?= $tableauOnglets[0] ?></h2>
-                <div class="input_client">
-                    <input type="text" class="searchBar" id="searchBarCustomersBuy" placeholder="Rechercher un client acheteur..." onkeyup="searchTable('CustomersBuy', 'searchBarCustomersBuy')">
-                    <?php if($_SESSION['user']['role'] == 1) { ?>
-                        <select class="inputSelect" name="selectAgenceBuy" id="selectAgenceBuy" onchange="window.selectAgence('CustomersBuy', 'selectAgenceBuy')">
-                            <optgroup label="Choisir l'agence pour trier les clients acheteurs"></optgroup>
-                                <option value="All">Toute les agences</option>
-                                <?php foreach($resAgence as $agence) { ?>
-                                    <option value="<?= $agence['agence_id'] ?>"><?= $agence['agence_nom'] ?></option>
-                                <?php } ?>
-                            </optgroup>
-                        </select>
-                    <?php } ?>
-                    <a href="./src/forms/customerForm.php?customerType=1">Créer un client acheteur</a>
-                </div>
-
-                <div class="overflowTable">
-                    <table class="table" id="CustomersBuyTable">
-                        <thead class="table-head" id="CustomersBuyTableHead">
-                            <tr class="table-row" id="CustomersBuyTableHeadRow">
-                                <th>Nom</th>
-                                <th>Prénom</th>
-                                <th>Adresse-mail</th>
-                                <th>Téléphone</th>
-                                <th>Numéro et rue</th>
-                                <th>Ville</th>
-                                <th>Code postale</th>
-                                <th>Numéro CNI</th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-body" id="CustomersBuyTableBody">
-                            <!-- INSERT AVEC JS -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="pagination visible" id="paginationCustomersBuy">
-                    <a onclick="prevPage('CustomersBuy')">Page précédente</a>
-                    <a onclick="nextPage('CustomersBuy')">Page suivante</a>
-                    <span id="pageInfoCustomersBuy"></span>
-                </div>
-            </div>
-
-            <!-- Clients Vendeur -->
-            <div class="content" id="tab2">
-                <h2><?= $tableauOnglets[1] ?></h2>
                 <div class="input_client">
                     <input type="text" class="searchBar" id="searchBarCustomersSell" placeholder="Rechercher un client vendeur..." onkeyup="searchTable('CustomersSell', 'searchBarCustomersSell')">
                     <?php if($_SESSION['user']['role'] == 1) { ?>
@@ -203,8 +158,8 @@
             </div>
 
             <!-- Véhicules -->
-            <div class="content" id="tab3">
-                <h2><?= $tableauOnglets[2] ?></h2>
+            <div class="content" id="tab2">
+                <h2><?= $tableauOnglets[1] ?></h2>
                 <div class="input_vehicle">
                     <input type="text" class="searchBar" id="searchBarVehicles" placeholder="Rechercher un véhicule..." onkeyup="searchTable('Vehicles', 'searchBarVehicles')">
                     <?php if($_SESSION['user']['role'] == 1) { ?>
@@ -244,6 +199,51 @@
                     <a onclick="prevPage('Vehicles')">Page précédente</a>
                     <a onclick="nextPage('Vehicles')">Page suivante</a>
                     <span id="pageInfoVehicles"></span>
+                </div>
+            </div>
+
+            <!-- Clients Acheteur -->
+            <div class="content" id="tab3">
+                <h2><?= $tableauOnglets[2] ?></h2>
+                <div class="input_client">
+                    <input type="text" class="searchBar" id="searchBarCustomersBuy" placeholder="Rechercher un client acheteur..." onkeyup="searchTable('CustomersBuy', 'searchBarCustomersBuy')">
+                    <?php if($_SESSION['user']['role'] == 1) { ?>
+                        <select class="inputSelect" name="selectAgenceBuy" id="selectAgenceBuy" onchange="window.selectAgence('CustomersBuy', 'selectAgenceBuy')">
+                            <optgroup label="Choisir l'agence pour trier les clients acheteurs"></optgroup>
+                                <option value="All">Toute les agences</option>
+                                <?php foreach($resAgence as $agence) { ?>
+                                    <option value="<?= $agence['agence_id'] ?>"><?= $agence['agence_nom'] ?></option>
+                                <?php } ?>
+                            </optgroup>
+                        </select>
+                    <?php } ?>
+                    <a href="./src/forms/customerForm.php?customerType=1">Créer un client acheteur</a>
+                </div>
+
+                <div class="overflowTable">
+                    <table class="table" id="CustomersBuyTable">
+                        <thead class="table-head" id="CustomersBuyTableHead">
+                            <tr class="table-row" id="CustomersBuyTableHeadRow">
+                                <th>Nom</th>
+                                <th>Prénom</th>
+                                <th>Adresse-mail</th>
+                                <th>Téléphone</th>
+                                <th>Numéro et rue</th>
+                                <th>Ville</th>
+                                <th>Code postale</th>
+                                <th>Numéro CNI</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body" id="CustomersBuyTableBody">
+                            <!-- INSERT AVEC JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination visible" id="paginationCustomersBuy">
+                    <a onclick="prevPage('CustomersBuy')">Page précédente</a>
+                    <a onclick="nextPage('CustomersBuy')">Page suivante</a>
+                    <span id="pageInfoCustomersBuy"></span>
                 </div>
             </div>
 
