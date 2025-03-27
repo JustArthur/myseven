@@ -16,14 +16,16 @@
     $selectedDefault = "selected";
     $valid = true;
 
-    switch($_GET['customerType']) {
-        case 1:
-            $selectedAcheteur = "selected";
-            break;
-        
-        case 2:
-            $selectedVendeur = "selected";
-            break;
+    if($_GET['customerType']) {
+        switch($_GET['customerType']) {
+            case 1:
+                $selectedAcheteur = "selected";
+                break;
+            
+            case 2:
+                $selectedVendeur = "selected";
+                break;
+        }
     }
 
     require_once '../../database.php';
