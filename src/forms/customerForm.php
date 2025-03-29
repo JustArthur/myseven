@@ -88,13 +88,17 @@
                             $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
                             $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
                             $getAgence = $getAgence->fetch();
-        
-                            $folderToCreate = strtoupper($firstName) . '-' . strtoupper($lastName) . '/';
-                            if(createNextcloudFolder($getAgence['agence_path_client'], $folderToCreate)) {;
+                            
+                            $folderToCreate = strtoupper($firstName) . "-" . strtoupper($lastName);
+                            $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_client'], $folderToCreate);
+
+                            $createFolderNextcloud = true;
+
+                            if($createFolderNextcloud) {;
                                 if($typeCustomerValue == "Acheteur") {
                                     echo '
-                                        <form id="redirectForm" action="saleMandateForm.php" method="POST">
-                                            <input type="hidden" name="client" value="' . strtolower($email) .'">
+                                        <form id="redirectForm" action="choiceVehicle.php" method="POST">
+                                            <input type="hidden" name="client_email" value="' . strtolower($email) .'">
                                         </form>
                                         <script>
                                             document.getElementById("redirectForm").submit();
@@ -103,23 +107,14 @@
                                     exit();
                                 } else {
                                     echo '
-                                        <div class="pop_up">
-                                            <div class="pop_content">
-                                                <h1>Le client à bien été créer</h1>
-                                                <p>Voulez-vous créer un nouveau véhicule ?</p>
-                
-                                                <div class="input_btn">
-                                                    <a href="vehicleForm.php" class="btn yes">Oui</a>
-                                                    <a href="../../index.php" class="btn no">Non</a>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <form id="redirectForm" action="vehicleForm.php" method="POST">
+                                            <input type="hidden" name="cient_email" value="' . strtolower($email) .'">
+                                        </form>
                                         <script>
-                                            document.addEventListener("DOMContentLoaded", function() {
-                                                document.getElementById("body").style.overflow = "hidden";
-                                            });
+                                            document.getElementById("redirectForm").submit();
                                         </script>
                                     ';
+                                    exit();
                                 }
                             } else {
                                 $error_message = [
@@ -169,7 +164,7 @@
         <div class="search-container">
             <h2>Créer un client</h2>
             <form id="form_pdf" method="POST" enctype="multipart/form-data">
-                <?php if(!empty($error_message)) {echo "<div style=margin-bottom: 30px;' class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>"; } ?>
+                <?php if(!empty($error_message)) {echo "<div style='margin-bottom: 30px;' class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>"; } ?>
 
                 <div class="input_box">
                     <span class="label form_required">Nom de famille</span>

@@ -127,7 +127,7 @@
                         </optgroup>
                         </select>
                     <?php } ?>
-                    <a href="./src/forms/customerForm.php?customerType=2">Créer un client vendeur</a>
+                    <a target="_blank" href="./src/forms/customerForm.php?customerType=2">Créer un client vendeur</a>
                 </div>
 
                 <div class="overflowTable">
@@ -172,7 +172,7 @@
                             </optgroup>
                         </select>
                     <?php } ?>
-                    <a href="./src/forms/vehicleForm.php">Créer un véhicule</a>
+                    <a target="_blank" href="./src/forms/vehicleForm.php">Créer un véhicule</a>
                 </div>
 
                 <div class="overflowTable">
@@ -217,7 +217,7 @@
                             </optgroup>
                         </select>
                     <?php } ?>
-                    <a href="./src/forms/customerForm.php?customerType=1">Créer un client acheteur</a>
+                    <a target="_blank" href="./src/forms/customerForm.php?customerType=1">Créer un client acheteur</a>
                 </div>
 
                 <div class="overflowTable">

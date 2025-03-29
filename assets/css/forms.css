@@ -78,6 +78,16 @@ form.gap {
     padding-bottom: 6px;
 }
 
+ul.options {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+ul.options li:first-child {
+    margin-top: 5px;
+}
+
 .select-btn, li {
     display: flex;
     align-items: center;

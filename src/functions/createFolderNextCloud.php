@@ -15,7 +15,17 @@
         $username = $_ENV['NEXT_CLOUD_USER'];
         $password = $_ENV['NEXT_CLOUD_PASSWORD'];
 
-        $brandFolderUrl = $nextcloudUrl . $baseFolder . urlencode($brand) . "/";
+        $baseFolder = trim($baseFolder, '/'); 
+        $baseFolder = str_replace(' ', '%20', $baseFolder);
+        $baseFolder = mb_convert_encoding($baseFolder, 'UTF-8', 'auto'); 
+
+        $brand = trim($brand, '/'); 
+        $brand = str_replace(' ', '%20', $brand);
+        $brand = mb_convert_encoding($brand, 'UTF-8', 'auto');
+
+        $brandFolderUrl = rtrim($nextcloudUrl, '/') . '/' . $baseFolder . '/' . $brand . '/';
+
+        var_dump($brandFolderUrl);
 
         function createFolder($url, $username, $password) {
             $ch = curl_init();
@@ -31,19 +41,17 @@
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
 
-            $httpCode = 201;
-
-            return ($httpCode == 201 || $httpCode == 207);
+            return ($httpCode == 201 || $httpCode == 207 || $httpCode == 405);
         }
 
         if (!createFolder($brandFolderUrl, $username, $password)) {
-            return "Erreur 1";
+            return false;
         }
 
         if (createFolder($brandFolderUrl, $username, $password)) {
-            return "Dossier créé";
+            return true;
         } else {
-            return "Erreur 2";
+            return false;
         }
     }
 ?>
