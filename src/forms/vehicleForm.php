@@ -57,24 +57,22 @@
                         $getAgence = $getAgence->fetch();
 
                         $folderToCreate = strtoupper($brand) . '/' . strtoupper($model) . '-' . strtoupper($immatriculation) . '/';
+                        $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreate);
                         
-                        if(createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreate)) {
-                            echo '
-                                    <div class="pop_up">
-                                        <div class="pop_content">
-                                            <h1>Le véhicule à bien été créer</h1>
-            
-                                            <div class="input_btn">
-                                                <a href="../../index.php" class="btn yes">Retournez au menu</a>
-                                            </div>
-                                        </div>
-                                    </div>
+                        if($createFolderNextcloud) {
+                            if(!empty($_POST['cient_email'])) {
+                                echo '
+                                    <form id="redirectForm" action="saleMandateForm.php" method="POST">
+                                        <input type="hidden" name="client" value="' . strtolower($cient_email) .'">
+                                        <input type="hidden" name="immatCar" value="' . strtoupper($immatriculation) .'">
+                                    </form>
                                     <script>
-                                        document.addEventListener("DOMContentLoaded", function() {
-                                            document.getElementById("body").style.overflow = "hidden";
-                                        });
+                                        document.getElementById("redirectForm").submit();
                                     </script>
-                                    ';
+                                ';
+                            }
+                            
+                            exit();
                         } else {
                             $error_message = [
                                 'type' => 'error',
@@ -117,7 +115,9 @@
         <div class="search-container">
             <h2>Créer un véhicule</h2>
             <form id="form_pdf" method="POST" enctype="multipart/form-data">
-                <?php if(!empty($error_message)) {echo "<div style=margin-bottom: 30px;' class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>"; } ?>
+                <?php if(!empty($error_message)) {echo "<div style='margin-bottom: 30px;' class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>"; } ?>
+
+                <?php if(!empty($_POST['cient_email'])) { echo "<input type='hidden' name='cient_email' value='" . $_POST['cient_email'] . "'>"; } ?>
 
                 <div class="input_box">
                     <span class="label form_required">Immatriculation</span>

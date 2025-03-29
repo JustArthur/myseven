@@ -20,21 +20,17 @@
 
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
-  
-    $resClient = $DB->prepare('SELECT * FROM clients INNER JOIN agence ON clients.clients_agence_id = agence.agence_id WHERE clients.clients_email = ?');
-    $resClient->execute(params: [$_POST['customerMail']]);
+
     $resClient = $DB->prepare('SELECT * FROM clients INNER JOIN agence ON clients.clients_agence_id = agence.agence_id WHERE clients.clients_email = ?');
     $resClient->execute([$_POST['customerMail']]);
     $resClient = $resClient->fetch();
 
     $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
-    $resVehicule->execute(params: [$_POST['immatCar']]);
-    $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
     $resVehicule->execute([$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();
 
     $resAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
-    $resAgence->execute(params: [$resClient['clients_agence_id']]);
+    $resAgence->execute([$resClient['clients_agence_id']]);
     $resAgence = $resAgence->fetch();
 
     $resAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');

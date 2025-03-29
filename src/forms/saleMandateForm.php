@@ -41,7 +41,6 @@
                 <div class="input_box">
                     <span class="label form_required">Immatriculation</span>
                     <input required type="text" name="immatricuCar" value="<?= $_POST['immatCar'] ?>" id="immatricuCar">
-                    <!-- <input hidden type="text" name="immatricuCar" value="<?= $_POST['immatCar'] ?>"> -->
 
                     <p class="text_error">Ce champ est requis</p>
                 </div>
