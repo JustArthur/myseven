@@ -107,7 +107,7 @@
                                     exit();
                                 } else {
                                     echo '
-                                        <form id="redirectForm" action="vehicleForm.php" method="POST">
+                                        <form id="redirectForm" action="vehicleForm.php" method="GET">
                                             <input type="hidden" name="cient_email" value="' . strtolower($email) .'">
                                         </form>
                                         <script>
