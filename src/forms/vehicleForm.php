@@ -56,11 +56,20 @@
                         $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
                         $getAgence = $getAgence->fetch();
 
-                        $folderToCreate = strtoupper($brand) . '/' . strtoupper($model) . '-' . strtoupper($immatriculation) . '/';
-                        $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreate);
+                        $brandFolder = strtoupper($brand) . '/';
+                        $createBrandFolder = createNextcloudFolder($getAgence['agence_path_vehicules'], $brandFolder);
+
+                        if ($createBrandFolder) {
+                            $folderToCreate = strtoupper($brand) . '/' . strtoupper($model) . '-' . strtoupper($immatriculation) . '/';
+                            $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreate);
+
+                            $valid = true;
+                        } else {
+                            $valid = false;
+                        }
                         
-                        if($createFolderNextcloud) {
-                            if(!empty($_POST['cient_email'])) {
+                        if($valid) {
+                            if(!empty($_GET['cient_email'])) {
                                 echo '
                                     <form id="redirectForm" action="saleMandateForm.php" method="POST">
                                         <input type="hidden" name="client" value="' . strtolower($cient_email) .'">
@@ -70,9 +79,11 @@
                                         document.getElementById("redirectForm").submit();
                                     </script>
                                 ';
+                                exit();
+                            } else {
+                                header("Location: ../../index.php");
+                                exit;
                             }
-                            
-                            exit();
                         } else {
                             $error_message = [
                                 'type' => 'error',
@@ -117,7 +128,7 @@
             <form id="form_pdf" method="POST" enctype="multipart/form-data">
                 <?php if(!empty($error_message)) {echo "<div style='margin-bottom: 30px;' class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>"; } ?>
 
-                <?php if(!empty($_POST['cient_email'])) { echo "<input type='hidden' name='cient_email' value='" . $_POST['cient_email'] . "'>"; } ?>
+                <?php if(!empty($_GET['cient_email'])) { echo "<input type='hidden' name='cient_email' value='" . $_GET['cient_email'] . "'>"; } ?>
 
                 <div class="input_box">
                     <span class="label form_required">Immatriculation</span>
