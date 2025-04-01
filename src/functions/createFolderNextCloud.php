@@ -49,4 +49,40 @@
 
         return createFolder($brandFolderUrl, $username, $password);
     }
+
+    function uploadPdfToNextcloud($baseFolder, $brand, $filePath) {
+        global $nextcloudUrl, $username, $password;
+
+        $baseFolder = trim($baseFolder, '/'); 
+        $baseFolder = str_replace(' ', '%20', $baseFolder);
+        $baseFolder = mb_convert_encoding($baseFolder, 'UTF-8', 'auto'); 
+
+        $brand = trim($brand, '/'); 
+        $brand = str_replace(' ', '%20', $brand);
+        $brand = mb_convert_encoding($brand, 'UTF-8', 'auto');
+
+        $fileName = basename($filePath);
+        $fileUrl = rtrim($nextcloudUrl, '/') . '/' . $baseFolder . '/' . $brand . '/' . $fileName;
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $fileUrl);
+        curl_setopt($ch, CURLOPT_PUT, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_USERPWD, $username . ':' . $password);
+        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+        $fileHandle = fopen($filePath, 'r');
+        curl_setopt($ch, CURLOPT_INFILE, $fileHandle);
+        curl_setopt($ch, CURLOPT_INFILESIZE, filesize($filePath));
+
+        curl_exec($ch);
+
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        fclose($fileHandle);
+
+        return ($httpCode == 201 || $httpCode == 204);
+    }
 ?>

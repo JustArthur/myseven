@@ -63,10 +63,43 @@
                             $folderToCreate = strtoupper($brand) . '/' . strtoupper($model) . '-' . strtoupper($immatriculation) . '/';
                             $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreate);
 
+                            if($createFolderNextcloud) {
+                                $folderToCreate = [
+                                    'PHOTO',
+                                    'CARTE_GRISE',
+                                    'CONTROLE_TECHNIQUE',
+                                    'FACTURES',
+                                    'DOCUMENT_DE_VENTE'
+                                ];
+
+                                foreach ($folderToCreate as $folder) {
+                                    $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreate . $folder);
+
+                                    if($createFolderNextcloud) {
+                                        $valid = true;
+                                    } else {
+                                        $valid = false;
+                                        $error_message = [
+                                            'type' => 'error',
+                                            'message' => 'Impossible de créer le dossier ' . $folder . '.'
+                                        ];
+                                        break;
+                                    }
+                                }
+                            }
+
                             $valid = true;
                         } else {
                             $valid = false;
                         }
+
+
+                        //PHOTO
+                        //CARTE_GRISE
+                        //CONTROLE_TECHNIQUE
+                        //FACTURES
+                        //DOCUMENT_DE_VENTE
+
                         
                         if($valid) {
                             if(!empty($_GET['cient_email'])) {

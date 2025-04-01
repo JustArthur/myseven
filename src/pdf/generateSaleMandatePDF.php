@@ -18,6 +18,7 @@
     require_once '../../vendor/setasign/fpdi/src/autoload.php';
 
     require_once '../../database.php';
+    require_once '../functions/createFolderNextCloud.php';
 
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
@@ -140,7 +141,15 @@
 
     $pdfNameFile = "MANDAT_DE_VENTE_" . $importVarPDF[1] . "_" . $fileCount . ".pdf";
 
-    $DBB->closeConnection();
     $pdf->Output('I', $pdfNameFile);
     $pdf->Output('F', $folder . $pdfNameFile);
+    
+    $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
+    $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
+    $getAgence = $getAgence->fetch();
+    $DBB->closeConnection();
+
+    $folder = $resVehicule['vehicules_marque'] . '/' . $resVehicule['vehicule_model']. '-' . $resVehicule['vehicules_immat'];
+
+    $uploadPDF = uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $folder, $folder . $pdfNameFile);
 ?>
