@@ -15,6 +15,7 @@
     $selectedVendeur = "";
     $selectedDefault = "selected";
     $valid = true;
+    $validFolder = true;
 
     if($_GET['customerType']) {
         switch($_GET['customerType']) {
@@ -92,29 +93,65 @@
                             $folderToCreate = strtoupper($firstName) . "-" . strtoupper($lastName);
                             $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_client'], $folderToCreate);
 
-                            $createFolderNextcloud = true;
+                            if($createFolderNextcloud) {
+                                if (isset($_FILES['fileCNI']) && $_FILES['fileCNI']['error'] == 0) {
+                                    $tmpPath = $_FILES['fileCNI']['tmp_name'];
+                                    $originalFileName = $_FILES['fileCNI']['name'];
+                                    $extension = pathinfo($_FILES['fileCNI']['name'], PATHINFO_EXTENSION);
 
-                            if($createFolderNextcloud) {;
-                                if($typeCustomerValue == "Acheteur") {
-                                    echo '
-                                        <form id="redirectForm" action="choiceVehicle.php" method="POST">
-                                            <input type="hidden" name="client_email" value="' . strtolower($email) .'">
-                                        </form>
-                                        <script>
-                                            document.getElementById("redirectForm").submit();
-                                        </script>
-                                    ';
-                                    exit();
+                                    $newFileName = "CNI_{$folderToCreate}.{$extension}";
+                                    $destinationPath = sys_get_temp_dir() . '/' . $newFileName;
+                                
+                                    if (move_uploaded_file($tmpPath, $destinationPath)) {
+                                        $uploadSuccess = uploadPdfToNextcloud($getAgence['agence_path_client'], $folderToCreate, $destinationPath);
+                                
+                                        if ($uploadSuccess) {
+                                            $validFolder = true;
+                                        } else {
+                                            $validFolder = false;
+                                        }
+                                
+                                        unlink($destinationPath);
+    
+                                    } else {
+                                        $error_message = [
+                                            'type' => 'error',
+                                            'message' => 'Impossible de déplacer le fichier.'
+                                        ];
+
+                                        $validFolder = false;
+                                    }
                                 } else {
-                                    echo '
-                                        <form id="redirectForm" action="vehicleForm.php" method="GET">
-                                            <input type="hidden" name="cient_email" value="' . strtolower($email) .'">
-                                        </form>
-                                        <script>
-                                            document.getElementById("redirectForm").submit();
-                                        </script>
-                                    ';
-                                    exit();
+                                    $error_message = [
+                                        'type' => 'error',
+                                        'message' => 'Erreur lors de l\'upload du fichier.'
+                                    ];
+
+                                    $validFolder = false;
+                                }
+
+                                if($validFolder) {
+                                    if($typeCustomerValue == "Acheteur") {
+                                        echo '
+                                            <form id="redirectForm" action="choiceVehicle.php" method="POST">
+                                                <input type="hidden" name="client_email" value="' . strtolower($email) .'">
+                                            </form>
+                                            <script>
+                                                document.getElementById("redirectForm").submit();
+                                            </script>
+                                        ';
+                                        exit();
+                                    } else {
+                                        echo '
+                                            <form id="redirectForm" action="vehicleForm.php" method="GET">
+                                                <input type="hidden" name="cient_email" value="' . strtolower($email) .'">
+                                            </form>
+                                            <script>
+                                                document.getElementById("redirectForm").submit();
+                                            </script>
+                                        ';
+                                        exit();
+                                    }
                                 }
                             } else {
                                 $error_message = [

@@ -24,8 +24,6 @@
         'Générer des PDF'
     ];
 
-
-
     $resAgence = selectAllAgence($DB);
     $resAgence = $resAgence->fetchAll();
 

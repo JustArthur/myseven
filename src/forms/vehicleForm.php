@@ -64,16 +64,17 @@
                             $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreate);
 
                             if($createFolderNextcloud) {
-                                $folderToCreate = [
-                                    'PHOTO',
+                                $folderToCreateArray = [
+                                    'PHOTOS',
                                     'CARTE_GRISE',
                                     'CONTROLE_TECHNIQUE',
                                     'FACTURES',
-                                    'DOCUMENT_DE_VENTE'
+                                    'DOCUMENTS_DE_VENTE'
                                 ];
 
-                                foreach ($folderToCreate as $folder) {
-                                    $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreate . $folder);
+                                foreach ($folderToCreateArray as $folder) {
+                                    $folderToCreateVehicule = $folderToCreate . $folder;
+                                    $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateVehicule);
 
                                     if($createFolderNextcloud) {
                                         $valid = true;
@@ -211,7 +212,7 @@
 
                 <div class="input_box">
                     <span class="label form_required">Kilometrage</span>
-                    <input required="true" type="number" id="kilometrage" name="kilometrage">
+                    <input required="true" type="text" id="kilometrage" name="kilometrage">
 
                     <p class="text_error hidden">Ce champ est requis.</p>
                 </div>
