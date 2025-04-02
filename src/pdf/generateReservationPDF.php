@@ -48,11 +48,11 @@
             array_push($crossToCreate, ['x' => 11.5, 'y' => 106]);
             break;
 
-        case '12MoisPrestige':
+        case '24Mois':
             array_push($crossToCreate, ['x' => 11.5, 'y' => 112]);
             break;
-
-        case '24Mois':  
+            
+        case '12MoisPrestige':  
             array_push($crossToCreate, ['x' => 11.5, 'y' => 118]);
             break;
 

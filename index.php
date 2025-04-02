@@ -24,6 +24,8 @@
         'Générer des PDF'
     ];
 
+
+
     $resAgence = selectAllAgence($DB);
     $resAgence = $resAgence->fetchAll();
 
@@ -36,6 +38,8 @@
 
         $resVehicule = selectAllVehicle($DB);
         $resVehicule = $resVehicule->fetchAll();
+
+        $tableauOnglets[] = 'Générer des Excel';
     } else {
         $resClientVendeur = selectAllClientVendeurWhereAgence($_SESSION['user']['agence_id'], $DB);
         $resClientVendeur = $resClientVendeur->fetchAll();
@@ -257,6 +261,11 @@
                     <button type="submit" name="generateBonReservation" target="_blank" class="btn-generate action-link">Bon de réservation</button>
                     <button type="submit" name="generateAccordBaissePrix" target="_blank" class="btn-generate action-link">Accord de baisse du prix net vendeur</button>
                 </div>
+            </div>
+
+            <div class="content" id="tab5">
+                <h2><?= $tableauOnglets[4] ?></h2>
+                <a href="src/excel/dumpExcel.php" target="_blank" class="btn-generate action-link">Générer un CSV</a>
             </div>
         </div>
     </form>

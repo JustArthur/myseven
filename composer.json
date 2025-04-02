@@ -2,6 +2,7 @@
     "require": {
         "setasign/fpdf": "^1.8",
         "setasign/fpdi": "^2.6",
-        "vlucas/phpdotenv": "^5.6"
+        "vlucas/phpdotenv": "^5.6",
+        "phpoffice/phpspreadsheet": "^4.1"
     }
 }

@@ -92,14 +92,6 @@
                         } else {
                             $valid = false;
                         }
-
-
-                        //PHOTO
-                        //CARTE_GRISE
-                        //CONTROLE_TECHNIQUE
-                        //FACTURES
-                        //DOCUMENT_DE_VENTE
-
                         
                         if($valid) {
                             if(!empty($_GET['cient_email'])) {
