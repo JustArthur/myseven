@@ -16,6 +16,11 @@
         header('Location: login.php');
         exit();
     }
+
+    if(empty($_SESSION['user']) && empty($_COOKIE['user_session'])) {
+        header('Location: login.php');
+        exit();
+    }
     
     $tableauOnglets = [
         'Clients vendeur',
