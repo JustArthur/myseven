@@ -31,7 +31,7 @@
     $resVehicule = $resVehicule->fetch();
 
     $importVarPDF = [
-        $resClient['clients_nom'] . ' ' . $resClient['clients_prenom'],
+        strtoupper($resClient['clients_nom']) . ' ' . $resClient['clients_prenom'],
         $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
         $resVehicule['vehicules_immatriculation'],
         $_POST['netVendeur'],
@@ -80,7 +80,7 @@
 
     $cleanedValueNameFolder = preg_replace('/[^A-Za-z0-9]+/', '-', trim($resClient['clients_nom'] . " " . $resClient['clients_prenom']));
     $cleanedValueName = preg_replace('/[^A-Za-z0-9]+/', '_', trim($resClient['clients_nom'] . " " . $resClient['clients_prenom']));
-    $cleanedValueNameVehicule = $toCleanVehicule . "DOCUMENTS_DE_VENTE";
+    $cleanedValueNameVehicule = $toCleanVehicule . "DOCUMENTS_DE_VENTE/CLIENT_VENDEUR";
 
     $pattern = $folder . "ACCORD_DE_BAISSE_DU_PRIX_NET_VENDEUR_" . strtoupper($cleanedValueName) . "_*.pdf";
     $pdfFiles = glob($pattern);

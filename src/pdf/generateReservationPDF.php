@@ -120,7 +120,7 @@
     $_POST['miseCircu'] = date('d/m/Y', strtotime($_POST['miseCircu']));
 
     $importVarPDF = [
-        $resClient['clients_nom'] . ' ' . $resClient['clients_prenom'],
+        strtoupper($resClient['clients_nom']) . ' ' . $resClient['clients_prenom'],
         $resClient['clients_rue'],
         $resClient['clients_cp'],
         $resClient['clients_ville'],
@@ -139,7 +139,7 @@
         $_POST['depot_arrhes_input'],
         $resAgence['agence_iban'],
         $resAgence['agence_bic'],
-        $_POST['miseCircu'],
+        date('d/m/Y', strtotime($resVehicule['vehicules_date_mise_en_circu'])),
         $resAgence['agence_nom']
     ];
 
@@ -201,13 +201,13 @@
 
     $cleanedValueNameFolder = preg_replace('/[^A-Za-z0-9]+/', '-', trim($resClient['clients_nom'] . " " . $resClient['clients_prenom']));
     $cleanedValueName = preg_replace('/[^A-Za-z0-9]+/', '_', trim($resClient['clients_nom'] . " " . $resClient['clients_prenom']));
-    $cleanedValueNameVehicule = $toCleanVehicule . "DOCUMENTS_DE_VENTE";
+    $cleanedValueNameVehicule = $toCleanVehicule . "DOCUMENTS_DE_VENTE/CLIENT_ACHETEUR";
 
-    $pattern = $folder . "BON_RESERVATION" . strtoupper($cleanedValueName) . "_*.pdf";
+    $pattern = $folder . "BON_RESERVATION_" . strtoupper($cleanedValueName) . "_*.pdf";
     $pdfFiles = glob($pattern);
     $fileCount = count($pdfFiles) + 1;
 
-    $pdfNameFile = "BON_RESERVATION" . strtoupper($cleanedValueName) . "_" . $fileCount . ".pdf";
+    $pdfNameFile = "BON_RESERVATION_" . strtoupper($cleanedValueName) . "_" . $fileCount . ".pdf";
     $destinationPath = $folder . $pdfNameFile;
 
     $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');

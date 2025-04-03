@@ -46,13 +46,6 @@
                 </div>
 
                 <div class="input_box">
-                    <span class="label form_required">Date de mise en circulation</span>
-                    <input required type="date" name="miseEnCircu" id="miseEnCircu">
-
-                    <p class="text_error hidden">Ce champ est requis</p>
-                </div>
-
-                <div class="input_box">
                     <span class="label form_required">Origine du véhicule</span>
                     <input required type="text" name="originCar" id="originCar">
 
@@ -68,15 +61,7 @@
 
                 <div class="input_box">
                     <span class="label form_required">Jour de la visite</span>
-                    <select required name="jourVisite" id="jourVisite">
-                        <option value="Lundi">Lundi</option>
-                        <option value="Mardi">Mardi</option>
-                        <option value="Mercredi">Mercredi</option>
-                        <option value="Jeudi">Jeudi</option>
-                        <option value="Vendredi">Vendredi</option>
-                        <option value="Samedi">Samedi</option>
-                        <option value="Dimanche">Dimanche</option>
-                    </select>
+                    <input required type="text" name="jourVisite" id="jourVisite">
 
                     <p class="text_error hidden">Ce champ est requis</p>
                 </div>

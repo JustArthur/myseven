@@ -58,7 +58,7 @@
     $importVarPDF = [
         $formattedId,
         strtoupper($resUser['utilisateurs_nom']) . " " . $resUser['utilisateurs_prenom'],
-        $resClient['clients_nom'] . " " . $resClient['clients_prenom'],
+        strtoupper($resClient['clients_nom']) . " " . $resClient['clients_prenom'],
         $resClient['clients_numero_cni'],
         $resClient['clients_telephone'],
         $resVehicule['vehicules_immatriculation'],
@@ -82,7 +82,7 @@
         $_POST['prixVenteSouhaite'],
         ucfirst($resClient['agence_nom']),
         date('d/m/Y'),
-        $_POST['miseEnCircu']
+        date('d/m/Y', strtotime($resVehicule['vehicules_date_mise_en_circu']))
     ];
 
     $importCoordinates = [
@@ -141,7 +141,7 @@
 
     $cleanedValueNameFolder = preg_replace('/[^A-Za-z0-9]+/', '-', trim($resClient['clients_nom'] . " " . $resClient['clients_prenom']));
     $cleanedValueName = preg_replace('/[^A-Za-z0-9]+/', '_', trim($resClient['clients_nom'] . " " . $resClient['clients_prenom']));
-    $cleanedValueNameVehicule = $toCleanVehicule . "DOCUMENTS_DE_VENTE";
+    $cleanedValueNameVehicule = $toCleanVehicule . "DOCUMENTS_DE_VENTE/CLIENT_VENDEUR";
 
     $pattern = $folder . "MANDAT_DE_VENTE_" . strtoupper($cleanedValueName) . "_*.pdf";
     $pdfFiles = glob($pattern);

@@ -15,7 +15,9 @@
 
     require_once '../../vendor/setasign/fpdf/fpdf.php';
     require_once '../../vendor/setasign/fpdi/src/autoload.php';
+
     require_once '../../database.php';
+    require_once '../functions/createFolderNextCloud.php';
 
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
@@ -36,7 +38,7 @@
 
 
     $importVarPDF = [
-        $resClient['clients_nom'] . ' ' . $resClient['clients_prenom'],
+        strtoupper($resClient['clients_nom']) . ' ' . $resClient['clients_prenom'],
         $day,
         $month,
         $year,
@@ -93,7 +95,7 @@
 
     $cleanedValueNameFolder = preg_replace('/[^A-Za-z0-9]+/', '-', trim($resClient['clients_nom'] . " " . $resClient['clients_prenom']));
     $cleanedValueName = preg_replace('/[^A-Za-z0-9]+/', '_', trim($resClient['clients_nom'] . " " . $resClient['clients_prenom']));
-    $cleanedValueNameVehicule = $toCleanVehicule . "DOCUMENTS_DE_VENTE";
+    $cleanedValueNameVehicule = $toCleanVehicule . "DOCUMENTS_DE_VENTE/CLIENT_VENDEUR";
 
     $pattern = $folder . "PROCURATION_DE_SIGNATURE_" . strtoupper($cleanedValueName) . "_*.pdf";
     $pdfFiles = glob($pattern);
