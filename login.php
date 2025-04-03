@@ -17,17 +17,22 @@
         $getUser = selectAllUsersInfoWhereId(htmlspecialchars($_COOKIE['user_session'], ENT_QUOTES), $DBB->openConnection());
         $getUser = $getUser->fetch();
 
-        session_regenerate_id(true);
-    
-        $_SESSION['user'] = [
-            'id' => htmlspecialchars($getUser['utilisateurs_id'], ENT_QUOTES),
-            'identifiant' => htmlspecialchars($getUser['utilisateurs_identifiant'], ENT_QUOTES),
-            'agence_id' => htmlspecialchars($getUser['utilisateurs_agence_id'], ENT_QUOTES),
-            'role' => htmlspecialchars($getUser['utilisateurs_role'], ENT_QUOTES)
-        ];
+        if($getUser['utilisateurs_role'] = "1" ) {
+            header('Location: selectAgence.php?error=1&username=' . $getUser['utilisateurs_identifiant']);
+            exit();
+        } else {
+            session_regenerate_id(true);
+        
+            $_SESSION['user'] = [
+                'id' => htmlspecialchars($getUser['utilisateurs_id'], ENT_QUOTES),
+                'identifiant' => htmlspecialchars($getUser['utilisateurs_identifiant'], ENT_QUOTES),
+                'agence_id' => htmlspecialchars($getUser['utilisateurs_agence_id'], ENT_QUOTES),
+                'role' => htmlspecialchars($getUser['utilisateurs_role'], ENT_QUOTES)
+            ];
 
-        header('Location: index.php');
-        exit;
+            header('Location: index.php');
+            exit;
+        }
     }
     
     if (!empty($_POST)) {
@@ -63,20 +68,26 @@
                 $getUser = selectAllUsersInfoWhereId(htmlspecialchars($identifiant, ENT_QUOTES), $DBB->openConnection());
                 $getUser = $getUser->fetch();
 
-                session_regenerate_id(true);
+                if($getUser['utilisateurs_role'] = "1" ) {
+                    header('Location: selectAgence.php?error=1&username=' . $getUser['utilisateurs_identifiant']);
+                    exit();
+                } else {
+                    session_regenerate_id(true);
+        
+                    $_SESSION['user'] = [
+                        'id' => htmlspecialchars($getUser['utilisateurs_id'], ENT_QUOTES),
+                        'identifiant' => htmlspecialchars($getUser['utilisateurs_identifiant'], ENT_QUOTES),
+                        'agence_id' => htmlspecialchars($getUser['utilisateurs_agence_id'], ENT_QUOTES),
+                        'role' => htmlspecialchars($getUser['utilisateurs_role'], ENT_QUOTES)
+                    ];
     
-                $_SESSION['user'] = [
-                    'id' => htmlspecialchars($getUser['utilisateurs_id'], ENT_QUOTES),
-                    'identifiant' => htmlspecialchars($getUser['utilisateurs_identifiant'], ENT_QUOTES),
-                    'agence_id' => htmlspecialchars($getUser['utilisateurs_agence_id'], ENT_QUOTES),
-                    'role' => htmlspecialchars($getUser['utilisateurs_role'], ENT_QUOTES)
-                ];
+                    setcookie('user_session', $_SESSION['user']['identifiant'], time() + (86400 * 30), "/", "", false, true);
+                    $DBB->closeConnection();
+    
+                    header('Location: index.php');
+                    exit;
+                }
 
-                setcookie('user_session', $_SESSION['user']['identifiant'], time() + (86400 * 30), "/", "", false, true);
-                $DBB->closeConnection();
-
-                header('Location: index.php');
-                exit;
             }
         }
     }

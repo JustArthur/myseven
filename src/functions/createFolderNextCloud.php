@@ -80,9 +80,27 @@
         curl_exec($ch);
 
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        fclose($fileHandle);
+        
+        $fileHandle = fopen($filePath, 'r');
+        if (!$fileHandle) {
+            die("Erreur : Impossible d'ouvrir le fichier $filePath");
+        }
+
+        curl_setopt($ch, CURLOPT_INFILE, $fileHandle);
+        curl_setopt($ch, CURLOPT_INFILESIZE, filesize($filePath));
+
+        $response = curl_exec($ch);
+        
+        if ($response === false) {
+            die("Erreur cURL : " . curl_error($ch));
+        }
+
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
         fclose($fileHandle);
 
+        
         return ($httpCode == 201 || $httpCode == 204);
     }
 ?>

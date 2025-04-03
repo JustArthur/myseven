@@ -15,6 +15,8 @@
 
     require_once '../../vendor/setasign/fpdf/fpdf.php';
     require_once '../../vendor/setasign/fpdi/src/autoload.php';
+
+    require_once '../functions/createFolderNextCloud.php';
     require_once '../../database.php';
 
 
@@ -191,17 +193,30 @@
 
     $folder = "../../storage/reservations/";
 
-    $pattern = $folder . "BON_RESERVATION_" . $importVarPDF[0] . "_*.pdf";
-    $pdfFiles = glob($pattern);
-    $fileCount = count($pdfFiles) + 1;
-
-    $pdfNameFile = "BON_RESERVATION_" . $importVarPDF[0] . "_" . $fileCount . ".pdf";
-
     if(!file_exists(filename: $folder)) {
         mkdir($folder, 0777, true);
     }
+    
+    $toCleanVehicule = $resVehicule['vehicules_marque'] . '/'. $resVehicule['vehicules_model'] . '-' . strtoupper($resVehicule['vehicules_immatriculation']) . '/';
 
+    $cleanedValueNameFolder = preg_replace('/[^A-Za-z0-9]+/', '-', trim($resClient['clients_nom'] . " " . $resClient['clients_prenom']));
+    $cleanedValueName = preg_replace('/[^A-Za-z0-9]+/', '_', trim($resClient['clients_nom'] . " " . $resClient['clients_prenom']));
+    $cleanedValueNameVehicule = $toCleanVehicule . "DOCUMENTS_DE_VENTE";
+
+    $pattern = $folder . "BON_RESERVATION" . strtoupper($cleanedValueName) . "_*.pdf";
+    $pdfFiles = glob($pattern);
+    $fileCount = count($pdfFiles) + 1;
+
+    $pdfNameFile = "BON_RESERVATION" . strtoupper($cleanedValueName) . "_" . $fileCount . ".pdf";
+    $destinationPath = $folder . $pdfNameFile;
+
+    $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
+    $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
+    $getAgence = $getAgence->fetch();
     $DBB->closeConnection();
+
+    $pdf->Output('F', $destinationPath);
+    uploadPdfToNextcloud($getAgence['agence_path_client'], strtoupper($cleanedValueNameFolder), $destinationPath);
+    uploadPdfToNextcloud($getAgence['agence_path_vehicules'], strtoupper($cleanedValueNameVehicule), $destinationPath);
     $pdf->Output('I', $pdfNameFile);
-    $pdf->Output('F', $folder . $pdfNameFile);
 ?>
