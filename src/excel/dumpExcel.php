@@ -10,7 +10,7 @@
 
     require_once '../../database.php';
 
-    $table = "excel_price";
+    $table = "vehicules";
 
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();

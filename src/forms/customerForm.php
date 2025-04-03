@@ -89,8 +89,10 @@
                             $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
                             $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
                             $getAgence = $getAgence->fetch();
+
+
                             
-                            $folderToCreate = strtoupper($firstName) . "-" . strtoupper($lastName);
+                            $folderToCreate = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($firstName) . "-" . strtoupper($lastName));
                             $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_client'], $folderToCreate);
 
                             if($createFolderNextcloud) {
@@ -133,7 +135,7 @@
                                 if($validFolder) {
                                     if($typeCustomerValue == "Acheteur") {
                                         echo '
-                                            <form id="redirectForm" action="choiceVehicle.php" method="POST">
+                                            <form id="redirectForm" action="choiceVehicle.php" method="GET">
                                                 <input type="hidden" name="client_email" value="' . strtolower($email) .'">
                                             </form>
                                             <script>
