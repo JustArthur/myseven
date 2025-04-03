@@ -56,11 +56,11 @@
                         $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
                         $getAgence = $getAgence->fetch();
 
-                        $brandFolder = strtoupper($brand) . '/';
+                        $brandFolder = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($brand)) . '/';
                         $createBrandFolder = createNextcloudFolder($getAgence['agence_path_vehicules'], $brandFolder);
 
                         if ($createBrandFolder) {
-                            $folderToCreate = strtoupper($brand) . '/' . strtoupper($model) . '-' . strtoupper($immatriculation) . '/';
+                            $folderToCreate = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($brand)) . '/' . preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($model)) . '-' . preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($immatriculation)) . '/';
                             $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreate);
 
                             if($createFolderNextcloud) {
@@ -85,6 +85,29 @@
                                             'message' => 'Impossible de créer le dossier ' . $folder . '.'
                                         ];
                                         break;
+                                    }
+                                }
+
+                                if($valid) {
+                                    $folderToCreateArrayClient = [
+                                        'CLIENT_VENDEUR',
+                                        'CLIENT_ACHETEUR'
+                                    ];
+
+                                    foreach($folderToCreateArrayClient as $clientFolder) {
+                                        $folderToCreateClientDocument = $folderToCreate . $folderToCreateArray[4] . '/' . $clientFolder;
+                                        $createFolderNextcloudClient = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateClientDocument);
+
+                                        if($folderToCreateClientDocument) {
+                                            $valid = true;
+                                        } else {
+                                            $valid = false;
+                                            $error_message = [
+                                                'type' => 'error',
+                                                'message' => 'Impossible de créer le dossier ' . $clientFolder . '.'
+                                            ];
+                                            break;
+                                        }
                                     }
                                 }
                             }

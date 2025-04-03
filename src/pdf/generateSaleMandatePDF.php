@@ -57,7 +57,7 @@
     //Valeur dans la BDD
     $importVarPDF = [
         $formattedId,
-        $resUser['utilisateurs_nom'] . " " . $resUser['utilisateurs_prenom'],
+        strtoupper($resUser['utilisateurs_nom']) . " " . $resUser['utilisateurs_prenom'],
         $resClient['clients_nom'] . " " . $resClient['clients_prenom'],
         $resClient['clients_numero_cni'],
         $resClient['clients_telephone'],
@@ -82,6 +82,7 @@
         $_POST['prixVenteSouhaite'],
         ucfirst($resClient['agence_nom']),
         date('d/m/Y'),
+        $_POST['miseEnCircu']
     ];
 
     $importCoordinates = [
@@ -89,7 +90,7 @@
         ['x' => 132, 'y' => 55], //Collaborateur
         ['x' => 56, 'y' => 63], //Nom prénom
         ['x' => 65, 'y' => 79], //numCNI
-        ['x' => 40, 'y' => 87], //tel
+        ['x' => 116, 'y' => 87], //tel
         ['x' => 70, 'y' => 97], //immat
         ['x' => 43, 'y' => 106], //model
         ['x' => 43, 'y' => 115], //type boite
@@ -98,19 +99,20 @@
         ['x' => 63, 'y' => 143], //orginCar
         ['x' => 55, 'y' => 152], //frais recent
         ['x' => 55, 'y' => 160], //frais prevoir
-        ['x' => 122, 'y' => 87], //email
+        ['x' => 116, 'y' => 79], //email
         ['x' => 127, 'y' => 97], //marque
         ['x' => 120, 'y' => 106], //puissance
         ['x' => 125, 'y' => 115], //couleur
         ['x' => 122, 'y' => 124], //kilometrage
-        ['x' => 152, 'y' => 134], //date entretien
-        ['x' => 134, 'y' => 143], //jourvisite
-        ['x' => 107, 'y' => 173], //prix vente
-        ['x' => 60, 'y' => 181], //raison vente
-        ['x' => 150, 'y' => 182], //delay vente
+        ['x' => 146, 'y' => 134], //date entretien
+        ['x' => 55, 'y' => 87], //jourvisite
+        ['x' => 107, 'y' => 172], //prix vente
+        ['x' => 60, 'y' => 180], //raison vente
+        ['x' => 150, 'y' => 180], //delay vente
         ['x' => 80, 'y' => 193], //prix Vente Souhaite
-        ['x' => 32, 'y' => 255],
-        ['x' => 75, 'y' => 255]
+        ['x' => 32, 'y' => 255], //Agence nom
+        ['x' => 75, 'y' => 255], //Date
+        ['x' => 135, 'y' => 143] //Mise en circu
     ];
 
     $pdf = new \setasign\Fpdi\Fpdi();
