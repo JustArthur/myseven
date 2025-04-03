@@ -11,6 +11,8 @@
     }
 
     $error_message = [];
+    $valid = true;
+    $validFolder = true;
 
     require_once '../../database.php';
     require_once '../functions/createFolderNextCloud.php';
@@ -47,104 +49,166 @@
                 $getImmat = $getImmat->fetch();
     
                 if (!$getImmat && $type_boite_value != "null") {
-                    $stmt = $DB->prepare("INSERT INTO vehicules (vehicules_marque, vehicules_model, vehicules_immatriculation, vehicules_puissance, vehicules_type_boite, vehicules_couleur, vehicules_finition, vehicules_kilometrage, vehicules_annee, vehicules_date_entretien, vehicules_frais_prevoir, vehicules_frais_recent, vehicules_agence_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    
-                    $stmt->execute([$brand, $model, $immatriculation, $puissance, $type_boite_value, $color, $finition, $kilometrage, $annee, $date_entretien, $frais_prevoir, $frais_recent , intval($_SESSION['user']["agence_id"])]);
 
-                    if ($stmt->rowCount() > 0) {
-                        $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
-                        $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
-                        $getAgence = $getAgence->fetch();
+                    if (isset($_FILES['fileCarteGrise']) && $_FILES['fileCarteGrise']['error'] == 0) {
+                        $allowed = ['png', 'jpeg', 'jpg', 'pdf'];
+                        $fileInfo = pathinfo($_FILES['fileCarteGrise']['name']);
+                        $fileExt = strtolower($fileInfo['extension']);
+                        $tmpPath = $_FILES['fileCarteGrise']['tmp_name'];
+                        
+                        $extension = pathinfo($_FILES['fileCarteGrise']['name'], PATHINFO_EXTENSION);
+                        $toCleanVehicule = strtoupper($brand) . '/'. strtoupper($model) . '-' . strtoupper($immatriculation) . '/';
+                        $cleanedValueNameVehicule = $toCleanVehicule . "DOCUMENTS_DE_VENTE/CLIENT_VENDEUR/";
+                        $carteGriseUploadNext = $toCleanVehicule . "CARTE_GRISE";
+                        $newFileName = "CARTE_GRISE_{$model}-{$immatriculation}.{$extension}";
+                        $destinationPath = sys_get_temp_dir() . '/' . $newFileName;
+        
+                        if (in_array($fileExt, $allowed)) {
+                            $fileContent = file_get_contents($_FILES['fileCarteGrise']['tmp_name']);
 
-                        $brandFolder = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($brand)) . '/';
-                        $createBrandFolder = createNextcloudFolder($getAgence['agence_path_vehicules'], $brandFolder);
-
-                        if ($createBrandFolder) {
-                            $folderToCreate = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($brand)) . '/' . preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($model)) . '-' . preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($immatriculation)) . '/';
-                            $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreate);
-
-                            if($createFolderNextcloud) {
-                                $folderToCreateArray = [
-                                    'PHOTOS',
-                                    'CARTE_GRISE',
-                                    'CONTROLE_TECHNIQUE',
-                                    'FACTURES',
-                                    'DOCUMENTS_DE_VENTE'
-                                ];
-
-                                foreach ($folderToCreateArray as $folder) {
-                                    $folderToCreateVehicule = $folderToCreate . $folder;
-                                    $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateVehicule);
-
+                            $stmt = $DB->prepare("INSERT INTO vehicules (vehicules_marque, vehicules_model, vehicules_carte_grise, vehicules_immatriculation, vehicules_puissance, vehicules_type_boite, vehicules_couleur, vehicules_finition, vehicules_kilometrage, vehicules_annee, vehicules_date_entretien, vehicules_frais_prevoir, vehicules_frais_recent, vehicules_agence_id, vehicules_date_mise_en_circu) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            
+                            $stmt->execute([$brand, $model, $fileContent, $immatriculation, $puissance, $type_boite_value, $color, $finition, $kilometrage, $annee, $date_entretien, $frais_prevoir, $frais_recent , intval($_SESSION['user']["agence_id"]), $dateMiseEnCircu]);
+        
+                            if ($stmt->rowCount() > 0) {
+                                $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
+                                $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
+                                $getAgence = $getAgence->fetch();
+        
+                                $brandFolder = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($brand)) . '/';
+                                $createBrandFolder = createNextcloudFolder($getAgence['agence_path_vehicules'], $brandFolder);
+        
+                                if ($createBrandFolder) {
+                                    $folderToCreate = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($brand)) . '/' . preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($model)) . '-' . preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($immatriculation)) . '/';
+                                    $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreate);
+        
                                     if($createFolderNextcloud) {
-                                        $valid = true;
-                                    } else {
-                                        $valid = false;
-                                        $error_message = [
-                                            'type' => 'error',
-                                            'message' => 'Impossible de créer le dossier ' . $folder . '.'
+                                        $folderToCreateArray = [
+                                            'PHOTOS',
+                                            'CARTE_GRISE',
+                                            'CONTROLE_TECHNIQUE',
+                                            'FACTURES',
+                                            'DOCUMENTS_DE_VENTE'
                                         ];
-                                        break;
-                                    }
-                                }
-
-                                if($valid) {
-                                    $folderToCreateArrayClient = [
-                                        'CLIENT_VENDEUR',
-                                        'CLIENT_ACHETEUR'
-                                    ];
-
-                                    foreach($folderToCreateArrayClient as $clientFolder) {
-                                        $folderToCreateClientDocument = $folderToCreate . $folderToCreateArray[4] . '/' . $clientFolder;
-                                        $createFolderNextcloudClient = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateClientDocument);
-
-                                        if($folderToCreateClientDocument) {
-                                            $valid = true;
-                                        } else {
-                                            $valid = false;
-                                            $error_message = [
-                                                'type' => 'error',
-                                                'message' => 'Impossible de créer le dossier ' . $clientFolder . '.'
+        
+                                        foreach ($folderToCreateArray as $folder) {
+                                            $folderToCreateVehicule = $folderToCreate . $folder;
+                                            $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateVehicule);
+        
+                                            if($createFolderNextcloud) {
+                                                $valid = true;
+                                            } else {
+                                                $valid = false;
+                                                $error_message = [
+                                                    'type' => 'error',
+                                                    'message' => 'Impossible de créer le dossier ' . $folder . '.'
+                                                ];
+                                                break;
+                                            }
+                                        }
+        
+                                        if($valid) {
+                                            $folderToCreateArrayClient = [
+                                                'CLIENT_VENDEUR',
+                                                'CLIENT_ACHETEUR'
                                             ];
-                                            break;
+        
+                                            foreach($folderToCreateArrayClient as $clientFolder) {
+                                                $folderToCreateClientDocument = $folderToCreate . $folderToCreateArray[4] . '/' . $clientFolder;
+                                                $createFolderNextcloudClient = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateClientDocument);
+
+        
+                                                if($folderToCreateClientDocument) {
+                                                    $valid = true;
+                                                } else {
+                                                    $valid = false;
+                                                    $error_message = [
+                                                        'type' => 'error',
+                                                        'message' => 'Impossible de créer le dossier ' . $clientFolder . '.'
+                                                    ];
+                                                    break;
+                                                }
+                                            }
+
+                                            if (move_uploaded_file($tmpPath, $destinationPath)) {
+                                                if(!empty($_GET['customerType'])) {
+                                                    switch ($_GET['customerType']) {
+                                                        case 2:
+                                                            $stmt = $DB->prepare("SELECT * FROM clients WHERE clients_email = ?");
+                                                            $stmt->execute([urldecode($_GET['cient_email'])]);
+                                                            $resClient = $stmt->fetch();
+        
+                                                            $fileContent = $resClient['clients_copie_cni'];
+                                                            $tempFilePath = sys_get_temp_dir() . "/CNI_client_" . strtoupper($resClient['clients_nom']) . "-" . strtoupper($resClient['clients_prenom']) . ".jpg";
+                                                            file_put_contents($tempFilePath, $fileContent);
+        
+                                                            $uploadSuccess = uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $cleanedValueNameVehicule, $tempFilePath);
+                                                            // $uploadSuccess = uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $cleanedValueNameVehicule, $destinationPath);
+                                                            break;
+        
+                                                        default:
+                                                            break;
+                                                    }
+                                            
+                                                    if ($uploadSuccess) {
+                                                        $validFolder = true;
+                                                    } else {
+                                                        $validFolder = false;
+                                                    }
+
+
+                                                }
+                                                
+                                                $uploadSuccess_2 = uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $carteGriseUploadNext, $destinationPath);
+
+                                                unlink($destinationPath);
+                                                
+                                            } else {
+                                                $error_message = [
+                                                    'type' => 'error',
+                                                    'message' => 'Impossible de déplacer le fichier.'
+                                                ];
+        
+                                                $validFolder = false;
+                                            }
                                         }
                                     }
+        
+                                    $valid = true;
+                                } else {
+                                    $valid = false;
                                 }
-                            }
-
-                            $valid = true;
-                        } else {
-                            $valid = false;
-                        }
-                        
-                        if($valid) {
-                            if(!empty($_GET['cient_email'])) {
-                                echo '
-                                    <form id="redirectForm" action="saleMandateForm.php" method="POST">
-                                        <input type="hidden" name="client" value="' . strtolower($cient_email) .'">
-                                        <input type="hidden" name="immatCar" value="' . strtoupper($immatriculation) .'">
-                                    </form>
-                                    <script>
-                                        document.getElementById("redirectForm").submit();
-                                    </script>
-                                ';
-                                exit();
+                                
+                                if($valid = true && $validFolder == true) {
+                                    if(!empty($_GET['cient_email'])) {
+                                        echo '
+                                            <form id="redirectForm" action="saleMandateForm.php" method="POST">
+                                                <input type="hidden" name="client" value="' . strtolower($cient_email) .'">
+                                                <input type="hidden" name="immatCar" value="' . strtoupper($immatriculation) .'">
+                                            </form>
+                                            <script>
+                                                document.getElementById("redirectForm").submit();
+                                            </script>
+                                        ';
+                                        exit();
+                                    } else {
+                                        header("Location: ../../index.php");
+                                        exit;
+                                    }
+                                } else {
+                                    $error_message = [
+                                        'type' => 'error',
+                                        'message' => 'Impossible de créer le dossier véhicule dans le Nextcloud.'
+                                    ];
+                                }
                             } else {
-                                header("Location: ../../index.php");
-                                exit;
-                            }
-                        } else {
-                            $error_message = [
-                                'type' => 'error',
-                                'message' => 'Impossible de créer le dossier véhicule dans le Nextcloud.'
-                            ];
+                                $error_message = [
+                                    'type' => 'error',
+                                    'message' => 'Impossible de créer le véhicule.'
+                                ];
+                            }        
                         }
-                    } else {
-                        $error_message = [
-                            'type' => 'error',
-                            'message' => 'Impossible de créer le véhicule.'
-                        ];
-                    }        
+                    }
                 } else {
                     $error_message = [
                         'type' => 'error',
@@ -182,6 +246,13 @@
                 <div class="input_box">
                     <span class="label form_required">Immatriculation</span>
                     <input required="true" name="immatriculation" type="text" id="immatriculation">
+
+                    <p class="text_error hidden">Ce champ est requis.</p>
+                </div>
+
+                <div class="input_box">
+                    <span class="label form_required">Carte grise (png, jpg, jpeg, pdf)</span>
+                    <input required="true" type="file" id="fileCarteGrise" name="fileCarteGrise">
 
                     <p class="text_error hidden">Ce champ est requis.</p>
                 </div>
@@ -243,6 +314,13 @@
                 <div class="input_box">
                     <span class="label form_required">Année du véhicule</span>
                     <input required="true" type="number" id="annee" name="annee">
+
+                    <p class="text_error hidden">Ce champ est requis.</p>
+                </div>
+
+                <div class="input_box">
+                    <span class="label form_required">Date de mise en circulation</span>
+                    <input required="true" type="date" id="dateMiseEnCircu" name="dateMiseEnCircu">
 
                     <p class="text_error hidden">Ce champ est requis.</p>
                 </div>
