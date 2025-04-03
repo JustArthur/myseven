@@ -46,6 +46,13 @@
                 </div>
 
                 <div class="input_box">
+                    <span class="label form_required">Date de mise en circulation</span>
+                    <input required type="date" name="miseEnCircu" id="miseEnCircu">
+
+                    <p class="text_error hidden">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box">
                     <span class="label form_required">Origine du véhicule</span>
                     <input required type="text" name="originCar" id="originCar">
 
