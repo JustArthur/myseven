@@ -4,7 +4,7 @@
         if (isset($_POST['submit_btn'])) {
 
             if(empty($immatCar)) {
-                $_POST['client_email'] = $client;
+                $_GET['client_email'] = $client;
                 $error_message = [
                     'type' => 'error',
                     'message' => 'Aucune immatriculation selectionné.'
@@ -49,7 +49,7 @@
             <form id="form_pdf" method="POST">
                 <?php if(!empty($error_message)) {echo "<div style='margin-bottom: 30px;' class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>"; } ?>
 
-                <input type="hidden" name="client" value="<?= $_POST['client_email'] ?>">
+                <input type="hidden" name="client" value="<?= $_GET['client_email'] ?>">
 
                 <div class="wrapper marque">
                     <span class="label form_required">Immatriculation du véhicule</span>
