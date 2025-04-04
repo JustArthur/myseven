@@ -268,7 +268,7 @@
 
                 <div class="input_box">
                     <span class="label form_required">Carte grise (png, jpg, jpeg, pdf)</span>
-                    <input required="true" type="file" id="fileCarteGrise" name="fileCarteGrise">
+                    <input required="true" type="file" id="fileCarteGrise" name="fileCarteGrise" accept=".png, .jpeg, .jpg, .pdf">
 
                     <p class="text_error hidden">Ce champ est requis.</p>
                 </div>

@@ -264,7 +264,7 @@
 
                 <div class="input_box">
                     <span class="label form_required">Ajouter la CNI (png, jpg, jpeg, pdf)</span>
-                    <input required="true" type="file" id="fileCNI" name="fileCNI">
+                    <input required="true" type="file" id="fileCNI" name="fileCNI" accept=".jpg, .jpeg, .png, .pdf">
 
                     <p class="text_error hidden">Ce champ est requis.</p>
                 </div>

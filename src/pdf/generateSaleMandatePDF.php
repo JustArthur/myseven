@@ -74,7 +74,7 @@
         $resVehicule['vehicules_puissance'],
         $resVehicule['vehicules_couleur'],
         $resVehicule['vehicules_kilometrage'],
-        $resVehicule['vehicules_date_entretien'],
+        date('d/m/Y', strtotime($resVehicule['vehicules_date_entretien'])),
         $_POST['jourVisite'],
         $_POST['prixVente'],
         $_POST['raisonVente'],
