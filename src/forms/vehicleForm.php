@@ -143,7 +143,7 @@
                                                             $fileContent = $resClient['clients_copie_cni'];
 
                                                             $finfo = new finfo(FILEINFO_MIME_TYPE);
-                                                            $mimeType = $finfo->buffer($resClient['clients_image_blob']);
+                                                            $mimeType = $finfo->buffer($resClient['clients_copie_cni']);
 
                                                             $extension = match ($mimeType) {
                                                                 'image/jpeg' => 'jpg',
