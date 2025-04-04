@@ -154,7 +154,7 @@
                                                                 default => 'pdf'
                                                             };
 
-                                                            $tempFilePath = sys_get_temp_dir() . "/CNI_client_" . strtoupper($resClient['clients_nom']) . "-" . strtoupper($resClient['clients_prenom']) . ".{$extension}";
+                                                            $tempFilePath = sys_get_temp_dir() . "/CNI_client_" . str_replace(' ', '_', strtoupper($resClient['clients_nom'])) . "-" . str_replace(' ', '_', strtoupper($resClient['clients_prenom'])) . ".{$extension}";
 
                                                             file_put_contents($tempFilePath, $resClient['clients_copie_cni']);
         
