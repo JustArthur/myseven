@@ -224,6 +224,10 @@ input[type="radio"]:checked {
     gap: 10px;
 }
 
+.btn_list.excel {
+    justify-content: start;
+}
+
 .btn_list .btn-generate {
     padding: 10px 15px;
     border-radius: var(--border-radius);

@@ -11,9 +11,12 @@
     }
 
     $error_message = [];
+
     $selectedAcheteur = "";
     $selectedVendeur = "";
     $selectedDefault = "selected";
+    $tileCustomer = "";
+
     $valid = true;
     $validFolder = true;
 
@@ -21,10 +24,17 @@
         switch($_GET['customerType']) {
             case 1:
                 $selectedAcheteur = "selected";
+                $tileCustomer = "Acheteur";
                 break;
             
             case 2:
                 $selectedVendeur = "selected";
+                $tileCustomer = "Vendeur";
+                break;
+
+            default:
+                $selectedDefault = "selected";
+                $tileCustomer = "";
                 break;
         }
     }
@@ -38,21 +48,6 @@
             $DBB = new ConnexionDB();
             $DB = $DBB->openConnection();
 
-            switch($typeCustomer) {
-                case 1:
-                    $typeCustomerValue = "Acheteur";
-                    break;
-
-                case 2:
-                    $typeCustomerValue = "Vendeur";
-                    break;
-
-                default:
-                    $valid = false;
-                    $typeCustomerValue = "null";
-                    break;
-            }
-
             $getEmail = $DB->prepare("SELECT clients_email FROM clients WHERE clients_email = ?");
             $getEmail->execute([$email]);
             $getEmail = $getEmail->fetch();
@@ -65,7 +60,7 @@
                 ];
             }
             
-            if (empty($firstName) || empty($lastName) || empty($email) || empty($telephone) || empty($birthday) || empty($lieuNaissance) || empty($numCNI) || empty($adresse) || empty($city) || empty($cp) || $typeCustomerValue == "null") {
+            if (empty($firstName) || empty($lastName) || empty($email) || empty($telephone) || empty($birthday) || empty($lieuNaissance) || empty($numCNI) || empty($adresse) || empty($city) || empty($cp) || empty($_GET['customerType'])) {
                 $valid = false;
                 $error_message = [
                     'type' => 'error',
@@ -83,7 +78,7 @@
                         $fileContent = file_get_contents($_FILES['fileCNI']['tmp_name']);
     
                         $stmt = $DB->prepare("INSERT INTO clients (clients_nom, clients_prenom, clients_email, clients_telephone, clients_anniversaire, clients_lieu_naissance, clients_numero_cni, clients_copie_cni, clients_rue, clients_ville, clients_cp, clients_agence_id, clients_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                        $stmt->execute([strtoupper($firstName), $lastName, strtolower($email), $telephone, $birthday, $lieuNaissance, $numCNI, $fileContent, $adresse, $city, $cp, intval($_SESSION['user']["agence_id"]), $typeCustomerValue]);
+                        $stmt->execute([strtoupper($firstName), $lastName, strtolower($email), $telephone, $birthday, $lieuNaissance, $numCNI, $fileContent, $adresse, $city, $cp, intval($_SESSION['user']["agence_id"]), intval($_GET['customerType'])]);
     
                         if ($stmt->rowCount() > 0) {
                             $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
@@ -193,14 +188,14 @@
     <link rel="stylesheet" href="../../assets/css/forms.css">
     <link rel="stylesheet" href="../../assets/css/pop_up.css">
 
-    <title>Myseven - Créer un client</title>
+    <title>Myseven - Créer un client <?= $tileCustomer ?></title>
 </head>
 
 <body id="body">
     <main>
 
         <div class="search-container">
-            <h2>Créer un client</h2>
+            <h2>Créer un client <?= $tileCustomer ?></h2>
             <form id="form_pdf" method="POST" enctype="multipart/form-data">
                 <?php if(!empty($error_message)) {echo "<div style='margin-bottom: 30px;' class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>"; } ?>
 
@@ -248,7 +243,7 @@
 
                 <div class="input_box">
                     <span class="label form_required">Numéro CNI</span>
-                    <input required="true" type="number" id="numCNI" name="numCNI" min="0">
+                    <input required="true" type="text" id="numCNI" name="numCNI" min="0">
 
                     <p class="text_error hidden">Ce champ est requis.</p>
                 </div>
@@ -282,17 +277,7 @@
                 </div>
 
                 <div class="input_box">
-                    <span class="label form_required">Type de client</span>
-                    <select required="true" id="typeCustomer" name="typeCustomer">
-                        <optgroup label="Choisir le type de client">
-                            <option <?= $selectedAcheteur ?> value=1>Acheteur</option>
-                            <option <?= $selectedVendeur ?> value=2>Vendeur</option>
-                        </optgroup>
-                    </select>
-                </div>
-
-                <div class="input_box">
-                    <input class="submit_btn" type="submit" name="submit_btn" id="submit_btn" value="Créer le client">
+                    <input class="submit_btn" type="submit" name="submit_btn" id="submit_btn" value="Créer le client <?= $tileCustomer ?>">
                 </div>
             </form>
         </div>

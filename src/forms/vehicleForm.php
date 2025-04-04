@@ -52,23 +52,25 @@
 
                     if (isset($_FILES['fileCarteGrise']) && $_FILES['fileCarteGrise']['error'] == 0) {
                         $allowed = ['png', 'jpeg', 'jpg', 'pdf'];
-                        $fileInfo = pathinfo($_FILES['fileCarteGrise']['name']);
-                        $fileExt = strtolower($fileInfo['extension']);
+                        $extension = pathinfo($_FILES['fileCarteGrise']['name'], PATHINFO_EXTENSION);
                         $tmpPath = $_FILES['fileCarteGrise']['tmp_name'];
                         
-                        $extension = pathinfo($_FILES['fileCarteGrise']['name'], PATHINFO_EXTENSION);
+                        $immatriculationCleaned = preg_replace('/[^A-Za-z0-9]/', '-', strtoupper($immatriculation));
                         $toCleanVehicule = strtoupper($brand) . '/'. strtoupper($model) . '-' . strtoupper($immatriculation) . '/';
+
                         $cleanedValueNameVehicule = $toCleanVehicule . "DOCUMENTS_DE_VENTE/CLIENT_VENDEUR/";
                         $carteGriseUploadNext = $toCleanVehicule . "CARTE_GRISE";
+
                         $newFileName = "CARTE_GRISE_{$model}-{$immatriculation}.{$extension}";
+
                         $destinationPath = sys_get_temp_dir() . '/' . $newFileName;
         
-                        if (in_array($fileExt, $allowed)) {
+                        if (in_array($extension, $allowed)) {
                             $fileContent = file_get_contents($_FILES['fileCarteGrise']['tmp_name']);
 
                             $stmt = $DB->prepare("INSERT INTO vehicules (vehicules_marque, vehicules_model, vehicules_carte_grise, vehicules_immatriculation, vehicules_puissance, vehicules_type_boite, vehicules_couleur, vehicules_finition, vehicules_kilometrage, vehicules_annee, vehicules_date_entretien, vehicules_frais_prevoir, vehicules_frais_recent, vehicules_agence_id, vehicules_date_mise_en_circu) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             
-                            $stmt->execute([$brand, $model, $fileContent, $immatriculation, $puissance, $type_boite_value, $color, $finition, $kilometrage, $annee, $date_entretien, $frais_prevoir, $frais_recent , intval($_SESSION['user']["agence_id"]), $dateMiseEnCircu]);
+                            $stmt->execute([strtoupper($brand), strtoupper($model), $fileContent, $immatriculationCleaned, $puissance, $type_boite_value, $color, $finition, $kilometrage, $annee, $date_entretien, $frais_prevoir, $frais_recent , intval($_SESSION['user']["agence_id"]), $dateMiseEnCircu]);
         
                             if ($stmt->rowCount() > 0) {
                                 $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
@@ -79,7 +81,7 @@
                                 $createBrandFolder = createNextcloudFolder($getAgence['agence_path_vehicules'], $brandFolder);
         
                                 if ($createBrandFolder) {
-                                    $folderToCreate = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($brand)) . '/' . preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($model)) . '-' . preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($immatriculation)) . '/';
+                                    $folderToCreate = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($brand)) . '/' . preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($model)) . '-' . $immatriculationCleaned . '/';
                                     $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreate);
         
                                     if($createFolderNextcloud) {
@@ -139,8 +141,22 @@
                                                             $resClient = $stmt->fetch();
         
                                                             $fileContent = $resClient['clients_copie_cni'];
-                                                            $tempFilePath = sys_get_temp_dir() . "/CNI_client_" . strtoupper($resClient['clients_nom']) . "-" . strtoupper($resClient['clients_prenom']) . ".jpg";
-                                                            file_put_contents($tempFilePath, $fileContent);
+
+                                                            $finfo = new finfo(FILEINFO_MIME_TYPE);
+                                                            $mimeType = $finfo->buffer($resClient['clients_image_blob']);
+
+                                                            $extension = match ($mimeType) {
+                                                                'image/jpeg' => 'jpg',
+                                                                'image/png' => 'png',
+                                                                'image/gif' => 'gif',
+                                                                'image/webp' => 'webp',
+                                                                'application/pdf' => 'pdf',
+                                                                default => 'pdf'
+                                                            };
+
+                                                            $tempFilePath = sys_get_temp_dir() . "/CNI_client_" . strtoupper($resClient['clients_nom']) . "-" . strtoupper($resClient['clients_prenom']) . ".{$extension}";
+
+                                                            file_put_contents($tempFilePath, $resClient['clients_copie_cni']);
         
                                                             $uploadSuccess = uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $cleanedValueNameVehicule, $tempFilePath);
                                                             // $uploadSuccess = uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $cleanedValueNameVehicule, $destinationPath);

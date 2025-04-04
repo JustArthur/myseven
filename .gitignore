@@ -1,12 +1,15 @@
-#Librairies
+# Librairies
 /vendor/
 .vscode/
 
-#Dossier de stocakge
+# Dossier de stocakge
 /storage
 
-#Fichier Environement
+# Fichier Environement
 .env
 
-#Fichier de création d'un utilisateur
+# Fichier de création d'un utilisateur
 register.php
+
+# Fichier de log
+*.log

@@ -26,7 +26,7 @@
         'Clients vendeur',
         'Véhicules',
         'Clients acheteur',
-        'Générer des PDF'
+        'PDF'
     ];
 
     $resAgence = selectAllAgence($DB);
@@ -42,7 +42,7 @@
         $resVehicule = selectAllVehicle($DB);
         $resVehicule = $resVehicule->fetchAll();
 
-        $tableauOnglets[] = 'Générer des Excel';
+        $tableauOnglets[] = 'Excel';
     } else {
         $resClientVendeur = selectAllClientVendeurWhereAgence($_SESSION['user']['agence_id'], $DB);
         $resClientVendeur = $resClientVendeur->fetchAll();
@@ -268,7 +268,9 @@
 
             <div class="content" id="tab5">
                 <h2><?= $tableauOnglets[4] ?></h2>
-                <a href="src/excel/dumpExcel.php" target="_blank" class="btn-generate action-link">Générer un CSV</a>
+                <div class="btn_list excel">
+                    <a href="src/excel/dumpExcel.php" target="_blank" class="btn-generate action-link">Générer un Excel</a>
+                </div>
             </div>
         </div>
     </form>
