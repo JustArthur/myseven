@@ -3,6 +3,11 @@
     ini_set('display_startup_errors', '1');
     error_reporting(E_ALL);
 
+    if(empty($_SESSION['user']) || empty($_COOKIE['user_session'])) {
+        header('Location: ../../login.php');
+        exit();
+    }
+
     if (!empty($_POST)) {
         extract(array: $_POST);
         if (isset($_POST['submit_btn'])) {

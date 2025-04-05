@@ -5,10 +5,9 @@
 
     session_start();
 
-    if(empty($_COOKIE['user_session']) && empty($_SESSION['user'])) {
+    if(empty($_SESSION['user']) || empty($_COOKIE['user_session'])) {
         header('Location: ../../login.php');
         exit();
-        
     } else if (empty($_POST['customerMail']) || empty($_POST['immatricuCar'])) {
         header('Location: ../../index.php');
         exit();

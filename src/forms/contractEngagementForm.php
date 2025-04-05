@@ -5,10 +5,10 @@
 
     session_start();
 
-    if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
+    if(empty($_SESSION['user']) || empty($_COOKIE['user_session'])) {
         header('Location: ../../login.php');
         exit();
-    } 
+    }
 ?>
 
 <!DOCTYPE html>
