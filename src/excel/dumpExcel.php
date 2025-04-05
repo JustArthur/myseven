@@ -3,6 +3,13 @@
     ini_set('display_startup_errors', '1');
     error_reporting(E_ALL);
 
+    session_start();
+
+    if(empty($_SESSION['user']) || empty($_SESSION['user'])) {
+        header('Location: ../../login.php');
+        exit();
+    }
+
     require '../../vendor/autoload.php';
 
     use PhpOffice\PhpSpreadsheet\Spreadsheet;

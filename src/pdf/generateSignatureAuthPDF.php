@@ -5,7 +5,7 @@
 
     session_start();
 
-    if(!isset($_COOKIE['user_session']) && !isset($_SESSION['user'])) {
+    if(empty($_SESSION['user']) || empty($_COOKIE['user_session'])) {
         header('Location: ../../login.php');
         exit();
     } else if (empty($_POST['client']) || empty($_POST['immatCar'])) {
@@ -109,12 +109,8 @@
     $getAgence = $getAgence->fetch();
     $DBB->closeConnection();
 
-    $pdf->Output('F', $destinationPath);
-    var_dump($getAgence['agence_path_vehicules']);
-    var_dump($cleanedValueNameVehicule);
-    var_dump($destinationPath);
-    
+    $pdf->Output('F', $destinationPath);    
     $t= uploadPdfToNextcloud($getAgence['agence_path_client'], strtoupper($cleanedValueNameFolder), $destinationPath);
     $y= uploadPdfToNextcloud($getAgence['agence_path_vehicules'], strtoupper($cleanedValueNameVehicule), $destinationPath);
-    // $pdf->Output('I', $pdfNameFile);
+    $pdf->Output('I', $pdfNameFile);
 ?>
