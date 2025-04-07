@@ -20,25 +20,6 @@
     $valid = true;
     $validFolder = true;
 
-    if($_GET['customerType']) {
-        switch($_GET['customerType']) {
-            case 1:
-                $selectedAcheteur = "selected";
-                $tileCustomer = "Acheteur";
-                break;
-            
-            case 2:
-                $selectedVendeur = "selected";
-                $tileCustomer = "Vendeur";
-                break;
-
-            default:
-                $selectedDefault = "selected";
-                $tileCustomer = "";
-                break;
-        }
-    }
-
     require_once '../../database.php';
     require_once '../functions/createFolderNextCloud.php';
 

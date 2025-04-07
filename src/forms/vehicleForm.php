@@ -54,9 +54,13 @@
                         $allowed = ['png', 'jpeg', 'jpg', 'pdf'];
                         $extension = pathinfo($_FILES['fileCarteGrise']['name'], PATHINFO_EXTENSION);
                         $tmpPath = $_FILES['fileCarteGrise']['tmp_name'];
+
+                        $cleanModel = preg_replace('/[^A-Za-z0-9]/', '-', strtoupper($model));
+                        $cleanBrand = preg_replace('/[^A-Za-z0-9]/', '-', strtoupper($brand));
+                        $immatriculation = preg_replace('/[^A-Za-z0-9]/', '-', strtoupper($immatriculation));
                         
                         $immatriculationCleaned = preg_replace('/[^A-Za-z0-9]/', '-', strtoupper($immatriculation));
-                        $toCleanVehicule = strtoupper($brand) . '/'. strtoupper($model) . '-' . strtoupper($immatriculation) . '/';
+                        $toCleanVehicule = $cleanBrand . '/'. $cleanModel . '-' . $immatriculation . '/';
 
                         $cleanedValueNameVehicule = $toCleanVehicule . "DOCUMENTS_DE_VENTE/CLIENT_VENDEUR/";
                         $carteGriseUploadNext = $toCleanVehicule . "CARTE_GRISE";

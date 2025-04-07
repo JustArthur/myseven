@@ -113,11 +113,8 @@
 
     $fraisMiseEnRoute = isset($_POST['fraisMiseEnRoute']) && !empty($_POST['fraisMiseEnRoute']) ? $_POST['fraisMiseEnRoute'] : 0;
     array_push($crossToCreate, ['x' => 18.5, 'y' => 148]);
-    array_push($crossToCreate, ['x' => 18.5, 'y' => 148]);
 
     $prixTotalHCG = (int)$_POST['garantieMecaniqueText'] + (int)$fraisMiseEnRoute + (int)$_POST['PrixVehicule'] + (int)$_POST['livraison'];
-    // $fraisCG = (int)$_POST['garantieMecaniqueText'] + $fraisMiseEnRoute + (int)$_POST['livraison'];
-    $_POST['miseCircu'] = date('d/m/Y', strtotime($_POST['miseCircu']));
 
     $importVarPDF = [
         strtoupper($resClient['clients_nom']) . ' ' . $resClient['clients_prenom'],
