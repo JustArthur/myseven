@@ -55,17 +55,16 @@
                         $extension = pathinfo($_FILES['fileCarteGrise']['name'], PATHINFO_EXTENSION);
                         $tmpPath = $_FILES['fileCarteGrise']['tmp_name'];
 
-                        $cleanModel = preg_replace('/[^A-Za-z0-9]/', '-', strtoupper($model));
                         $cleanBrand = preg_replace('/[^A-Za-z0-9]/', '-', strtoupper($brand));
-                        $immatriculation = preg_replace('/[^A-Za-z0-9]/', '-', strtoupper($immatriculation));
-                        
-                        $immatriculationCleaned = preg_replace('/[^A-Za-z0-9]/', '-', strtoupper($immatriculation));
-                        $toCleanVehicule = $cleanBrand . '/'. $cleanModel . '-' . $immatriculation . '/';
+                        $cleanModel = preg_replace('/[^A-Za-z0-9]/', '-', strtoupper($model));
+                        $cleanImmatriculation = preg_replace('/[^A-Za-z0-9]/', '-', strtoupper($immatriculation));
+
+                        $toCleanVehicule = $cleanBrand . '/'. $cleanModel . '-' . $cleanImmatriculation . '/';
 
                         $cleanedValueNameVehicule = $toCleanVehicule . "DOCUMENTS_DE_VENTE/CLIENT_VENDEUR/";
                         $carteGriseUploadNext = $toCleanVehicule . "CARTE_GRISE";
 
-                        $newFileName = "CARTE_GRISE_{$model}-{$immatriculation}.{$extension}";
+                        $newFileName = "CARTE_GRISE_{$cleanModel}-{$cleanImmatriculation}.{$extension}";
 
                         $destinationPath = sys_get_temp_dir() . '/' . $newFileName;
         
@@ -74,7 +73,7 @@
 
                             $stmt = $DB->prepare("INSERT INTO vehicules (vehicules_marque, vehicules_model, vehicules_carte_grise, vehicules_immatriculation, vehicules_puissance, vehicules_type_boite, vehicules_couleur, vehicules_finition, vehicules_kilometrage, vehicules_annee, vehicules_date_entretien, vehicules_frais_prevoir, vehicules_frais_recent, vehicules_agence_id, vehicules_date_mise_en_circu) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             
-                            $stmt->execute([strtoupper($brand), strtoupper($model), $fileContent, $immatriculationCleaned, $puissance, $type_boite_value, $color, $finition, $kilometrage, $annee, $date_entretien, $frais_prevoir, $frais_recent , intval($_SESSION['user']["agence_id"]), $dateMiseEnCircu]);
+                            $stmt->execute([strtoupper($brand), strtoupper($model), $fileContent, $cleanImmatriculation, $puissance, $type_boite_value, $color, $finition, $kilometrage, $annee, $date_entretien, $frais_prevoir, $frais_recent , intval($_SESSION['user']["agence_id"]), $dateMiseEnCircu]);
         
                             if ($stmt->rowCount() > 0) {
                                 $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
@@ -85,7 +84,7 @@
                                 $createBrandFolder = createNextcloudFolder($getAgence['agence_path_vehicules'], $brandFolder);
         
                                 if ($createBrandFolder) {
-                                    $folderToCreate = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($brand)) . '/' . preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($model)) . '-' . $immatriculationCleaned . '/';
+                                    $folderToCreate = preg_replace('/[^A-Za-z0-9]/', '-', strtoupper($brand)) . '/' . preg_replace('/[^A-Za-z0-9]/', '-', strtoupper($model)) . '-' . $cleanImmatriculation . '/';
                                     $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreate);
         
                                     if($createFolderNextcloud) {
@@ -180,6 +179,12 @@
                                                 }
                                                 
                                                 $uploadSuccess_2 = uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $carteGriseUploadNext, $destinationPath);
+
+                                                if($uploadSuccess_2) {
+                                                    $validFolder = true;
+                                                } else {
+                                                    $validFolder = false;
+                                                }
 
                                                 unlink($destinationPath);
                                                 
