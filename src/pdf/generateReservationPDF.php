@@ -27,6 +27,8 @@
     $resClient->execute([$_POST['customerMail']]);
     $resClient = $resClient->fetch();
 
+    $_POST['immatCar'] = preg_replace('/\s+/', '-', $_POST['immatCar']);
+
     $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
     $resVehicule->execute([$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();

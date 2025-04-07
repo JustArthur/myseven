@@ -22,6 +22,7 @@
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
 
+    $_POST['immatCar'] = preg_replace('/\s+/', '-', $_POST['immatCar']);
 
     $resClient = $DB->prepare('SELECT * FROM clients INNER JOIN agence ON clients.clients_agence_id = agence.agence_id WHERE clients.clients_email = ?');
     $resClient->execute([$_POST['client']]);
