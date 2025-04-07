@@ -141,6 +141,7 @@
         $resAgence['agence_cp'] . " " . $resAgence['agence_ville'],
         $resAgence['agence_telephone'],
         $resAgence['agence_mail'],
+        "ARR " . $resVehicule['vehicules_immatriculation'],
     ];
 
 
@@ -179,6 +180,7 @@
         ['x' => 27, 'y' => 53], // Agence CP / Ville
         ['x' => 26, 'y' => 64], // Agence Téléphone
         ['x' => 26, 'y' => 59], // Agence Email
+        ['x' => 128, 'y' => 144], // Arrhes
     ];
 
     foreach ($crossToCreate as $index) {
