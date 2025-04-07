@@ -112,7 +112,13 @@
     $fraisMiseEnRoute = isset($_POST['fraisMiseEnRoute']) && !empty($_POST['fraisMiseEnRoute']) ? $_POST['fraisMiseEnRoute'] : 0;
     array_push($crossToCreate, ['x' => 18.5, 'y' => 148]);
 
-    $prixTotalHCG = (int)$_POST['garantieMecaniqueText'] + (int)$fraisMiseEnRoute + (int)$_POST['PrixVehicule'] + (int)$_POST['livraison'];
+
+    if($_POST['depot_arrhes_select'] != 'empBank') {
+        $prixTotalHCG = (int)$_POST['garantieMecaniqueText'] + (int)$fraisMiseEnRoute + (int)$_POST['PrixVehicule'] + (int)$_POST['livraison'] - (int)$_POST['depot_arrhes_input'];
+    } else {
+        $prixTotalHCG = (int)$_POST['garantieMecaniqueText'] + (int)$fraisMiseEnRoute + (int)$_POST['PrixVehicule'] + (int)$_POST['livraison'];
+
+    }
 
     $importVarPDF = [
         strtoupper($resClient['clients_nom']) . ' ' . $resClient['clients_prenom'],
