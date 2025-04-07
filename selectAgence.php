@@ -31,7 +31,7 @@
             $_SESSION['user'] = [
                 'id' => htmlspecialchars($getUser['utilisateurs_id'], ENT_QUOTES),
                 'identifiant' => htmlspecialchars($getUser['utilisateurs_identifiant'], ENT_QUOTES),
-                'agence_id' => htmlspecialchars($choiceAgence, ENT_QUOTES),
+                'agence_id' => intval($choiceAgence),
                 'role' => htmlspecialchars($getUser['utilisateurs_role'], ENT_QUOTES)
             ];
     
