@@ -22,11 +22,15 @@
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
     
-    $resClient = $DB->prepare('SELECT * FROM clients INNER JOIN agence ON clients.clients_agence_id = agence.agence_id WHERE clients.clients_email = ?');
+    $resClient = $DB->prepare('SELECT * FROM clients WHERE clients.clients_email = ?');
     $resClient->execute([$_POST['client']]);
     $resClient = $resClient->fetch();
 
     $_POST['immatCar'] = preg_replace('/\s+/', '-', $_POST['immatCar']);
+
+    $resAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
+    $resAgence->execute([$_SESSION['user']['agence_id']]);
+    $resAgence = $resAgence->fetch();
 
     $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
     $resVehicule->execute([$_POST['immatCar']]);
@@ -37,8 +41,8 @@
         $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
         $resVehicule['vehicules_immatriculation'],
         $_POST['netVendeur'],
-        $resClient['agence_nom'],
-        $resClient['agence_nom'],
+        $resAgence['agence_nom'],
+        $resAgence['agence_nom'],
         date("d"),
         date("m"),
         date("Y")

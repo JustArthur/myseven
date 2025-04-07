@@ -34,11 +34,7 @@
     $resVehicule = $resVehicule->fetch();
 
     $resAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
-    $resAgence->execute([$resClient['clients_agence_id']]);
-    $resAgence = $resAgence->fetch();
-
-    $resAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
-    $resAgence->execute([$resClient['clients_agence_id']]);
+    $resAgence->execute([$_SESSION['user']['agence_id']]);
     $resAgence = $resAgence->fetch();
 
     $crossToCreate = [];
@@ -194,6 +190,7 @@
 
     foreach ($importVarPDF as $index => $valPDF) {
         $pdf->SetFont('Helvetica');
+        $pdf->SetFontSize(10);
         $pdf->SetTextColor(r: 0, g: 0, b: 0);
         $pdf->SetXY($importCoordinates[$index]['x'], $importCoordinates[$index]['y']);
         $valPDF = mb_convert_encoding($valPDF, 'windows-1252', 'UTF-8');

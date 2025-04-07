@@ -28,9 +28,13 @@
     $resVehicule->execute([$_POST['immatricuCar']]);
     $resVehicule = $resVehicule->fetch();
 
-    $resClient = $DB->prepare('SELECT * FROM clients INNER JOIN agence ON agence.agence_id = clients.clients_agence_id WHERE clients.clients_email = ?');
+    $resClient = $DB->prepare('SELECT * FROM clients WHERE clients.clients_email = ?');
     $resClient->execute([$_POST['customerMail']]);
     $resClient = $resClient->fetch();
+
+    $resAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
+    $resAgence->execute([$_SESSION['user']['agence_id']]);
+    $resAgence = $resAgence->fetch();
 
     $resUser = $DB->prepare('SELECT * FROM utilisateurs WHERE utilisateurs_id = ?');
     $resUser->execute([$_SESSION['user']['id']]);
@@ -81,7 +85,7 @@
         $_POST['raisonVente'],
         $_POST['delayVenteText'] . " " . $_POST['delayVenteType'],
         $_POST['prixVenteSouhaite'],
-        ucfirst($resClient['agence_nom']),
+        ucfirst($resAgence['agence_nom']),
         date('d/m/Y'),
         date('d/m/Y', strtotime($resVehicule['vehicules_date_mise_en_circu']))
     ];
