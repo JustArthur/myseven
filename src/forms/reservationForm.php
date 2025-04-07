@@ -51,13 +51,6 @@
             </div>
 
             <div class="input_box">
-                <span class="label form_required">Date de mise en circulation</span>
-                <input required type="date" name="miseCircu" id="miseCircu">
-
-                <p class="text_error">Ce champ est requis</p>
-            </div>
-
-            <div class="input_box">
                 <span class="label form_required">Frais de carte grise</span>
                 <input required type="text" name="fraisGC" id="fraisGC">
 

@@ -139,7 +139,12 @@
         $resAgence['agence_iban'],
         $resAgence['agence_bic'],
         date('d/m/Y', strtotime($resVehicule['vehicules_date_mise_en_circu'])),
-        $resAgence['agence_nom']
+        $resAgence['agence_nom'],
+        $resAgence['agence_nom'],
+        $resAgence['agence_rue'],
+        $resAgence['agence_cp'] . " " . $resAgence['agence_ville'],
+        $resAgence['agence_telephone'],
+        $resAgence['agence_mail'],
     ];
 
 
@@ -172,7 +177,12 @@
         ['x' => 128, 'y' => 149], // IBAN
         ['x' => 128, 'y' => 153], // BIC
         ['x' => 130, 'y' => 93.5], // Mise en circulation
-        ['x' => 133, 'y' => 270.5] // Agence
+        ['x' => 133, 'y' => 270.5], // Agence Nom
+        ['x' => 49, 'y' => 43], // Agence Nom
+        ['x' => 27, 'y' => 48], // Agence Adresse
+        ['x' => 10, 'y' => 53], // Agence CP / Ville
+        ['x' => 20, 'y' => 64], // Agence Téléphone
+        ['x' => 26, 'y' => 59], // Agence Email
     ];
 
     foreach ($crossToCreate as $index) {
