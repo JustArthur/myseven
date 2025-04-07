@@ -151,7 +151,7 @@
         $resAgence['agence_telephone'],
         $resAgence['agence_mail'],
         "ARR " . $resVehicule['vehicules_immatriculation'],
-        "= " . $cashSentinel . " €",
+        ": " . $cashSentinel . " €TTC",
     ];
 
 
