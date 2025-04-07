@@ -194,7 +194,11 @@
         mkdir($folder, 0777, true);
     }
     
-    $toCleanVehicule = $resVehicule['vehicules_marque'] . '/'. $resVehicule['vehicules_model'] . '-' . strtoupper($resVehicule['vehicules_immatriculation']) . '/';
+    $cleanBrand = preg_replace('/[^A-Za-z0-9]+/', '-', trim($resVehicule['vehicules_marque']));
+    $cleanModel = preg_replace('/[^A-Za-z0-9]+/', '-', trim($resVehicule['vehicules_model']));
+    $cleanImmatriculation = preg_replace('/[^A-Za-z0-9]+/', '-', trim($resVehicule['vehicules_immatriculation']));
+
+    $toCleanVehicule = $cleanBrand . '/'. $cleanModel . '-' . $cleanImmatriculation . '/';
 
     $cleanedValueNameFolder = preg_replace('/[^A-Za-z0-9]+/', '-', trim($resClient['clients_nom'] . " " . $resClient['clients_prenom']));
     $cleanedValueName = preg_replace('/[^A-Za-z0-9]+/', '_', trim($resClient['clients_nom'] . " " . $resClient['clients_prenom']));
