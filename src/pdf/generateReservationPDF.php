@@ -129,7 +129,7 @@
         $_POST['livraison'],
         $prixTotalHCG,
         $_POST['fraisGC'],
-        $resClient['agence_nom'],
+        $resAgence['agence_nom'],
         date('d/m/Y'),
         $_POST['depot_arrhes_input'],
         $resAgence['agence_iban'],
@@ -176,7 +176,7 @@
         ['x' => 133, 'y' => 270.5], // Agence Nom
         ['x' => 49, 'y' => 43], // Agence Nom
         ['x' => 27, 'y' => 48], // Agence Adresse
-        ['x' => 10, 'y' => 53], // Agence CP / Ville
+        ['x' => 27, 'y' => 53], // Agence CP / Ville
         ['x' => 20, 'y' => 64], // Agence Téléphone
         ['x' => 26, 'y' => 59], // Agence Email
     ];
