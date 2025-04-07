@@ -38,6 +38,7 @@
     $resAgence = $resAgence->fetch();
 
     $crossToCreate = [];
+    $cashSentinel = "";
 
     switch($_POST['garantieMecaniqueType']) {
         case '3Mois':
@@ -114,10 +115,12 @@
 
 
     if($_POST['depot_arrhes_select'] != 'empBank') {
-        $prixTotalHCG = (int)$_POST['garantieMecaniqueText'] + (int)$fraisMiseEnRoute + (int)$_POST['PrixVehicule'] + (int)$_POST['livraison'] - (int)$_POST['depot_arrhes_input'];
-    } else {
         $prixTotalHCG = (int)$_POST['garantieMecaniqueText'] + (int)$fraisMiseEnRoute + (int)$_POST['PrixVehicule'] + (int)$_POST['livraison'];
 
+        $cashSentinel = (int)$prixTotalHCG - (int)$_POST['depot_arrhes_input'];
+    } else {
+        $prixTotalHCG = (int)$_POST['garantieMecaniqueText'] + (int)$fraisMiseEnRoute + (int)$_POST['PrixVehicule'] + (int)$_POST['livraison'];
+        $cashSentinel = $prixTotalHCG;
     }
 
     $importVarPDF = [
@@ -137,7 +140,7 @@
         $_POST['fraisGC'],
         $resAgence['agence_nom'],
         date('d/m/Y'),
-        $_POST['depot_arrhes_input'],
+        $_POST['depot_arrhes_input'] . " €",
         $resAgence['agence_iban'],
         $resAgence['agence_bic'],
         date('d/m/Y', strtotime($resVehicule['vehicules_date_mise_en_circu'])),
@@ -148,6 +151,7 @@
         $resAgence['agence_telephone'],
         $resAgence['agence_mail'],
         "ARR " . $resVehicule['vehicules_immatriculation'],
+        "= " . $cashSentinel . " €",
     ];
 
 
@@ -160,7 +164,7 @@
     $pdf->useImportedPage($pageId, 5, 10, 200);
 
     $importCoordinates = [
-        ['x' => 103, 'y' => 51], //nom prénom
+        ['x' => 103, 'y' => 52], //nom prénom
         ['x' => 93, 'y' => 58], //adresse
         ['x' => 94, 'y' => 64], //cp
         ['x' => 122, 'y' => 64], //ville
@@ -180,13 +184,14 @@
         ['x' => 128, 'y' => 149], // IBAN
         ['x' => 128, 'y' => 153], // BIC
         ['x' => 130, 'y' => 93.5], // Mise en circulation
-        ['x' => 133, 'y' => 270.5], // Agence Nom
+        ['x' => 132, 'y' => 269.5], // Agence Nom
         ['x' => 49, 'y' => 43], // Agence Nom
         ['x' => 27, 'y' => 48], // Agence Adresse
         ['x' => 27, 'y' => 53], // Agence CP / Ville
         ['x' => 26, 'y' => 64], // Agence Téléphone
         ['x' => 26, 'y' => 59], // Agence Email
         ['x' => 128, 'y' => 145], // Arrhes
+        ['x' => 143, 'y' => 217.5], // CashSentinel
     ];
 
     foreach ($crossToCreate as $index) {
