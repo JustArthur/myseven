@@ -79,8 +79,11 @@
                             $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
                             $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
                             $getAgence = $getAgence->fetch();
+
+                            $cleanFirstName = preg_replace('/[^A-Za-z0-9]/', '', strtoupper($firstName));
+                            $cleanLastName = preg_replace('/[^A-Za-z0-9]/', '', strtoupper($lastName));
  
-                            $folderToCreate = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($firstName) . "-" . strtoupper($lastName));
+                            $folderToCreate = $cleanFirstName . "-" . $cleanLastName;
                             $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_client'], $folderToCreate);
 
                             if($createFolderNextcloud) {

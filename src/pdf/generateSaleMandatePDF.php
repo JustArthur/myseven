@@ -22,6 +22,8 @@
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
 
+    $_POST['immatricuCar'] = preg_replace('/\s+/', '-', $_POST['immatricuCar']);
+
     $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
     $resVehicule->execute([$_POST['immatricuCar']]);
     $resVehicule = $resVehicule->fetch();
