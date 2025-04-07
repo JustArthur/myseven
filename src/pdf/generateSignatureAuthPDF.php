@@ -49,7 +49,7 @@
         $year,
         $resClient['clients_lieu_naissance'],
         $resClient['clients_rue'] . ' ' . ucfirst($resClient['clients_ville']) . ' ' . $resClient['clients_cp'],
-        $resClient['agence_nom'],
+        $resAgence['agence_nom'],
         $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
         $resVehicule['vehicules_immatriculation'],
         $resAgence['agence_nom'],
