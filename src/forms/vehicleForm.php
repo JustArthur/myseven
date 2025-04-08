@@ -1,248 +1,192 @@
 <?php
-    ini_set('display_errors', '1');
-    ini_set('display_startup_errors', '1');
-    error_reporting(E_ALL);
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
 
-    session_start();
+session_start();
 
-    if(empty($_SESSION['user']) || empty($_COOKIE['user_session'])) {
-        header('Location: ../../login.php');
-        exit();
-    }
+if (empty($_SESSION['user']) || empty($_COOKIE['user_session'])) {
+    header('Location: ../../login.php');
+    exit();
+}
 
-    $error_message = [];
-    $valid = true;
-    $validFolder = true;
+$error_message = [];
+$valid = true;
+$validFolder = true;
 
-    require_once '../../database.php';
-    require_once '../functions/createFolderNextCloud.php';
+require_once '../../database.php';
+require_once '../functions/createFolderNextCloud.php';
 
-    if (!empty($_POST)) {
-        extract(array: $_POST);
-        if (isset($_POST['submit_btn'])) {
+if (!empty($_POST)) {
+    extract(array: $_POST);
+    if (isset($_POST['submit_btn'])) {
 
-            switch($type_boite) {
-                case 1:
-                    $type_boite_value = "Manuelle";
-                    break;
+        switch ($type_boite) {
+            case 1:
+                $type_boite_value = "Manuelle";
+                break;
 
-                case 2:
-                    $type_boite_value = "Automatique";
-                    break;
+            case 2:
+                $type_boite_value = "Automatique";
+                break;
 
-                default:
-                    $type_boite_value = "null";
-                    break;
-            }
+            default:
+                $type_boite_value = "null";
+                break;
+        }
 
-            if (empty($immatriculation) || empty($brand) || empty($model) || empty($puissance) || $type_boite_value === "null" || empty($color) || empty($finition) || empty($kilometrage) || empty($annee) || empty($date_entretien) || empty($frais_prevoir) || empty($frais_recent)) {
-                $error_message = [
-                    'type' => 'error',
-                    'message' => 'Tous les champs sont requis..'
-                ];
-            } else {
-                $DBB = new ConnexionDB();
-                $DB = $DBB->openConnection();
-    
-                $getImmat = $DB->prepare("SELECT vehicules_immatriculation FROM vehicules WHERE vehicules_immatriculation = ?");
-                $getImmat->execute([$immatriculation]);
-                $getImmat = $getImmat->fetch();
-    
-                if (!$getImmat && $type_boite_value != "null") {
+        if (empty($immatriculation) || empty($brand) || empty($model) || empty($puissance) || $type_boite_value === "null" || empty($color) || empty($finition) || empty($kilometrage) || empty($annee) || empty($date_entretien) || empty($frais_prevoir) || empty($frais_recent)) {
+            $error_message = [
+                'type' => 'error',
+                'message' => 'Tous les champs sont requis..'
+            ];
+        } else {
+            $DBB = new ConnexionDB();
+            $DB = $DBB->openConnection();
 
-                    if (isset($_FILES['fileCarteGrise']) && $_FILES['fileCarteGrise']['error'] == 0) {
-                        $allowed = ['png', 'jpeg', 'jpg', 'pdf'];
-                        $extension = pathinfo($_FILES['fileCarteGrise']['name'], PATHINFO_EXTENSION);
-                        $tmpPath = $_FILES['fileCarteGrise']['tmp_name'];
+            $getImmat = $DB->prepare("SELECT vehicules_immatriculation FROM vehicules WHERE vehicules_immatriculation = ?");
+            $getImmat->execute([$immatriculation]);
+            $getImmat = $getImmat->fetch();
 
-                        $cleanBrand = preg_replace('/[^A-Za-z0-9]/', '-', strtoupper($brand));
-                        $cleanModel = preg_replace('/[^A-Za-z0-9]/', '-', strtoupper($model));
-                        $cleanImmatriculation = preg_replace('/[^A-Za-z0-9]/', '-', strtoupper($immatriculation));
+            if (!$getImmat && $type_boite_value != "null") {
 
-                        $toCleanVehicule = $cleanBrand . '/'. $cleanModel . '-' . $cleanImmatriculation . '/';
+                if (isset($_FILES['fileCarteGrise']) && $_FILES['fileCarteGrise']['error'] == 0) {
+                    $allowed = ['png', 'jpeg', 'jpg', 'pdf'];
+                    $extension = pathinfo($_FILES['fileCarteGrise']['name'], PATHINFO_EXTENSION);
+                    $tmpPath = $_FILES['fileCarteGrise']['tmp_name'];
 
-                        $cleanedValueNameVehicule = $toCleanVehicule . "DOCUMENTS_DE_VENTE/CLIENT_VENDEUR/";
-                        $carteGriseUploadNext = $toCleanVehicule . "CARTE_GRISE";
+                    $cleanBrand = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($brand));
+                    $cleanModel = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($model));
+                    $cleanImmatriculation = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($immatriculation));
 
-                        $newFileName = "CARTE_GRISE_{$cleanModel}-{$cleanImmatriculation}.{$extension}";
+                    $toCleanVehicule = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/';
+                    $newFileName = "CARTE_GRISE_{$cleanModel}-{$cleanImmatriculation}.{$extension}";
 
-                        $destinationPath = sys_get_temp_dir() . '/' . $newFileName;
-        
-                        if (in_array($extension, $allowed)) {
-                            $fileContent = file_get_contents($_FILES['fileCarteGrise']['tmp_name']);
+                    $destinationPath = sys_get_temp_dir() . '/' . $newFileName;
 
-                            $stmt = $DB->prepare("INSERT INTO vehicules (vehicules_marque, vehicules_model, vehicules_carte_grise, vehicules_immatriculation, vehicules_puissance, vehicules_type_boite, vehicules_couleur, vehicules_finition, vehicules_kilometrage, vehicules_annee, vehicules_date_entretien, vehicules_frais_prevoir, vehicules_frais_recent, vehicules_agence_id, vehicules_date_mise_en_circu) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            
-                            $stmt->execute([strtoupper($brand), strtoupper($model), $fileContent, $cleanImmatriculation, $puissance, $type_boite_value, $color, $finition, $kilometrage, $annee, $date_entretien, $frais_prevoir, $frais_recent , intval($_SESSION['user']["agence_id"]), $dateMiseEnCircu]);
-        
-                            if ($stmt->rowCount() > 0) {
-                                $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
-                                $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
-                                $getAgence = $getAgence->fetch();
-        
-                                $brandFolder = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($brand)) . '/';
-                                $createBrandFolder = createNextcloudFolder($getAgence['agence_path_vehicules'], $brandFolder);
-        
-                                if ($createBrandFolder) {
-                                    $folderToCreate = preg_replace('/[^A-Za-z0-9]/', '-', strtoupper($brand)) . '/' . preg_replace('/[^A-Za-z0-9]/', '-', strtoupper($model)) . '-' . $cleanImmatriculation . '/';
-                                    $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreate);
-        
-                                    if($createFolderNextcloud) {
-                                        $folderToCreateArray = [
-                                            'PHOTOS',
-                                            'CARTE_GRISE',
-                                            'CONTROLE_TECHNIQUE',
-                                            'FACTURES',
-                                            'DOCUMENTS_DE_VENTE'
-                                        ];
-        
-                                        foreach ($folderToCreateArray as $folder) {
-                                            $folderToCreateVehicule = $folderToCreate . $folder;
-                                            $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateVehicule);
-        
-                                            if($createFolderNextcloud) {
-                                                $valid = true;
-                                            } else {
-                                                $valid = false;
-                                                $error_message = [
-                                                    'type' => 'error',
-                                                    'message' => 'Impossible de créer le dossier ' . $folder . '.'
-                                                ];
-                                                break;
-                                            }
-                                        }
-        
-                                        if($valid) {
-                                            $folderToCreateArrayClient = [
-                                                'CLIENT_VENDEUR',
-                                                'CLIENT_ACHETEUR'
-                                            ];
-        
-                                            foreach($folderToCreateArrayClient as $clientFolder) {
-                                                $folderToCreateClientDocument = $folderToCreate . $folderToCreateArray[4] . '/' . $clientFolder;
-                                                $createFolderNextcloudClient = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateClientDocument);
+                    if (in_array($extension, $allowed)) {
+                        $fileContent = file_get_contents($_FILES['fileCarteGrise']['tmp_name']);
 
-        
-                                                if($folderToCreateClientDocument) {
-                                                    $valid = true;
-                                                } else {
-                                                    $valid = false;
-                                                    $error_message = [
-                                                        'type' => 'error',
-                                                        'message' => 'Impossible de créer le dossier ' . $clientFolder . '.'
-                                                    ];
-                                                    break;
-                                                }
-                                            }
+                        $stmt = $DB->prepare("INSERT INTO vehicules (vehicules_marque, vehicules_model, vehicules_carte_grise, vehicules_immatriculation, vehicules_puissance, vehicules_type_boite, vehicules_couleur, vehicules_finition, vehicules_kilometrage, vehicules_annee, vehicules_date_entretien, vehicules_frais_prevoir, vehicules_frais_recent, vehicules_agence_id, vehicules_date_mise_en_circu) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-                                            if (move_uploaded_file($tmpPath, $destinationPath)) {
-                                                if(!empty($_GET['customerType'])) {
-                                                    switch ($_GET['customerType']) {
-                                                        case 2:
-                                                            $stmt = $DB->prepare("SELECT * FROM clients WHERE clients_email = ?");
-                                                            $stmt->execute([urldecode($_GET['cient_email'])]);
-                                                            $resClient = $stmt->fetch();
-        
-                                                            $fileContent = $resClient['clients_copie_cni'];
+                        $stmt->execute([strtoupper($brand), strtoupper($model), $fileContent, $cleanImmatriculation, $puissance, $type_boite_value, $color, $finition, $kilometrage, $annee, $date_entretien, $frais_prevoir, $frais_recent, intval($_SESSION['user']["agence_id"]), $dateMiseEnCircu]);
 
-                                                            $finfo = new finfo(FILEINFO_MIME_TYPE);
-                                                            $mimeType = $finfo->buffer($resClient['clients_copie_cni']);
+                        if ($stmt->rowCount() > 0) {
+                            $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
+                            $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
+                            $getAgence = $getAgence->fetch();
 
-                                                            $extension = match ($mimeType) {
-                                                                'image/jpeg' => 'jpg',
-                                                                'image/png' => 'png',
-                                                                'image/gif' => 'gif',
-                                                                'image/webp' => 'webp',
-                                                                'application/pdf' => 'pdf',
-                                                                default => 'pdf'
-                                                            };
+                            $brandFolder = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($brand)) . '/';
+                            $createBrandFolder = createNextcloudFolder($getAgence['agence_path_vehicules'], $brandFolder);
 
-                                                            $tempFilePath = sys_get_temp_dir() . "/CNI_client_" . str_replace(' ', '_', strtoupper($resClient['clients_nom'])) . "-" . str_replace(' ', '_', strtoupper($resClient['clients_prenom'])) . ".{$extension}";
+                            $folderToCreate = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/';
+                            $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreate);
 
-                                                            file_put_contents($tempFilePath, $resClient['clients_copie_cni']);
-        
-                                                            $uploadSuccess = uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $cleanedValueNameVehicule, $tempFilePath);
-                                                            // $uploadSuccess = uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $cleanedValueNameVehicule, $destinationPath);
-                                                            break;
-        
-                                                        default:
-                                                            break;
-                                                    }
-                                            
-                                                    if ($uploadSuccess) {
-                                                        $validFolder = true;
-                                                    } else {
-                                                        $validFolder = false;
-                                                    }
+                            $folderToCreatePhoto = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/PHOTOS/';
+                            $folderToCreateCarteGrise = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/CARTE_GRISE/';
+                            $folderToCreateControleTechnique = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/CONTROLE_TECHNIQUE/';
+                            $folderToCreateFactures = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/FACTURES/';
+                            $folderToCreateDocumentDeVente = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/';
 
+                            createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreatePhoto);
+                            createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateCarteGrise);
+                            createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateControleTechnique);
+                            createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateFactures);
+                            createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateDocumentDeVente);
 
-                                                }
-                                                
-                                                $uploadSuccess_2 = uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $carteGriseUploadNext, $destinationPath);
+                            $folderToCreateClientVendeur = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/CLIENT_VENDEUR/';
+                            $folderToCreateClientAcheteur = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/CLIENT_ACHETEUR/';
 
-                                                if($uploadSuccess_2) {
-                                                    $validFolder = true;
-                                                } else {
-                                                    $validFolder = false;
-                                                }
+                            createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateClientVendeur);
+                            createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateClientAcheteur);
 
-                                                unlink($destinationPath);
-                                                
-                                            } else {
-                                                $error_message = [
-                                                    'type' => 'error',
-                                                    'message' => 'Impossible de déplacer le fichier.'
-                                                ];
-        
-                                                $validFolder = false;
-                                            }
-                                        }
+                            if (move_uploaded_file($tmpPath, $destinationPath)) {
+                                if (!empty($_GET['customerType'])) {
+                                    switch ($_GET['customerType']) {
+                                        case 2:
+                                            $stmt = $DB->prepare("SELECT * FROM clients WHERE clients_email = ?");
+                                            $stmt->execute([urldecode($_GET['cient_email'])]);
+                                            $resClient = $stmt->fetch();
+
+                                            $fileContent = $resClient['clients_copie_cni'];
+
+                                            $finfo = new finfo(FILEINFO_MIME_TYPE);
+                                            $mimeType = $finfo->buffer($resClient['clients_copie_cni']);
+
+                                            $extension = match ($mimeType) {
+                                                'image/jpeg' => 'jpg',
+                                                'image/png' => 'png',
+                                                'image/gif' => 'gif',
+                                                'image/webp' => 'webp',
+                                                'application/pdf' => 'pdf',
+                                                default => 'pdf'
+                                            };
+
+                                            $tempFilePath = sys_get_temp_dir() . "/CNI_client_" . str_replace(' ', '_', strtoupper($resClient['clients_nom'])) . "-" . str_replace(' ', '_', strtoupper($resClient['clients_prenom'])) . ".{$extension}";
+
+                                            file_put_contents($tempFilePath, $resClient['clients_copie_cni']);
+
+                                            uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $folderToCreateClientVendeur, $tempFilePath);
+                                            break;
+
+                                        default:
+                                            break;
                                     }
-        
-                                    $valid = true;
-                                } else {
-                                    $valid = false;
                                 }
-                                
-                                if($valid = true && $validFolder == true) {
-                                    if(!empty($_GET['cient_email'])) {
-                                        echo '
+
+                                $carteGriseUploadNext = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/CARTE_GRISE/';
+                                uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $carteGriseUploadNext, $destinationPath);
+                                unlink($destinationPath);
+                            } else {
+                                $error_message = [
+                                    'type' => 'error',
+                                    'message' => 'Impossible de déplacer le fichier.'
+                                ];
+
+                                $validFolder = false;
+                            }
+
+                            $valid = true;
+
+                            if ($valid = true && $validFolder == true) {
+                                if (!empty($_GET['cient_email'])) {
+                                    echo '
                                             <form id="redirectForm" action="saleMandateForm.php" method="POST">
-                                                <input type="hidden" name="client" value="' . strtolower($cient_email) .'">
-                                                <input type="hidden" name="immatCar" value="' . strtoupper($immatriculation) .'">
+                                                <input type="hidden" name="client" value="' . strtolower($cient_email) . '">
+                                                <input type="hidden" name="immatCar" value="' . strtoupper($immatriculation) . '">
                                             </form>
                                             <script>
                                                 document.getElementById("redirectForm").submit();
                                             </script>
                                         ';
-                                        exit();
-                                    } else {
-                                        header("Location: ../../index.php");
-                                        exit;
-                                    }
+                                    exit();
                                 } else {
-                                    $error_message = [
-                                        'type' => 'error',
-                                        'message' => 'Impossible de créer le dossier véhicule dans le Nextcloud.'
-                                    ];
+                                    header("Location: ../../index.php");
+                                    exit;
                                 }
                             } else {
                                 $error_message = [
                                     'type' => 'error',
-                                    'message' => 'Impossible de créer le véhicule.'
+                                    'message' => 'Impossible de créer le dossier véhicule dans le Nextcloud.'
                                 ];
-                            }        
+                            }
+                        } else {
+                            $error_message = [
+                                'type' => 'error',
+                                'message' => 'Impossible de créer le véhicule.'
+                            ];
                         }
                     }
-                } else {
-                    $error_message = [
-                        'type' => 'error',
-                        'message' => 'L\'immatriculation existe déjà.'
-                    ];
                 }
+            } else {
+                $error_message = [
+                    'type' => 'error',
+                    'message' => 'L\'immatriculation existe déjà.'
+                ];
             }
         }
     }
+}
 ?>
 
 <!DOCTYPE html>
@@ -263,10 +207,14 @@
 
         <div class="search-container">
             <h2>Créer un véhicule</h2>
-            <form id="form_pdf" method="POST" enctype="multipart/form-data">
-                <?php if(!empty($error_message)) {echo "<div style='margin-bottom: 30px;' class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>"; } ?>
+            <form id="form_pdf" target="_blank" method="POST" enctype="multipart/form-data">
+                <?php if (!empty($error_message)) {
+                    echo "<div style='margin-bottom: 30px;' class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>";
+                } ?>
 
-                <?php if(!empty($_GET['cient_email'])) { echo "<input type='hidden' name='cient_email' value='" . $_GET['cient_email'] . "'>"; } ?>
+                <?php if (!empty($_GET['cient_email'])) {
+                    echo "<input type='hidden' name='cient_email' value='" . $_GET['cient_email'] . "'>";
+                } ?>
 
                 <div class="input_box">
                     <span class="label form_required">Immatriculation</span>

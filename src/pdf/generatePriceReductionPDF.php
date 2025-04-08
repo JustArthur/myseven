@@ -82,15 +82,14 @@
         mkdir($folder, 0777, true);
     }
 
-    $cleanBrand = preg_replace('/[^A-Za-z0-9]+/', '-', trim($resVehicule['vehicules_marque']));
-    $cleanModel = preg_replace('/[^A-Za-z0-9]+/', '-', trim($resVehicule['vehicules_model']));
-    $cleanImmatriculation = preg_replace('/[^A-Za-z0-9]+/', '-', trim($resVehicule['vehicules_immatriculation']));
+    $cleanBrand = preg_replace('/[^A-Za-z0-9]+/', '_', trim($resVehicule['vehicules_marque']));
+    $cleanModel = preg_replace('/[^A-Za-z0-9]+/', '_', trim($resVehicule['vehicules_model']));
+    $cleanImmatriculation = preg_replace('/[^A-Za-z0-9]+/', '_', trim($resVehicule['vehicules_immatriculation']));
+    $cleanNom = preg_replace('/[^A-Za-z0-9]+/', '_', trim($resClient['clients_nom']));
+    $cleanPrenom = preg_replace('/[^A-Za-z0-9]+/', '_', trim($resClient['clients_prenom']));
 
-    $toCleanVehicule = $cleanBrand . '/'. $cleanModel . '-' . $cleanImmatriculation . '/';
-
-    $cleanedValueNameFolder = preg_replace('/[^A-Za-z0-9]+/', '-', trim($resClient['clients_nom'] . " " . $resClient['clients_prenom']));
-    $cleanedValueName = preg_replace('/[^A-Za-z0-9]+/', '_', trim($resClient['clients_nom'] . " " . $resClient['clients_prenom']));
-    $cleanedValueNameVehicule = $toCleanVehicule . "DOCUMENTS_DE_VENTE/CLIENT_VENDEUR";
+    $cleanedValueName = $cleanNom . '_' . $cleanPrenom;
+    $cleanedValueVehicule = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/CLIENT_VENDEUR/';
 
     $pattern = $folder . "ACCORD_DE_BAISSE_DU_PRIX_NET_VENDEUR_" . strtoupper($cleanedValueName) . "_*.pdf";
     $pdfFiles = glob($pattern);
@@ -105,7 +104,7 @@
     $DBB->closeConnection();
 
     $pdf->Output('F', $destinationPath);
-    uploadPdfToNextcloud($getAgence['agence_path_client'], strtoupper($cleanedValueNameFolder), $destinationPath);
-    uploadPdfToNextcloud($getAgence['agence_path_vehicules'], strtoupper($cleanedValueNameVehicule), $destinationPath);
+    uploadPdfToNextcloud($getAgence['agence_path_client'], strtoupper($cleanedValueName), $destinationPath);
+    uploadPdfToNextcloud($getAgence['agence_path_vehicules'], strtoupper($cleanedValueVehicule), $destinationPath);
     $pdf->Output('I', $pdfNameFile);
 ?>

@@ -151,12 +151,6 @@
                         </tbody>
                     </table>
                 </div>
-
-                <div class="pagination visible" id="paginationCustomersSell">
-                    <a onclick="prevPage('CustomersSell')">Page précédente</a>
-                    <a onclick="nextPage('CustomersSell')">Page suivante</a>
-                    <span id="pageInfoCustomersSell"></span>
-                </div>
             </div>
 
             <!-- Véhicules -->
@@ -196,12 +190,6 @@
                         </tbody>
                     </table>
                 </div>
-
-                <div class="pagination visible" id="paginationVehicles">
-                    <a onclick="prevPage('Vehicles')">Page précédente</a>
-                    <a onclick="nextPage('Vehicles')">Page suivante</a>
-                    <span id="pageInfoVehicles"></span>
-                </div>
             </div>
 
             <!-- Clients Acheteur -->
@@ -240,12 +228,6 @@
                             <!-- INSERT AVEC JS -->
                         </tbody>
                     </table>
-                </div>
-
-                <div class="pagination visible" id="paginationCustomersBuy">
-                    <a onclick="prevPage('CustomersBuy')">Page précédente</a>
-                    <a onclick="nextPage('CustomersBuy')">Page suivante</a>
-                    <span id="pageInfoCustomersBuy"></span>
                 </div>
             </div>
 

@@ -2,19 +2,6 @@ let currentPage = 1,
     rowsPerPage = 50;
     editingCell = null
 
-const initPagination = (tableName) => {
-    const rows = window[tableName];
-    const pagination = document.getElementById(`pagination${tableName}`);
-
-    if (rows.length <= rowsPerPage) {
-        pagination.classList.remove('visible');
-        pagination.classList.add('invisible');
-    } else {
-        pagination.classList.remove('invisible');
-        pagination.classList.add('visible');
-    }
-};
-
 window.selectAgence = (tableName, AgenceId) => {
     const selectedAgenceId = document.getElementById(AgenceId).value;
 
@@ -34,51 +21,23 @@ window.selectAgence = (tableName, AgenceId) => {
 
 const searchTable = (tableName, searchBarId) => {
     const searchTerm = document.getElementById(searchBarId).value.toLowerCase();
-    const pagination = document.getElementById(`pagination${tableName}`);
 
     let filteredRows;
 
     if (searchTerm === "") {
         filteredRows = window[tableName];
-        pagination.classList.remove('invisible');
-        pagination.classList.add('visible');
     } else {
         filteredRows = window[tableName].filter(row =>
             Object.values(row).some(value => value.toString().toLowerCase().includes(searchTerm))
         );
-        pagination.classList.remove('visible');
-        pagination.classList.add('invisible');
     }
 
     updateTable(filteredRows, tableName);
-    updatePagination(tableName);
-};
-
-const updatePagination = (tableName) => {
-    const pageInfo = document.getElementById(`pageInfo${tableName}`);
-    const totalPages = Math.ceil(window[tableName].length / rowsPerPage);
-    pageInfo.textContent = `Page ${currentPage} / ${totalPages}`;
-};
-
-const prevPage = (tableName) => {
-    if (currentPage > 1) {
-        currentPage--;
-        updateTable(window[tableName], tableName);
-    }
-};
-
-const nextPage = (tableName) => {
-    const totalPages = Math.ceil(window[tableName].length / rowsPerPage);
-    if (currentPage < totalPages) {
-        currentPage++;
-        updateTable(window[tableName], tableName);
-    }
 };
 
 const updateTable = (rows, tableName) => {
     const tbody = document.getElementById(`${tableName}TableBody`);
     tbody.innerHTML = rows
-        .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
         .map((row) => {
             const uniqueKey = tableName === "Vehicles" ? "vehicules_immatriculation" : "clients_email";
             const typeValue = tableName === "Vehicles" ? "selectedVehicles" : "selectedCustomers";
@@ -96,7 +55,6 @@ const updateTable = (rows, tableName) => {
                 </tr>
             `;
         }).join('');
-    updatePagination(tableName);
 };
 
 const editCell = (td, field, index, tableName) => {
@@ -268,7 +226,6 @@ const cardShow = (tableName, realIndex) => {
 
 const initTable = (tableName, rows) => {
     window[tableName] = rows;
-    initPagination(tableName);
     updateTable(rows, tableName);
 };
 

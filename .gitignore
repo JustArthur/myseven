@@ -13,3 +13,5 @@ register.php
 
 # Fichier de log
 *.log
+
+*.sql
