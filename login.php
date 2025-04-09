@@ -17,7 +17,7 @@
         $getUser = selectAllUsersInfoWhereId(htmlspecialchars($_COOKIE['user_session'], ENT_QUOTES), $DBB->openConnection());
         $getUser = $getUser->fetch();
 
-        if($getUser['utilisateurs_role'] = "1" ) {
+        if($getUser['utilisateurs_role'] == 1 ) {
             header('Location: selectAgence.php?error=1&username=' . $getUser['utilisateurs_identifiant']);
             exit();
         } else {
@@ -68,7 +68,7 @@
                 $getUser = selectAllUsersInfoWhereId(htmlspecialchars($identifiant, ENT_QUOTES), $DBB->openConnection());
                 $getUser = $getUser->fetch();
 
-                if($getUser['utilisateurs_role'] = "1" ) {
+                if($getUser['utilisateurs_role'] == 1) {
                     header('Location: selectAgence.php?error=1&username=' . $getUser['utilisateurs_identifiant']);
                     exit();
                 } else {
