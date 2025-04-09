@@ -5,15 +5,19 @@ error_reporting(E_ALL);
 
 session_start();
 
+// Vérification de la session utilisateur
 if (empty($_SESSION['user']) || empty($_COOKIE['user_session'])) {
     header('Location: ../../login.php');
     exit();
 }
 
+
+
 if (!empty($_POST)) {
     extract(array: $_POST);
     if (isset($_POST['submit_btn'])) {
 
+        // Verifie si l'immatriculation est vide
         if (empty($immatCar)) {
             $_GET['client_email'] = $client;
             $error_message = [
@@ -29,17 +33,20 @@ if (!empty($_POST)) {
             $DB = $DBB->openConnection();
 
             $client_email = $_GET['client_email'];
-            $stmt = $DB->prepare("SELECT * FROM clients WHERE clients_email = ?");
-            $stmt->execute([urldecode($_GET['client_email'])]);
-            $resClient = $stmt->fetch();
+
+            $resClient = $DB->prepare("SELECT * FROM clients WHERE clients_email = ?");
+            $resClient->execute([urldecode($_GET['client_email'])]);
+            $resClient = $resClient->fetch();
 
             $resVehicule = $DB->prepare("SELECT * FROM vehicules WHERE vehicules_immatriculation = ?");
             $resVehicule->execute([$immatCar]);
             $resVehicule = $resVehicule->fetch();
 
+            // Vérifie si le cni du client n'est pas vide
             if ($resClient['clients_copie_cni']) {
                 $fileContent = $resClient['clients_copie_cni'];
 
+                //Récupère l'exntionion du fichier via le blob
                 $finfo = new finfo(FILEINFO_MIME_TYPE);
                 $mimeType = $finfo->buffer($resClient['clients_copie_cni']);
 
@@ -52,26 +59,30 @@ if (!empty($_POST)) {
                     default => 'pdf'
                 };
 
+                // Clean les valeurs pour créer un nom de fichier valide
                 $cleanBrand = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resVehicule['vehicules_marque']));
                 $cleanModel = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resVehicule['vehicules_model']));
                 $cleanImmatriculation = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resVehicule['vehicules_immatriculation']));
                 $cleanNom = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resClient['clients_nom']));
                 $cleanPrenom = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resClient['clients_prenom']));
 
-                $tempFilePath = sys_get_temp_dir() . "/CNI_" . $cleanNom . "_" . $cleanPrenom . ".jpg";
+                $tempFilePath = sys_get_temp_dir() . "/CNI_" . $cleanNom . "_" . $cleanPrenom . ".{$extension}";
+
+                // Met le fichier CNI dans un dossier temporaire
                 file_put_contents($tempFilePath, $fileContent);
 
                 $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
                 $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
                 $getAgence = $getAgence->fetch();
 
-
+                // Crée le dossier sur NextCloud
                 $CNItoUpload = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/' . "DOCUMENTS_DE_VENTE/CLIENT_ACHETEUR/";
-
                 $uploadSuccess = uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $CNItoUpload, $tempFilePath);
 
+                //unlink le fichier temporaire
                 unlink($tempFilePath);
 
+                // Renvoi sur le formulaire suivant
                 echo '
                     <form id="redirectForm" action="reservationForm.php" method="POST">
                         <input type="hidden" name="client" value="' . strtolower($_GET['client_email']) . '">
