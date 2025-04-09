@@ -58,7 +58,8 @@
             'generateProcurationSignature' => 'src/pdf/generateSignatureAuthPDF.php',
             'generateBonReservation' => 'src/forms/reservationForm.php',
             'generateAccordBaissePrix' => 'src/forms/priceReductionForm.php',
-            'generateContractEngagement' => 'src/forms/contractEngagementForm.php'
+            'generateContractEngagement' => 'src/forms/contractEngagementForm.php',
+            'generateInformationSell' => 'src/pdf/generateInformationSell.php',
         ];
 
         if (empty($selectedCustomers) || empty($selectedVehicles)) {
@@ -126,7 +127,7 @@
                             <?php } ?>
                         </optgroup>
                     </select>
-                    <a target="_blank" href="./src/forms/customerForm.php?customerType=2">Créer un client vendeur</a>
+                    <a href="./src/forms/customerForm.php?customerType=2">Créer un client vendeur</a>
                 </div>
 
                 <div class="overflowTable">
@@ -163,7 +164,7 @@
                             <?php } ?>
                         </optgroup>
                     </select>
-                    <a target="_blank" href="./src/forms/vehicleForm.php">Créer un véhicule</a>
+                    <a href="./src/forms/vehicleForm.php">Créer un véhicule</a>
                 </div>
 
                 <div class="overflowTable">
@@ -200,7 +201,7 @@
                             <?php } ?>
                         </optgroup>
                     </select>
-                    <a target="_blank" href="./src/forms/customerForm.php?customerType=1">Créer un client acheteur</a>
+                    <a href="./src/forms/customerForm.php?customerType=1">Créer un client acheteur</a>
                 </div>
 
                 <div class="overflowTable">
@@ -228,11 +229,12 @@
             <div class="content" id="tab4">
                 <h2><?= $tableauOnglets[3] ?></h2>
                 <div class="btn_list">
-                    <button type="submit" name="generateMandatVente" target="_blank" class="btn-generate action-link">Mandat de vente</button>
-                    <button type="submit" name="generateContractEngagement" target="_blank" class="btn-generate action-link">Mandat d'engagement</button>
-                    <button type="submit" name="generateProcurationSignature" target="_blank" class="btn-generate action-link">Procuration signature</button>
-                    <button type="submit" name="generateBonReservation" target="_blank" class="btn-generate action-link">Bon de réservation</button>
-                    <button type="submit" name="generateAccordBaissePrix" target="_blank" class="btn-generate action-link">Accord de baisse du prix net vendeur</button>
+                    <button type="submit" target="_blank" name="generateMandatVente" class="btn-generate action-link">Mandat de vente</button>
+                    <button type="submit" target="_blank" name="generateContractEngagement" class="btn-generate action-link">Mandat d'engagement</button>
+                    <button type="submit" target="_blank" name="generateProcurationSignature" class="btn-generate action-link">Procuration signature</button>
+                    <button type="submit" target="_blank" name="generateBonReservation" class="btn-generate action-link">Bon de réservation</button>
+                    <button type="submit" target="_blank" name="generateAccordBaissePrix" class="btn-generate action-link">Accord de baisse du prix net vendeur</button>
+                    <button type="submit" target="_blank" name="generateInformationSell" class="btn-generate action-link">Information relative à la vente</button>
                 </div>
             </div>
 

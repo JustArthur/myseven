@@ -16,6 +16,7 @@ $validFolder = true;
 
 require_once '../../database.php';
 require_once '../functions/createFolderNextCloud.php';
+require_once '../functions/cleanValues.php';
 
 if (!empty($_POST)) {
     extract(array: $_POST);
@@ -55,11 +56,13 @@ if (!empty($_POST)) {
                     $extension = pathinfo($_FILES['fileCarteGrise']['name'], PATHINFO_EXTENSION);
                     $tmpPath = $_FILES['fileCarteGrise']['tmp_name'];
 
-                    $cleanBrand = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($brand));
-                    $cleanModel = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($model));
-                    $cleanImmatriculation = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($immatriculation));
+                    $cleanBrand = cleanValue($brand);
+                    $cleanModel = cleanValue($model);
+                    $cleanImmatriculation = cleanValue($immatriculation);
 
-                    $toCleanVehicule = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/';
+                    // exit;
+
+                    $toCleanVehicule = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/';
                     $newFileName = "CARTE_GRISE_{$cleanModel}-{$cleanImmatriculation}.{$extension}";
 
                     $destinationPath = sys_get_temp_dir() . '/' . $newFileName;
@@ -68,7 +71,6 @@ if (!empty($_POST)) {
                         $fileContent = file_get_contents($_FILES['fileCarteGrise']['tmp_name']);
 
                         $stmt = $DB->prepare("INSERT INTO vehicules (vehicules_marque, vehicules_model, vehicules_carte_grise, vehicules_immatriculation, vehicules_puissance, vehicules_type_boite, vehicules_couleur, vehicules_finition, vehicules_kilometrage, vehicules_annee, vehicules_date_entretien, vehicules_frais_prevoir, vehicules_frais_recent, vehicules_agence_id, vehicules_date_mise_en_circu) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
                         $stmt->execute([strtoupper($brand), strtoupper($model), $fileContent, strtoupper($immatriculation), $puissance, $type_boite_value, $color, $finition, $kilometrage, $annee, $date_entretien, $frais_prevoir, $frais_recent, intval($_SESSION['user']["agence_id"]), $dateMiseEnCircu]);
 
                         if ($stmt->rowCount() > 0) {
@@ -79,14 +81,14 @@ if (!empty($_POST)) {
                             $brandFolder = $cleanBrand . '/';
                             $createBrandFolder = createNextcloudFolder($getAgence['agence_path_vehicules'], $brandFolder);
 
-                            $folderToCreate = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/';
+                            $folderToCreate = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/';
                             $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreate);
 
-                            $folderToCreatePhoto = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/PHOTOS/';
-                            $folderToCreateCarteGrise = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/CARTE_GRISE/';
-                            $folderToCreateControleTechnique = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/CONTROLE_TECHNIQUE/';
-                            $folderToCreateFactures = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/FACTURES/';
-                            $folderToCreateDocumentDeVente = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/';
+                            $folderToCreatePhoto = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/PHOTOS/';
+                            $folderToCreateCarteGrise = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/CARTE_GRISE/';
+                            $folderToCreateControleTechnique = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/CONTROLE_TECHNIQUE/';
+                            $folderToCreateFactures = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/FACTURES/';
+                            $folderToCreateDocumentDeVente = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/';
 
                             createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreatePhoto);
                             createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateCarteGrise);
@@ -94,8 +96,8 @@ if (!empty($_POST)) {
                             createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateFactures);
                             createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateDocumentDeVente);
 
-                            $folderToCreateClientVendeur = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/CLIENT_VENDEUR/';
-                            $folderToCreateClientAcheteur = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/CLIENT_ACHETEUR/';
+                            $folderToCreateClientVendeur = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/CLIENT_VENDEUR/';
+                            $folderToCreateClientAcheteur = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/CLIENT_ACHETEUR/';
 
                             createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateClientVendeur);
                             createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateClientAcheteur);
@@ -107,9 +109,9 @@ if (!empty($_POST)) {
                                             $resClient = $DB->prepare("SELECT * FROM clients WHERE clients_email = ?");
                                             $resClient->execute([urldecode($_GET['cient_email'])]);
                                             $resClient = $resClient->fetch();
-                        
-                                            $cleanNom = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resClient['clients_nom']));
-                                            $cleanPrenom = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resClient['clients_prenom']));
+
+                                            $cleanFirstName = cleanValue($resClient['clients_prenom']);
+                                            $cleanLastName = cleanValue($resClient['clients_nom']);
 
                                             $fileContent = $resClient['clients_copie_cni'];
 
@@ -125,7 +127,7 @@ if (!empty($_POST)) {
                                                 default => 'pdf'
                                             };
 
-                                            $tempFilePath = sys_get_temp_dir() . "/CNI_client_" . $cleanNom . "_" . $cleanPrenom . ".{$extension}";
+                                            $tempFilePath = sys_get_temp_dir() . "/CNI_" . $cleanLastName . "-" . $cleanFirstName . ".{$extension}";
 
                                             file_put_contents($tempFilePath, $resClient['clients_copie_cni']);
 
@@ -137,7 +139,7 @@ if (!empty($_POST)) {
                                     }
                                 }
 
-                                $carteGriseUploadNext = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/CARTE_GRISE/';
+                                $carteGriseUploadNext = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/CARTE_GRISE/';
                                 uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $carteGriseUploadNext, $destinationPath);
                                 unlink($destinationPath);
                             } else {

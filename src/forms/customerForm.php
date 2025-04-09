@@ -35,6 +35,7 @@
 
     require_once '../../database.php';
     require_once '../functions/createFolderNextCloud.php';
+    require_once '../functions/cleanValues.php';
 
     if (!empty($_POST)) {
         extract(array: $_POST);
@@ -73,16 +74,17 @@
     
                         $stmt = $DB->prepare("INSERT INTO clients (clients_nom, clients_prenom, clients_email, clients_telephone, clients_anniversaire, clients_lieu_naissance, clients_numero_cni, clients_copie_cni, clients_rue, clients_ville, clients_cp, clients_agence_id, clients_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                         $stmt->execute([strtoupper($firstName), $lastName, strtolower($email), $telephone, $birthday, $lieuNaissance, $numCNI, $fileContent, $adresse, $city, $cp, intval($_SESSION['user']["agence_id"]), $typeCustomerValue]);
-    
+                        
                         if ($stmt->rowCount() > 0) {
                             $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
                             $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
                             $getAgence = $getAgence->fetch();
 
-                            $cleanFirstName = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($firstName));
-                            $cleanLastName = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($lastName));
+                            // Clean le nom et prénom
+                            $cleanFirstName = cleanValue($firstName);
+                            $cleanLastName = cleanValue($lastName);
  
-                            $folderToCreate = $cleanFirstName . "_" . $cleanLastName;
+                            $folderToCreate = $cleanFirstName . "-" . $cleanLastName;
                             $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_client'], $folderToCreate);
 
                             if($createFolderNextcloud) {
@@ -91,7 +93,7 @@
                                     $originalFileName = $_FILES['fileCNI']['name'];
                                     $extension = pathinfo($_FILES['fileCNI']['name'], PATHINFO_EXTENSION);
 
-                                    $newFileName = "CNI_{$cleanFirstName}_{$cleanLastName}.{$extension}";
+                                    $newFileName = "CNI_{$cleanFirstName}-{$cleanLastName}.{$extension}";
                                     $destinationPath = sys_get_temp_dir() . '/' . $newFileName;
                                 
                                     if (move_uploaded_file($tmpPath, $destinationPath)) {
@@ -118,22 +120,30 @@
                                 if($validFolder) {
                                     if($typeCustomerValue == "Acheteur") {
                                         echo '
-                                            <form id="redirectForm" action="choiceVehicle.php" method="GET">
-                                                <input type="hidden" name="client_email" value="' . strtolower($email) .'">
+                                            <form id="redirectForm" action="choiceVehicle.php" method="GET" target="newTabForm" style="display:none;">
+                                                <input type="hidden" name="client_email" value="' . strtolower($email) . '">
                                             </form>
+
                                             <script>
+                                                window.open("", "newTabForm");
                                                 document.getElementById("redirectForm").submit();
+
+                                                window.location.href = "../../index.php";
                                             </script>
                                         ';
                                         exit();
                                     } else {
                                         echo '
-                                            <form id="redirectForm" action="vehicleForm.php" method="GET">
+                                            <form id="redirectForm" action="vehicleForm.php" method="GET"  target="newTabForm" style="display:none;">
                                                 <input type="hidden" name="cient_email" value="' . strtolower($email) .'">
                                                 <input type="hidden" name="customerType" value="' . $_GET['customerType'] .'">
                                             </form>
+
                                             <script>
+                                                window.open("", "newTabForm");
                                                 document.getElementById("redirectForm").submit();
+
+                                                window.location.href = "../../index.php";
                                             </script>
                                         ';
                                         exit();

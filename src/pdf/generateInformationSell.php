@@ -36,35 +36,49 @@
     $resVehicule = $resVehicule->fetch();
 
     $importVarPDF = [
-        strtoupper($resClient['clients_nom']) . ' ' . $resClient['clients_prenom'],
-        $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
+        $resClient['clients_nom'] . ' ' . $resClient['clients_prenom'],
+        $resClient['clients_rue'] . ' ' . $resClient['clients_ville'] . ' ' . $resClient['clients_cp'],
+        $resClient['clients_numero_cni'],
+        $resVehicule['vehicules_marque'],
+        $resVehicule['vehicules_model'],
+        //Genre ?
         $resVehicule['vehicules_immatriculation'],
-        $_POST['netVendeur'],
+        $resVehicule['vehicules_kilometrage'],
+        $resVehicule['vehicules_couleur'],
+        $resVehicule['vehicules_puissance'],
+        // Numéro Série ?
+        date('d/m/Y', strtotime($resVehicule['vehicules_date_mise_en_circu'])),
+        // Date controle Technique ?
+        // PV N° ?
         $resAgence['agence_nom'],
-        $resAgence['agence_nom'],
-        date("d"),
-        date("m"),
-        date("Y")
+        date('d/m/Y')
     ];
 
     $pdf = new \setasign\Fpdi\Fpdi();
 
-    $pageCount = $pdf->setSourceFile('../../documents/price_reduction_agreement.pdf');
+    $pageCount = $pdf->setSourceFile('../../documents/information_sell.pdf');
     $pageId = $pdf->importPage(1, \setasign\Fpdi\PdfReader\PageBoundaries::MEDIA_BOX);
 
     $pdf->addPage();
     $pdf->useImportedPage($pageId, 5, 10, 200);
 
     $importCoordinates = [
-        ['x' => 52, 'y' => 91],  // nom prénom
-        ['x' => 70, 'y' => 102],  // marque model
-        ['x' => 45, 'y' => 112],  // immat
-        ['x' => 118, 'y' => 123],  // prix net vendeur
-        ['x' => 83, 'y' => 134],  // agence
-        ['x' => 23, 'y' => 161],  // agence
-        ['x' => 68, 'y' => 161],  // day
-        ['x' => 78.5, 'y' => 161],  // month
-        ['x' => 91, 'y' => 161]  // year
+        ['x' => 55, 'y' => 71.5], // Nom et prénom Client
+        ['x' => 55, 'y' => 76], // Adresse Client
+        ['x' => 63, 'y' => 81], // Numéro CNI
+        ['x' => 45, 'y' => 101], // Marque véhicule
+        ['x' => 45, 'y' => 105.5], // Modèle véhicule
+        // Genre
+        ['x' => 60, 'y' => 115], // Immatriculation véhicule
+        ['x' => 51, 'y' => 120], // Kilomètrage véhicule
+        ['x' => 135, 'y' => 100.5], // Couleur véhicule
+        ['x' => 150, 'y' => 105.5], // Puissance véhicule
+        // Numéro Série
+        ['x' => 140, 'y' => 115], // Mise en circulation véhicule
+        // Date controle Technique
+        // PV N°
+        ['x' => 52, 'y' => 219.5], // Nom de l'agence
+        ['x' => 88, 'y' => 219.5] // Date du jour
     ];
 
     foreach ($importVarPDF as $index => $valPDF) {
@@ -76,7 +90,7 @@
         $pdf->Write(0, $valPDF);
     }
 
-    $folder = "../../storage/price_reduction/";
+    $folder = "../../storage/information_sell/";
 
     if(!file_exists($folder)) {
         mkdir($folder, 0777, true);
@@ -91,11 +105,11 @@
     $cleanedValueName = $cleanNom . '-' . $cleanPrenom;
     $cleanedValueVehicule = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/CLIENT_VENDEUR/';
 
-    $pattern = $folder . "ACCORD_DE_BAISSE_DU_PRIX_NET_VENDEUR_" . $cleanedValueName . "_*.pdf";
+    $pattern = $folder . "INFORMATION_RELATIVE_VENTE_" . $cleanedValueName . "_*.pdf";
     $pdfFiles = glob($pattern);
     $fileCount = count($pdfFiles) + 1;
 
-    $pdfNameFile = "ACCORD_DE_BAISSE_DU_PRIX_NET_VENDEUR_" . $cleanedValueName . "_" . $fileCount . ".pdf";
+    $pdfNameFile = "INFORMATION_RELATIVE_VENTE_" . $cleanedValueName . "_" . $fileCount . ".pdf";
     $destinationPath = $folder . $pdfNameFile;
 
     $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');

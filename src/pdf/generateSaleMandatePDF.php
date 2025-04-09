@@ -18,6 +18,7 @@
 
     require_once '../functions/createFolderNextCloud.php';
     require_once '../../database.php';
+    require_once '../functions/cleanValues.php';
 
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
@@ -129,6 +130,7 @@
     foreach ($importVarPDF as $index => $valPDF) {
         $pdf->SetFont('Helvetica');
         $pdf->SetTextColor(0, 0, 0);
+        $pdf->SetFontSize(11);
         $pdf->SetXY($importCoordinates[$index]['x'], $importCoordinates[$index]['y']);
         $valPDF = mb_convert_encoding($valPDF, 'windows-1252', 'UTF-8');
         $pdf->Write(0, $valPDF);
@@ -140,14 +142,14 @@
         mkdir($folder, 0777, true);
     }
 
-    $cleanBrand = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resVehicule['vehicules_marque']));
-    $cleanModel = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resVehicule['vehicules_model']));
-    $cleanImmatriculation = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resVehicule['vehicules_immatriculation']));
-    $cleanNom = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resClient['clients_nom']));
-    $cleanPrenom = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resClient['clients_prenom']));
+    $cleanBrand = cleanValue($resVehicule['vehicules_marque']);
+    $cleanModel = cleanValue($resVehicule['vehicules_model']);
+    $cleanImmatriculation = cleanValue($resVehicule['vehicules_immatriculation']);
+    $cleanNom = cleanValue($resClient['clients_nom']);
+    $cleanPrenom = cleanValue($resClient['clients_prenom']);
 
-    $cleanedValueName = $cleanNom . '_' . $cleanPrenom;
-    $cleanedValueVehicule = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/CLIENT_VENDEUR/';
+    $cleanedValueName = $cleanNom . '-' . $cleanPrenom;
+    $cleanedValueVehicule = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/CLIENT_VENDEUR/';
 
     $pattern = $folder . "MANDAT_DE_VENTE_" . strtoupper($cleanedValueName) . "_*.pdf";
     $pdfFiles = glob($pattern);
