@@ -180,6 +180,11 @@ if (!empty($_POST)) {
                             ];
                         }
                     }
+                } else {
+                    $error_message = [
+                        'type' => 'error',
+                        'message' => 'Fichier CG trop volumineux. 16Mo maximum.'
+                    ];
                 }
             } else {
                 $error_message = [

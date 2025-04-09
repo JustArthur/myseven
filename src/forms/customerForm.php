@@ -160,7 +160,7 @@
                 } else {
                     $error_message = [
                         'type' => 'error',
-                        'message' => 'Fichier CNI trop volumineux. 2Mo maximum.'
+                        'message' => 'Fichier CNI trop volumineux. 16Mo maximum.'
                     ];
                 }
             }
