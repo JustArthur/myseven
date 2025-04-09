@@ -11,11 +11,24 @@
     }
 
     $error_message = [];
-
-    $selectedAcheteur = "";
-    $selectedVendeur = "";
-    $selectedDefault = "selected";
     $tileCustomer = "";
+
+    switch($_GET['customerType']) {
+        case 1:
+            $typeCustomerValue = "Acheteur";
+            $tileCustomer = "Acheteur";
+            break;
+        
+        case 2:
+            $typeCustomerValue = "Vendeur";
+            $tileCustomer = "Vendeur";
+            break;
+
+        default:
+            $typeCustomerValue = "Default";
+            $tileCustomer = "";
+            break;
+    }
 
     $valid = true;
     $validFolder = true;
@@ -57,20 +70,6 @@
     
                     if (in_array($fileExt, $allowed)) {
                         $fileContent = file_get_contents($_FILES['fileCNI']['tmp_name']);
-
-                        switch($_GET['customerType']) {
-                            case 1:
-                                $typeCustomerValue = "Acheteur";
-                                break;
-                            
-                            case 2:
-                                $typeCustomerValue = "Vendeur";
-                                break;
-
-                            default:
-                                $typeCustomerValue = "Default";
-                                break;
-                        }
     
                         $stmt = $DB->prepare("INSERT INTO clients (clients_nom, clients_prenom, clients_email, clients_telephone, clients_anniversaire, clients_lieu_naissance, clients_numero_cni, clients_copie_cni, clients_rue, clients_ville, clients_cp, clients_agence_id, clients_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                         $stmt->execute([strtoupper($firstName), $lastName, strtolower($email), $telephone, $birthday, $lieuNaissance, $numCNI, $fileContent, $adresse, $city, $cp, intval($_SESSION['user']["agence_id"]), $typeCustomerValue]);
@@ -80,8 +79,8 @@
                             $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
                             $getAgence = $getAgence->fetch();
 
-                            $cleanFirstName = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($firstName));
-                            $cleanLastName = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($lastName));
+                            $cleanFirstName = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($firstName));
+                            $cleanLastName = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($lastName));
  
                             $folderToCreate = $cleanFirstName . "_" . $cleanLastName;
                             $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_client'], $folderToCreate);
@@ -92,24 +91,17 @@
                                     $originalFileName = $_FILES['fileCNI']['name'];
                                     $extension = pathinfo($_FILES['fileCNI']['name'], PATHINFO_EXTENSION);
 
-                                    $newFileName = "CNI_{$folderToCreate}.{$extension}";
+                                    $newFileName = "CNI_{$cleanFirstName}_{$cleanLastName}.{$extension}";
                                     $destinationPath = sys_get_temp_dir() . '/' . $newFileName;
                                 
                                     if (move_uploaded_file($tmpPath, $destinationPath)) {
-                                        $uploadSuccess = uploadPdfToNextcloud($getAgence['agence_path_client'], $folderToCreate, $destinationPath);
-                                
-                                        if ($uploadSuccess) {
-                                            $validFolder = true;
-                                        } else {
-                                            $validFolder = false;
-                                        }
-                                
+                                        $uploadSuccess = uploadPdfToNextcloud($getAgence['agence_path_client'], $folderToCreate, $destinationPath);                                
                                         unlink($destinationPath);
     
                                     } else {
                                         $error_message = [
                                             'type' => 'error',
-                                            'message' => 'Impossible de déplacer le fichier.'
+                                            'message' => 'Impossible de déplacer le fichier CNI dans le temp_dir.'
                                         ];
 
                                         $validFolder = false;
@@ -117,7 +109,7 @@
                                 } else {
                                     $error_message = [
                                         'type' => 'error',
-                                        'message' => 'Erreur lors de l\'upload du fichier.'
+                                        'message' => 'Erreur lors de l\'upload du fichier CNI.'
                                     ];
 
                                     $validFolder = false;

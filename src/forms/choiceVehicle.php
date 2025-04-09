@@ -1,84 +1,90 @@
 <?php
-    ini_set('display_errors', '1');
-    ini_set('display_startup_errors', '1');
-    error_reporting(E_ALL);
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
 
-    if(empty($_SESSION['user']) || empty($_COOKIE['user_session'])) {
-        header('Location: ../../login.php');
-        exit();
-    }
+session_start();
 
-    if (!empty($_POST)) {
-        extract(array: $_POST);
-        if (isset($_POST['submit_btn'])) {
+if (empty($_SESSION['user']) || empty($_COOKIE['user_session'])) {
+    header('Location: ../../login.php');
+    exit();
+}
 
-            if(empty($immatCar)) {
-                $_GET['client_email'] = $client;
-                $error_message = [
-                    'type' => 'error',
-                    'message' => 'Aucune immatriculation selectionné.'
-                ];
-            } else {
-                session_start();
+if (!empty($_POST)) {
+    extract(array: $_POST);
+    if (isset($_POST['submit_btn'])) {
 
-                require_once '../../database.php';
-                require_once '../functions/createFolderNextCloud.php';
+        if (empty($immatCar)) {
+            $_GET['client_email'] = $client;
+            $error_message = [
+                'type' => 'error',
+                'message' => 'Aucune immatriculation selectionné.'
+            ];
+        } else {
 
-                $DBB = new ConnexionDB;
-                $DB = $DBB->openConnection();
+            require_once '../../database.php';
+            require_once '../functions/createFolderNextCloud.php';
 
-                $client_email = $_GET['client_email']; 
-                $stmt = $DB->prepare("SELECT * FROM clients WHERE clients_email = ?");
-                $stmt->execute([urldecode($_GET['client_email'])]);
-                $resClient = $stmt->fetch();
+            $DBB = new ConnexionDB;
+            $DB = $DBB->openConnection();
 
-                $resVehicule = $DB->prepare("SELECT * FROM vehicules WHERE vehicules_immatriculation = ?");
-                $resVehicule->execute([$immatCar]);
-                $resVehicule = $resVehicule->fetch();
+            $client_email = $_GET['client_email'];
+            $stmt = $DB->prepare("SELECT * FROM clients WHERE clients_email = ?");
+            $stmt->execute([urldecode($_GET['client_email'])]);
+            $resClient = $stmt->fetch();
 
-                if ($resClient['clients_copie_cni']) {
-                    $fileContent = $resClient['clients_copie_cni'];
+            $resVehicule = $DB->prepare("SELECT * FROM vehicules WHERE vehicules_immatriculation = ?");
+            $resVehicule->execute([$immatCar]);
+            $resVehicule = $resVehicule->fetch();
 
-                    $tempFilePath = sys_get_temp_dir() . "/CNI_client_" . strtoupper($resClient['clients_nom']) . "-" . strtoupper($resClient['clients_prenom']) . ".jpg";
-                    file_put_contents($tempFilePath, $fileContent);
+            if ($resClient['clients_copie_cni']) {
+                $fileContent = $resClient['clients_copie_cni'];
 
-                    $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
-                    $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
-                    $getAgence = $getAgence->fetch();
+                $finfo = new finfo(FILEINFO_MIME_TYPE);
+                $mimeType = $finfo->buffer($resClient['clients_copie_cni']);
 
-                    $toCleanVehicule = strtoupper($resVehicule['vehicules_marque']) . '/'. strtoupper($resVehicule['vehicules_model']) . '-' . strtoupper($immatCar) . '/';
-                    $folderToUpload = $toCleanVehicule . "DOCUMENTS_DE_VENTE/CLIENT_ACHETEUR/";
+                $extension = match ($mimeType) {
+                    'image/jpeg' => 'jpg',
+                    'image/png' => 'png',
+                    'image/gif' => 'gif',
+                    'image/webp' => 'webp',
+                    'application/pdf' => 'pdf',
+                    default => 'pdf'
+                };
 
-                    $uploadSuccess = uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $folderToUpload, $tempFilePath);
+                $cleanBrand = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resVehicule['vehicules_marque']));
+                $cleanModel = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resVehicule['vehicules_model']));
+                $cleanImmatriculation = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resVehicule['vehicules_immatriculation']));
+                $cleanNom = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resClient['clients_nom']));
+                $cleanPrenom = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resClient['clients_prenom']));
 
-                    if ($uploadSuccess) {
-                        $valid = true;
-                    } else {
-                        $error_message = [
-                            'type' => 'error',
-                            'message' => 'Erreur lors de l\'upload du fichier.'
-                        ];
-                        $valid = false;
-                    }
+                $tempFilePath = sys_get_temp_dir() . "/CNI_" . $cleanNom . "_" . $cleanPrenom . ".jpg";
+                file_put_contents($tempFilePath, $fileContent);
 
-                    unlink($tempFilePath);
+                $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
+                $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
+                $getAgence = $getAgence->fetch();
 
-                    if($valid) {
-                        echo '
-                            <form id="redirectForm" action="reservationForm.php" method="POST">
-                                <input type="hidden" name="client" value="' . strtolower($_GET['client_email']) .'">
-                                <input type="hidden" name="immatCar" value="' . $immatCar .'">
-                            </form>
-                            <script>
-                                document.getElementById("redirectForm").submit();
-                            </script>
-                        ';
-                    }
 
-                }
+                $CNItoUpload = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/' . "DOCUMENTS_DE_VENTE/CLIENT_ACHETEUR/";
+
+                $uploadSuccess = uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $CNItoUpload, $tempFilePath);
+
+                unlink($tempFilePath);
+
+                echo '
+                    <form id="redirectForm" action="reservationForm.php" method="POST">
+                        <input type="hidden" name="client" value="' . strtolower($_GET['client_email']) . '">
+                        <input type="hidden" name="immatCar" value="' . $immatCar . '">
+                    </form>
+                    <script>
+                        document.getElementById("redirectForm").submit();
+                    </script>
+                ';
             }
         }
     }
+}
 ?>
 
 <!DOCTYPE html>
@@ -104,7 +110,9 @@
         <div class="search-container">
             <h2>Selectionner un véhicule</h2>
             <form id="form_pdf" method="POST">
-                <?php if(!empty($error_message)) {echo "<div style='margin-bottom: 30px;' class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>"; } ?>
+                <?php if (!empty($error_message)) {
+                    echo "<div style='margin-bottom: 30px;' class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>";
+                } ?>
 
                 <input type="hidden" name="client" value="<?= $_GET['client_email'] ?>">
 

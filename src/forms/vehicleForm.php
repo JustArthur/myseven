@@ -55,9 +55,9 @@ if (!empty($_POST)) {
                     $extension = pathinfo($_FILES['fileCarteGrise']['name'], PATHINFO_EXTENSION);
                     $tmpPath = $_FILES['fileCarteGrise']['tmp_name'];
 
-                    $cleanBrand = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($brand));
-                    $cleanModel = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($model));
-                    $cleanImmatriculation = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($immatriculation));
+                    $cleanBrand = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($brand));
+                    $cleanModel = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($model));
+                    $cleanImmatriculation = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($immatriculation));
 
                     $toCleanVehicule = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/';
                     $newFileName = "CARTE_GRISE_{$cleanModel}-{$cleanImmatriculation}.{$extension}";
@@ -69,14 +69,14 @@ if (!empty($_POST)) {
 
                         $stmt = $DB->prepare("INSERT INTO vehicules (vehicules_marque, vehicules_model, vehicules_carte_grise, vehicules_immatriculation, vehicules_puissance, vehicules_type_boite, vehicules_couleur, vehicules_finition, vehicules_kilometrage, vehicules_annee, vehicules_date_entretien, vehicules_frais_prevoir, vehicules_frais_recent, vehicules_agence_id, vehicules_date_mise_en_circu) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-                        $stmt->execute([strtoupper($brand), strtoupper($model), $fileContent, $cleanImmatriculation, $puissance, $type_boite_value, $color, $finition, $kilometrage, $annee, $date_entretien, $frais_prevoir, $frais_recent, intval($_SESSION['user']["agence_id"]), $dateMiseEnCircu]);
+                        $stmt->execute([strtoupper($brand), strtoupper($model), $fileContent, strtoupper($immatriculation), $puissance, $type_boite_value, $color, $finition, $kilometrage, $annee, $date_entretien, $frais_prevoir, $frais_recent, intval($_SESSION['user']["agence_id"]), $dateMiseEnCircu]);
 
                         if ($stmt->rowCount() > 0) {
                             $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
                             $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
                             $getAgence = $getAgence->fetch();
 
-                            $brandFolder = preg_replace('/[^A-Za-z0-9]/', '_', strtoupper($brand)) . '/';
+                            $brandFolder = $cleanBrand . '/';
                             $createBrandFolder = createNextcloudFolder($getAgence['agence_path_vehicules'], $brandFolder);
 
                             $folderToCreate = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/';
@@ -104,9 +104,12 @@ if (!empty($_POST)) {
                                 if (!empty($_GET['customerType'])) {
                                     switch ($_GET['customerType']) {
                                         case 2:
-                                            $stmt = $DB->prepare("SELECT * FROM clients WHERE clients_email = ?");
-                                            $stmt->execute([urldecode($_GET['cient_email'])]);
-                                            $resClient = $stmt->fetch();
+                                            $resClient = $DB->prepare("SELECT * FROM clients WHERE clients_email = ?");
+                                            $resClient->execute([urldecode($_GET['cient_email'])]);
+                                            $resClient = $resClient->fetch();
+                        
+                                            $cleanNom = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resClient['clients_nom']));
+                                            $cleanPrenom = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resClient['clients_prenom']));
 
                                             $fileContent = $resClient['clients_copie_cni'];
 
@@ -122,7 +125,7 @@ if (!empty($_POST)) {
                                                 default => 'pdf'
                                             };
 
-                                            $tempFilePath = sys_get_temp_dir() . "/CNI_client_" . str_replace(' ', '_', strtoupper($resClient['clients_nom'])) . "-" . str_replace(' ', '_', strtoupper($resClient['clients_prenom'])) . ".{$extension}";
+                                            $tempFilePath = sys_get_temp_dir() . "/CNI_client_" . $cleanNom . "_" . $cleanPrenom . ".{$extension}";
 
                                             file_put_contents($tempFilePath, $resClient['clients_copie_cni']);
 
@@ -207,7 +210,7 @@ if (!empty($_POST)) {
 
         <div class="search-container">
             <h2>Créer un véhicule</h2>
-            <form id="form_pdf" target="_blank" method="POST" enctype="multipart/form-data">
+            <form id="form_pdf" method="POST" enctype="multipart/form-data">
                 <?php if (!empty($error_message)) {
                     echo "<div style='margin-bottom: 30px;' class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>";
                 } ?>

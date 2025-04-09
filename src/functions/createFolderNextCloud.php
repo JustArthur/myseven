@@ -99,7 +99,8 @@
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
         fclose($fileHandle);
+
         
-        return ($httpCode == 201 || $httpCode == 204);
+        return ($httpCode == 201 || $httpCode == 207 || $httpCode == 405);
     }
 ?>

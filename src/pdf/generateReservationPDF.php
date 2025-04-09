@@ -23,11 +23,9 @@
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
 
-    $resClient = $DB->prepare('SELECT * FROM clients INNER JOIN agence ON clients.clients_agence_id = agence.agence_id WHERE clients.clients_email = ?');
+    $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_email = ?');
     $resClient->execute([$_POST['customerMail']]);
     $resClient = $resClient->fetch();
-
-    $_POST['immatCar'] = preg_replace('/\s+/', '-', $_POST['immatCar']);
 
     $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
     $resVehicule->execute([$_POST['immatCar']]);
@@ -216,14 +214,14 @@
         mkdir($folder, 0777, true);
     }
     
-    $cleanBrand = preg_replace('/[^A-Za-z0-9]+/', '_', trim($resVehicule['vehicules_marque']));
-    $cleanModel = preg_replace('/[^A-Za-z0-9]+/', '_', trim($resVehicule['vehicules_model']));
-    $cleanImmatriculation = preg_replace('/[^A-Za-z0-9]+/', '_', trim($resVehicule['vehicules_immatriculation']));
-    $cleanNom = preg_replace('/[^A-Za-z0-9]+/', '_', trim($resClient['clients_nom']));
-    $cleanPrenom = preg_replace('/[^A-Za-z0-9]+/', '_', trim($resClient['clients_prenom']));
+    $cleanBrand = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resVehicule['vehicules_marque']));
+    $cleanModel = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resVehicule['vehicules_model']));
+    $cleanImmatriculation = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resVehicule['vehicules_immatriculation']));
+    $cleanNom = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resClient['clients_nom']));
+    $cleanPrenom = preg_replace('/[^A-Za-z0-9]+/', '_', strtoupper($resClient['clients_prenom']));
 
     $cleanedValueName = $cleanNom . '_' . $cleanPrenom;
-    $cleanedValueVehicule = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/CLIENT_VENDEUR/';
+    $cleanedValueVehicule = $cleanBrand . '/' . $cleanModel . '_' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/CLIENT_ACHETEUR/';
 
     $pattern = $folder . "BON_RESERVATION_" . strtoupper($cleanedValueName) . "_*.pdf";
     $pdfFiles = glob($pattern);
