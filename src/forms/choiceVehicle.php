@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 session_start();
 
 // Vérification de la session utilisateur
-if (empty($_SESSION['user']) || empty($_COOKIE['user_session'])) {
+if(!isset($_SESSION['user']['role']) || empty($_COOKIE['user_session'])) {
     header('Location: ../../login.php');
     exit();
 }

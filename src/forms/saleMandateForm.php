@@ -5,7 +5,7 @@
 
     session_start();
 
-    if(empty($_SESSION['user']) || empty($_COOKIE['user_session'])) {
+    if(!isset($_SESSION['user']['role']) || empty($_COOKIE['user_session'])) {
         header('Location: ../../login.php');
         exit();
     }
@@ -29,7 +29,7 @@
     <main>
         <div class="search-container">
             <h2>Générer un mandat de vente</h2>
-            <form id="form_pdf" action="../pdf/generateSaleMandatePDF.php" method="POST">
+            <form id="form_pdf" target="_blank" action="../pdf/generateSaleMandatePDF.php" method="POST">
                 <div class="input_box">
                     <span class="label form_required">Adresse-mail du client</span>
                     <input required type="email" disabled name="customerMail"  value="<?= $_POST['client'] ?>" class="disabled" id="customerMail">
@@ -65,8 +65,6 @@
 
                     <p class="text_error hidden">Ce champ est requis</p>
                 </div>
-
-                
 
                 <div class="input_box">
                     <span class="label form_required">Raison de la vente</span>

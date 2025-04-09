@@ -17,12 +17,10 @@
 
     require_once '../../database.php';
 
-    $table = "vehicules";
-
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
 
-    $stmt = $DB->prepare("SELECT * FROM $table");
+    $stmt = $DB->prepare("SELECT * FROM 'vehicules'");
     $stmt->execute();
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -45,7 +43,7 @@
         $row++;
     }
 
-    $filename = $table . "_export_" . date("Y-m-d") . ".xlsx";
+    $filename = "Export_" . date("d-m-Y") . ".xlsx";
     header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     header("Content-Disposition: attachment; filename=\"$filename\"");
     header("Cache-Control: max-age=0");

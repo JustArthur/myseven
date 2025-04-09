@@ -156,14 +156,14 @@ if (!empty($_POST)) {
                             if ($valid = true && $validFolder == true) {
                                 if (!empty($_GET['cient_email'])) {
                                     echo '
-                                            <form id="redirectForm" action="saleMandateForm.php" method="POST">
-                                                <input type="hidden" name="client" value="' . strtolower($cient_email) . '">
-                                                <input type="hidden" name="immatCar" value="' . strtoupper($immatriculation) . '">
-                                            </form>
-                                            <script>
-                                                document.getElementById("redirectForm").submit();
-                                            </script>
-                                        ';
+                                        <form id="redirectForm" action="saleMandateForm.php" method="POST">
+                                            <input type="hidden" name="client" value="' . strtolower($cient_email) . '">
+                                            <input type="hidden" name="immatCar" value="' . strtoupper($immatriculation) . '">
+                                        </form>
+                                        <script>
+                                            document.getElementById("redirectForm").submit();
+                                        </script>
+                                    ';
                                     exit();
                                 } else {
                                     header("Location: ../../index.php");
@@ -185,7 +185,7 @@ if (!empty($_POST)) {
                 } else {
                     $error_message = [
                         'type' => 'error',
-                        'message' => 'Fichier CG trop volumineux. 16Mo maximum.'
+                        'message' => 'Fichier carte grise trop volumineux. 16Mo maximum.'
                     ];
                 }
             } else {
@@ -316,15 +316,15 @@ if (!empty($_POST)) {
                 </div>
 
                 <div class="input_box">
-                    <span class="label form_required">Frais à prévoir</span>
-                    <input required="true" type="text" id="frais_prevoir" name="frais_prevoir">
+                    <span class="label form_required">Frais récent</span>
+                    <input required="true" type="text" id="frais_recent" name="frais_recent">
 
                     <p class="text_error hidden">Ce champ est requis.</p>
                 </div>
 
                 <div class="input_box">
-                    <span class="label form_required">Frais récent</span>
-                    <input required="true" type="text" id="frais_recent" name="frais_recent">
+                    <span class="label form_required">Frais à prévoir</span>
+                    <input required="true" type="text" id="frais_prevoir" name="frais_prevoir">
 
                     <p class="text_error hidden">Ce champ est requis.</p>
                 </div>
