@@ -5,14 +5,6 @@
 
     session_start();
 
-    if(empty($_SESSION['user']) || empty($_COOKIE['user_session'])) {
-        header('Location: ../../login.php');
-        exit();
-    } else if (empty($_POST['client']) || empty($_POST['immatCar'])) {
-        header('Location: ../../index.php');
-        exit();
-    }
-
     require_once '../../vendor/setasign/fpdf/fpdf.php';
     require_once '../../vendor/setasign/fpdi/src/autoload.php';
 
@@ -20,12 +12,28 @@
     require_once '../functions/createFolderNextCloud.php';
     require_once '../functions/cleanValues.php';
 
+    if(empty($_SESSION['user']) || empty($_COOKIE['user_session'])) {
+        header('Location: ../../login.php');
+        exit();
+    }
+
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
     
-    $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_email = ?');
-    $resClient->execute([$_POST['client']]);
-    $resClient = $resClient->fetch();
+    if (!empty($_POST['clientEmail'])) {
+        $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_email = ?');
+        $resClient->execute([$_POST['clientEmail']]);
+        $resClient = $resClient->fetch();
+
+    } else if (!empty($_POST['idClient'])){
+        $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_id = ?');
+        $resClient->execute([$_POST['idClient']]);
+        $resClient = $resClient->fetch();
+        
+    } else {
+        header('Location: ../../login.php');
+        exit();
+    }
 
     $resAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
     $resAgence->execute([$_SESSION['user']['agence_id']]);

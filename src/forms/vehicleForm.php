@@ -60,8 +60,6 @@ if (!empty($_POST)) {
                     $cleanModel = cleanValue($model);
                     $cleanImmatriculation = cleanValue($immatriculation);
 
-                    // exit;
-
                     $toCleanVehicule = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/';
                     $newFileName = "CARTE_GRISE_{$cleanModel}-{$cleanImmatriculation}.{$extension}";
 
@@ -70,8 +68,8 @@ if (!empty($_POST)) {
                     if (in_array($extension, $allowed)) {
                         $fileContent = file_get_contents($_FILES['fileCarteGrise']['tmp_name']);
 
-                        $stmt = $DB->prepare("INSERT INTO vehicules (vehicules_marque, vehicules_model, vehicules_carte_grise, vehicules_immatriculation, vehicules_puissance, vehicules_type_boite, vehicules_couleur, vehicules_finition, vehicules_kilometrage, vehicules_annee, vehicules_date_entretien, vehicules_frais_prevoir, vehicules_frais_recent, vehicules_agence_id, vehicules_date_mise_en_circu) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                        $stmt->execute([strtoupper($brand), strtoupper($model), $fileContent, strtoupper($immatriculation), $puissance, $type_boite_value, $color, $finition, $kilometrage, $annee, $date_entretien, $frais_prevoir, $frais_recent, intval($_SESSION['user']["agence_id"]), $dateMiseEnCircu]);
+                        $stmt = $DB->prepare("INSERT INTO vehicules (vehicules_marque, vehicules_model, vehicules_carte_grise, vehicules_immatriculation, vehicules_puissance, vehicules_type_boite, vehicules_couleur, vehicules_finition, vehicules_kilometrage, vehicules_annee, vehicules_date_entretien, vehicules_frais_prevoir, vehicules_frais_recent, vehicules_agence_id, vehicules_date_mise_en_circu, vehicules_type, vehicules_numero_serie) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        $stmt->execute([strtoupper($brand), strtoupper($model), $fileContent, strtoupper($immatriculation), $puissance, $type_boite_value, $color, $finition, $kilometrage, $annee, $date_entretien, $frais_prevoir, $frais_recent, intval($_SESSION['user']["agence_id"]), $dateMiseEnCircu, $typeVehicle, $numSerie]);
 
                         if ($stmt->rowCount() > 0) {
                             $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
@@ -103,11 +101,11 @@ if (!empty($_POST)) {
                             createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateClientAcheteur);
 
                             if (move_uploaded_file($tmpPath, $destinationPath)) {
-                                if (!empty($_GET['customerType'])) {
-                                    switch ($_GET['customerType']) {
+                                if (!empty($customerType)) {
+                                    switch ($customerType) {
                                         case 2:
-                                            $resClient = $DB->prepare("SELECT * FROM clients WHERE clients_email = ?");
-                                            $resClient->execute([urldecode($_GET['cient_email'])]);
+                                            $resClient = $DB->prepare("SELECT * FROM clients WHERE clients_id = ?");
+                                            $resClient->execute([$idClient]);
                                             $resClient = $resClient->fetch();
 
                                             $cleanFirstName = cleanValue($resClient['clients_prenom']);
@@ -154,16 +152,32 @@ if (!empty($_POST)) {
                             $valid = true;
 
                             if ($valid = true && $validFolder == true) {
-                                if (!empty($_GET['cient_email'])) {
+                                if (!empty($idClient)) {
                                     echo '
-                                        <form id="redirectForm" action="saleMandateForm.php" method="POST">
-                                            <input type="hidden" name="client" value="' . strtolower($cient_email) . '">
-                                            <input type="hidden" name="immatCar" value="' . strtoupper($immatriculation) . '">
-                                        </form>
+                                        <head><link rel="stylesheet" href="../../assets/css/forms.css"></head>
+                                        <div id="popup" class="modal">
+                                            <div class="modal-content">
+                                                <h1>Voulez-vous créer un co-titulaire pour ce véhicule?</h1>
+                                                <form id="cotitulaireForm" action="cotitulairesForm.php" method="POST">
+                                                    <input type="hidden" name="idClient" value="'. $idClient .'">
+                                                    <input type="hidden" name="immatCar" value="'. strtoupper($immatriculation) .'">
+
+                                                    <div class="button-group">
+                                                        <button type="submit" onclick="setFormAction(\'cotitulairesForm.php\')" name="yes" value="oui">Oui</button>
+                                                        <button type="submit" onclick="setFormAction(\'saleMandateForm.php\')" name="no" value="non">Non</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+
                                         <script>
-                                            document.getElementById("redirectForm").submit();
+                                            function setFormAction(actionUrl) {
+                                                document.getElementById(\'cotitulaireForm\').action = actionUrl;
+                                            }
                                         </script>
                                     ';
+
+
                                     exit();
                                 } else {
                                     header("Location: ../../index.php");
@@ -222,8 +236,9 @@ if (!empty($_POST)) {
                     echo "<div style='margin-bottom: 30px;' class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>";
                 } ?>
 
-                <?php if (!empty($_GET['cient_email'])) {
-                    echo "<input type='hidden' name='cient_email' value='" . $_GET['cient_email'] . "'>";
+                <?php if (!empty($_POST['idClient'])) {
+                    echo "<input type='hidden' name='idClient' value='" . $_POST['idClient'] . "'>";
+                    echo "<input type='hidden' name='customerType' value='" . $_POST['customerType'] . "'>";
                 } ?>
 
                 <div class="input_box">
@@ -250,6 +265,20 @@ if (!empty($_POST)) {
                 <div class="input_box">
                     <span class="label form_required">Modèle</span>
                     <input required="true" name="model" type="text" id="model">
+
+                    <p class="text_error hidden">Ce champ est requis.</p>
+                </div>
+
+                <div class="input_box">
+                    <span class="label form_required">Type de véhicule</span>
+                    <input required="true" name="typeVehicle" type="text" id="typeVehicle">
+
+                    <p class="text_error hidden">Ce champ est requis.</p>
+                </div>
+
+                <div class="input_box">
+                    <span class="label form_required">Numéro de série</span>
+                    <input required="true" name="numSerie" type="text" id="numSerie">
 
                     <p class="text_error hidden">Ce champ est requis.</p>
                 </div>

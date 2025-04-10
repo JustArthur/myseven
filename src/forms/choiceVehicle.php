@@ -11,6 +11,12 @@ if(!isset($_SESSION['user']['role']) || empty($_COOKIE['user_session'])) {
     exit();
 }
 
+// Vérifie si il y a bien un idClient et une immatriculation de voiture
+if(empty($_POST['idClient'])) {
+    header('Location: ../../index.php');
+    exit();
+}
+
 require_once '../../database.php';
 require_once '../functions/createFolderNextCloud.php';
 require_once '../functions/cleanValues.php';
@@ -23,24 +29,27 @@ if (!empty($_POST)) {
 
         // Verifie si l'immatriculation est vide
         if (empty($immatCar)) {
-            $_GET['client_email'] = $client;
+            $_POST['idClient'] = $_POST['idClient'];
             $error_message = [
                 'type' => 'error',
                 'message' => 'Aucune immatriculation selectionné.'
             ];
+            
         } else {
             $DBB = new ConnexionDB;
             $DB = $DBB->openConnection();
 
-            $client_email = $_GET['client_email'];
-
-            $resClient = $DB->prepare("SELECT * FROM clients WHERE clients_email = ?");
-            $resClient->execute([urldecode($_GET['client_email'])]);
+            $resClient = $DB->prepare("SELECT * FROM clients WHERE clients_id = ?");
+            $resClient->execute([$idClient]);
             $resClient = $resClient->fetch();
 
             $resVehicule = $DB->prepare("SELECT * FROM vehicules WHERE vehicules_immatriculation = ?");
             $resVehicule->execute([$immatCar]);
             $resVehicule = $resVehicule->fetch();
+
+            $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
+            $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
+            $getAgence = $getAgence->fetch();
 
             // Vérifie si le cni du client n'est pas vide
             if ($resClient['clients_copie_cni']) {
@@ -71,13 +80,9 @@ if (!empty($_POST)) {
                 // Met le fichier CNI dans un dossier temporaire
                 file_put_contents($tempFilePath, $fileContent);
 
-                $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
-                $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
-                $getAgence = $getAgence->fetch();
-
                 // Crée le dossier sur NextCloud
                 $CNItoUpload = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/' . "DOCUMENTS_DE_VENTE/CLIENT_ACHETEUR/";
-                $uploadSuccess = uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $CNItoUpload, $tempFilePath);
+                uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $CNItoUpload, $tempFilePath);
 
                 //unlink le fichier temporaire
                 unlink($tempFilePath);
@@ -85,9 +90,10 @@ if (!empty($_POST)) {
                 // Renvoi sur le formulaire suivant
                 echo '
                     <form id="redirectForm" action="reservationForm.php" method="POST">
-                        <input type="hidden" name="client" value="' . strtolower($_GET['client_email']) . '">
-                        <input type="hidden" name="immatCar" value="' . $immatCar . '">
+                        <input type="hidden" name="idClient" value="' . $idClient . '">
+                        <input type="hidden" name="immatCar" value="' . strtoupper($immatCar) . '">
                     </form>
+                    
                     <script>
                         document.getElementById("redirectForm").submit();
                     </script>
@@ -125,7 +131,7 @@ if (!empty($_POST)) {
                     echo "<div style='margin-bottom: 30px;' class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>";
                 } ?>
 
-                <input type="hidden" name="client" value="<?= $_GET['client_email'] ?>">
+                <input type="hidden" name="idClient" value="<?= $_POST['idClient'] ?>">
 
                 <div class="wrapper marque">
                     <span class="label form_required">Immatriculation du véhicule</span>

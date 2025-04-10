@@ -80,12 +80,17 @@
                             $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
                             $getAgence = $getAgence->fetch();
 
+                            $getClient = $DB->prepare('SELECT * FROM clients WHERE clients_email = ?');
+                            $getClient->execute([strtolower($email)]);
+                            $getClient = $getClient->fetch();
+
                             // Clean le nom et prénom
                             $cleanFirstName = cleanValue($firstName);
                             $cleanLastName = cleanValue($lastName);
  
                             $folderToCreate = $cleanFirstName . "-" . $cleanLastName;
                             $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_client'], $folderToCreate);
+                            $createFolderNextcloud = true;
 
                             if($createFolderNextcloud) {
                                 if (isset($_FILES['fileCNI']) && $_FILES['fileCNI']['error'] == 0) {
@@ -97,7 +102,7 @@
                                     $destinationPath = sys_get_temp_dir() . '/' . $newFileName;
                                 
                                     if (move_uploaded_file($tmpPath, $destinationPath)) {
-                                        $uploadSuccess = uploadPdfToNextcloud($getAgence['agence_path_client'], $folderToCreate, $destinationPath);                                
+                                        uploadPdfToNextcloud($getAgence['agence_path_client'], $folderToCreate, $destinationPath);                                
                                         unlink($destinationPath);
     
                                     } else {
@@ -120,8 +125,8 @@
                                 if($validFolder) {
                                     if($typeCustomerValue == "Acheteur") {
                                         echo '
-                                            <form id="redirectForm" action="choiceVehicle.php" method="GET" target="newTabForm" style="display:none;">
-                                                <input type="hidden" name="client_email" value="' . strtolower($email) . '">
+                                            <form id="redirectForm" action="choiceVehicle.php" method="POST" target="newTabForm" style="display:none;">
+                                                <input type="hidden" name="idClient" value="' . strtolower($getClient['clients_id']) . '">
                                             </form>
 
                                             <script>
@@ -134,8 +139,8 @@
                                         exit();
                                     } else {
                                         echo '
-                                            <form id="redirectForm" action="vehicleForm.php" method="GET"  target="newTabForm" style="display:none;">
-                                                <input type="hidden" name="cient_email" value="' . strtolower($email) .'">
+                                            <form id="redirectForm" action="vehicleForm.php" method="POST"  target="newTabForm" style="display:none;">
+                                                <input type="hidden" name="idClient" value="' . strtolower($getClient['clients_id']) .'">
                                                 <input type="hidden" name="customerType" value="' . $_GET['customerType'] .'">
                                             </form>
 

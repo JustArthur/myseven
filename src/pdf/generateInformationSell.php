@@ -8,10 +8,7 @@
     if(empty($_SESSION['user']) || empty($_COOKIE['user_session'])) {
         header('Location: ../../login.php');
         exit();
-    } else if (empty($_POST['client']) || empty($_POST['immatCar'])) {
-        header('Location: ../../index.php');
-        exit();
-    }
+    } 
 
     require_once '../../vendor/setasign/fpdf/fpdf.php';
     require_once '../../vendor/setasign/fpdi/src/autoload.php';
@@ -23,9 +20,20 @@
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
     
-    $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_email = ?');
-    $resClient->execute([$_POST['client']]);
-    $resClient = $resClient->fetch();
+    if (!empty($_POST['clientEmail'])) {
+        $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_email = ?');
+        $resClient->execute([$_POST['clientEmail']]);
+        $resClient = $resClient->fetch();
+
+    } else if (!empty($_POST['idClient'])){
+        $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_id = ?');
+        $resClient->execute([$_POST['idClient']]);
+        $resClient = $resClient->fetch();
+        
+    } else {
+        header('Location: ../../login.php');
+        exit();
+    }
 
     $resAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
     $resAgence->execute([$_SESSION['user']['agence_id']]);
@@ -41,15 +49,15 @@
         $resClient['clients_numero_cni'],
         $resVehicule['vehicules_marque'],
         $resVehicule['vehicules_model'],
-        //Genre ?
+        $resVehicule['vehicules_type'],
         $resVehicule['vehicules_immatriculation'],
         $resVehicule['vehicules_kilometrage'],
         $resVehicule['vehicules_couleur'],
         $resVehicule['vehicules_puissance'],
-        // Numéro Série ?
+        $resVehicule['vehicules_numero_serie'],
         date('d/m/Y', strtotime($resVehicule['vehicules_date_mise_en_circu'])),
-        // Date controle Technique ?
-        // PV N° ?
+        date('d/m/Y', strtotime($resVehicule['vehicules_date_entretien'])),
+        // PV N° ,
         $resAgence['agence_nom'],
         date('d/m/Y')
     ];
@@ -68,15 +76,15 @@
         ['x' => 63, 'y' => 81], // Numéro CNI
         ['x' => 45, 'y' => 101], // Marque véhicule
         ['x' => 45, 'y' => 105.5], // Modèle véhicule
-        // Genre
-        ['x' => 60, 'y' => 115], // Immatriculation véhicule
+        ['x' => 45, 'y' => 110], // Type
+        ['x' => 58, 'y' => 115], // Immatriculation véhicule
         ['x' => 51, 'y' => 120], // Kilomètrage véhicule
         ['x' => 135, 'y' => 100.5], // Couleur véhicule
         ['x' => 150, 'y' => 105.5], // Puissance véhicule
-        // Numéro Série
+        ['x' => 140, 'y' => 110], // Numéro de série
         ['x' => 140, 'y' => 115], // Mise en circulation véhicule
-        // Date controle Technique
-        // PV N°
+        ['x' => 125, 'y' => 159.5], // Date dernier contrôle technique
+        // ['x' => 155, 'y' => 159.5], // PV N°
         ['x' => 52, 'y' => 219.5], // Nom de l'agence
         ['x' => 88, 'y' => 219.5] // Date du jour
     ];

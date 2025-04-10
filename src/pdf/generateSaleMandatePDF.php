@@ -8,7 +8,9 @@
     if(empty($_SESSION['user']) || empty($_COOKIE['user_session'])) {
         header('Location: ../../login.php');
         exit();
-    } else if (empty($_POST['customerMail']) || empty($_POST['immatricuCar'])) {
+    } 
+    
+    if (empty($_POST['idClient']) || empty($_POST['immatCar'])) {
         header('Location: ../../index.php');
         exit();
     }
@@ -24,19 +26,19 @@
     $DB = $DBB->openConnection();
 
     $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
-    $resVehicule->execute([$_POST['immatricuCar']]);
+    $resVehicule->execute([$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();
 
-    $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_email = ?');
-    $resClient->execute([$_POST['customerMail']]);
+    $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_id = ?');
+    $resClient->execute([$_POST['idClient']]);
     $resClient = $resClient->fetch();
 
     $resAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
-    $resAgence->execute([$_SESSION['user']['agence_id']]);
+    $resAgence->execute([intval($_SESSION['user']["agence_id"])]);
     $resAgence = $resAgence->fetch();
 
     $resUser = $DB->prepare('SELECT * FROM utilisateurs WHERE utilisateurs_id = ?');
-    $resUser->execute([$_SESSION['user']['id']]);
+    $resUser->execute([intval($_SESSION['user']["id"])]);
     $resUser = $resUser->fetch();
 
     $filePath = '../../storage/json_data/sale_mandate_id.json';
@@ -158,13 +160,10 @@
     $pdfNameFile = "MANDAT_DE_VENTE_" . strtoupper($cleanedValueName) . "_" . $fileCount . ".pdf";
     $destinationPath = $folder . $pdfNameFile;
 
-    $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
-    $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
-    $getAgence = $getAgence->fetch();
     $DBB->closeConnection();
 
     $pdf->Output('F', $destinationPath);
-    // uploadPdfToNextcloud($getAgence['agence_path_client'], strtoupper($cleanedValueName), $destinationPath);
-    uploadPdfToNextcloud($getAgence['agence_path_vehicules'], strtoupper($cleanedValueVehicule), $destinationPath);
+    // uploadPdfToNextcloud($resAgence['agence_path_client'], strtoupper($cleanedValueName), $destinationPath);
+    uploadPdfToNextcloud($resAgence['agence_path_vehicules'], strtoupper($cleanedValueVehicule), $destinationPath);
     $pdf->Output('I', $pdfNameFile);
 ?>

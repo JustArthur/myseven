@@ -9,6 +9,41 @@
         header('Location: ../../login.php');
         exit();
     }
+
+    require_once '../../database.php';
+
+    if(!isset($_SESSION['user']['role']) || empty($_COOKIE['user_session'])) {
+        header('Location: ../../login.php');
+        exit();
+    }
+
+    $DBB = new ConnexionDB();
+    $DB = $DBB->openConnection();
+
+    if (!empty($_POST['clientEmail'])) {
+        $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_email = ?');
+        $resClient->execute([$_POST['clientEmail']]);
+        $resClient = $resClient->fetch();
+
+    } else if (!empty($_POST['idClient'])){
+        $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_id = ?');
+        $resClient->execute([$_POST['idClient']]);
+        $resClient = $resClient->fetch();
+        
+    } else {
+        header('Location: ../../login.php');
+        exit();
+    }
+
+
+    if(!$resClient || empty($_POST['immatCar'])) {
+        header('Location: ../../login.php');
+        exit();
+    }
+
+    $resVehicule = $DB->prepare("SELECT vehicules_immatriculation FROM vehicules WHERE vehicules_immatriculation = ?");
+    $resVehicule->execute([$_POST['immatCar']]);
+    $resVehicule = $resVehicule->fetch();
 ?>
 
 <!DOCTYPE html>
@@ -22,22 +57,22 @@
     <title>Myseven - Générer un mandat d'engagement</title>
 </head>
 <body>
-<main>
+    <main>
         <div class="search-container">
             <h2>Générer un mandat d'engagement</h2>
             <form id="form_pdf" action="../pdf/generateContractEngagementPDF.php" method="POST">
                 <div class="input_box">
                     <span class="label form_required">Adresse-mail du client</span>
-                    <input required type="email" disabled  value="<?= $_POST['client'] ?>" class="disabled" id="customerMail">
-                    <input hidden type="email" name="customerMail" value="<?= $_POST['client'] ?>">
+                    <input required type="email" disabled  value="<?= $resClient['clients_email'] ?>" class="disabled" id="customerMail">
+                    <input hidden type="text" name="idClient" value="<?= $resClient['clients_id'] ?>">
 
                     <p class="text_error">Ce champ est requis</p>
                 </div>
 
                 <div class="input_box">
                     <span class="label form_required">Plaque d'immatriculation</span>
-                    <input required type="text" disabled  value="<?= $_POST['immatCar'] ?>" class="disabled" id="immatCar">
-                    <input hidden type="text" name="immatCar" value="<?= $_POST['immatCar'] ?>">
+                    <input required type="text" disabled  value="<?= $resVehicule['vehicules_immatriculation'] ?>" class="disabled" id="immatCar">
+                    <input hidden type="text" name="immatCar" value="<?= $resVehicule['vehicules_immatriculation'] ?>">
 
                     <p class="text_error">Ce champ est requis</p>
                 </div>

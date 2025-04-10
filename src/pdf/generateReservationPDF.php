@@ -8,7 +8,9 @@
     if(empty($_SESSION['user']) || empty($_COOKIE['user_session'])) {
         header('Location: ../../login.php');
         exit();
-    } else if (empty($_POST['customerMail']) || empty($_POST['immatCar'])) {
+    }
+    
+    if (empty($_POST['idClient']) || empty($_POST['immatCar'])) {
         header('Location: ../../index.php');
         exit();
     }
@@ -24,8 +26,8 @@
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
 
-    $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_email = ?');
-    $resClient->execute([$_POST['customerMail']]);
+    $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_id = ?');
+    $resClient->execute([$_POST['idClient']]);
     $resClient = $resClient->fetch();
 
     $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
@@ -150,7 +152,7 @@
         $resAgence['agence_telephone'],
         $resAgence['agence_mail'],
         "ARR " . $resVehicule['vehicules_immatriculation'],
-        ": " . $cashSentinel . " €TTC",
+        ": " . $cashSentinel . " € TTC",
     ];
 
 
