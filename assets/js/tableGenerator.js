@@ -38,14 +38,14 @@ const searchTable = (tableName, searchBarId) => {
 const updateTable = (rows, tableName) => {
     const tbody = document.getElementById(`${tableName}TableBody`);
     tbody.innerHTML = rows
-        .map((row) => {
+        .map((row, index) => {
             const uniqueKey = tableName === "Vehicles" ? "vehicules_immatriculation" : "clients_email";
             const typeValue = tableName === "Vehicles" ? "selectedVehicles" : "selectedCustomers";
-            const realIndex = rows.findIndex(r => r[uniqueKey] === row[uniqueKey]);
+            const realIndex = window[tableName].findIndex(r => r[uniqueKey] === row[uniqueKey]);
             const lastIndexValue = tableName === "Vehicles" ? row.vehicules_agence_id : row.clients_agence_id;
             const lastIndex = tableName === "Vehicles" ? "vehicules_agence_id" : "clients_agence_id";
             return `
-                <tr data-index="${realIndex}" onclick="selectRow(this, '${tableName}')">
+                <tr data-index="${realIndex}" data-real-index="${realIndex}" onclick="selectRow(this, '${tableName}')">
                     ${Object.keys(row).filter(field => field !== lastIndex).map(field => {
                         return `<td ondblclick="editCell(this, '${field}', ${realIndex}, '${tableName}')">${row[field]}</td>`;
                     }).join('')}
@@ -58,7 +58,6 @@ const updateTable = (rows, tableName) => {
 };
 
 const editCell = (td, field, index, tableName) => {
-
     if (td.querySelector("input, select")) {
         return;
     }
@@ -157,7 +156,7 @@ const editCell = (td, field, index, tableName) => {
         if (field === "vehicules_type_boite" && tableName === "Vehicles") {
             saveChanges();
         }
-    })
+    });
 
     input.addEventListener("blur", saveChanges);
     input.addEventListener("keypress", (e) => {
@@ -166,6 +165,7 @@ const editCell = (td, field, index, tableName) => {
         }
     });
 };
+
 
 const updateDatabase = (item, oldUniqueValue, tableName) => {
     const controllerFile = (tableName === "CustomersSell" || tableName === "CustomersBuy") ? "controllerCustomers.php" : "controllerVehicles.php";
