@@ -123,7 +123,7 @@
                         <optgroup label="Choisir l'agence pour trier les clients vendeurs">
                             <option value="All">Toute les agences</option>
                             <?php foreach($resAgence as $agence) { ?>
-                                <option value="<?= $agence['agence_id'] ?>"><?= $agence['agence_nom'] ?></option>
+                                <option value="<?= $agence['agence_id'] ?>" <?php if($_SESSION['user']['agence_id'] == $agence['agence_id']) { echo "selected";} ?>><?= $agence['agence_nom'] ?></option>
                             <?php } ?>
                         </optgroup>
                     </select>
@@ -160,7 +160,7 @@
                         <optgroup label="Choisir l'agence pour trier les véhicules">
                             <option value="All">Toute les agences</option>
                             <?php foreach($resAgence as $agence) { ?>
-                                <option value="<?= $agence['agence_id'] ?>"><?= $agence['agence_nom'] ?></option>
+                                <option value="<?= $agence['agence_id'] ?>" <?php if($_SESSION['user']['agence_id'] == $agence['agence_id']) { echo "selected";} ?>><?= $agence['agence_nom'] ?></option>
                             <?php } ?>
                         </optgroup>
                     </select>
@@ -197,7 +197,7 @@
                         <optgroup label="Choisir l'agence pour trier les clients achteurs">
                             <option value="All">Toute les agences</option>
                             <?php foreach($resAgence as $agence) { ?>
-                                <option value="<?= $agence['agence_id'] ?>"><?= $agence['agence_nom'] ?></option>
+                                <option value="<?= $agence['agence_id'] ?>" <?php if($_SESSION['user']['agence_id'] == $agence['agence_id']) { echo "selected";} ?>><?= $agence['agence_nom'] ?></option>
                             <?php } ?>
                         </optgroup>
                     </select>
@@ -259,15 +259,39 @@
 
     
     <script>
+        // Fonction pour générer les lignes du tableau à partir des données
         const rowsCustomersSell = [<?= generateRows($resClientVendeur, $customerFields) ?>];
         const rowsCustomersBuy = [<?= generateRows($resClientAcheteur, $customerFields) ?>];
         const rowsVehicles = [<?= generateRows($resVehicule, $vehicleFields) ?>];
 
+        // Désactiver le entrée du grand form
         document.getElementById("bigForm").addEventListener("keypress", function (e) {
             if (e.key === "Enter") {
                 e.preventDefault();
             }
         });
+
+        // Ajoutez cette ligne après l'initialisation de la page pour appliquer le filtre par défaut à chaque select
+        document.addEventListener("DOMContentLoaded", () => {
+            // Récupérer les éléments des select
+            const agenceSellSelect = document.getElementById('selectAgenceSell');
+            const agenceBuySelect = document.getElementById('selectAgenceBuy');
+            const vehiclesSelect = document.getElementById('selectAgenceVehicles');
+
+            // Récupérer l'ID de l'agence de l'utilisateur connecté
+            const defaultAgenceId = "<?php echo $_SESSION['user']['agence_id']; ?>"; // L'ID de l'agence par défaut de l'utilisateur connecté
+
+            // Sélectionner l'agence par défaut dans chaque select
+            agenceSellSelect.value = defaultAgenceId;
+            agenceBuySelect.value = defaultAgenceId;
+            vehiclesSelect.value = defaultAgenceId;
+
+            // Appliquer le filtrage pour chaque select
+            window.selectAgence('CustomersSell', 'selectAgenceSell');
+            window.selectAgence('CustomersBuy', 'selectAgenceBuy');
+            window.selectAgence('Vehicles', 'selectAgenceVehicles');
+        });
+
     </script>
     
     <script type="text/javascript" src="assets/js/tableGenerator.js"></script>

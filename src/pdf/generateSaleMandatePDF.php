@@ -164,7 +164,7 @@
     $DBB->closeConnection();
 
     $pdf->Output('F', $destinationPath);
-    uploadPdfToNextcloud($getAgence['agence_path_client'], strtoupper($cleanedValueName), $destinationPath);
+    // uploadPdfToNextcloud($getAgence['agence_path_client'], strtoupper($cleanedValueName), $destinationPath);
     uploadPdfToNextcloud($getAgence['agence_path_vehicules'], strtoupper($cleanedValueVehicule), $destinationPath);
     $pdf->Output('I', $pdfNameFile);
 ?>

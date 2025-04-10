@@ -96,8 +96,18 @@
 
                     $fileCNIName = "CNI_{$cleanFirstName}-{$cleanLastName}.{$extension}";
                     $destinationPath = sys_get_temp_dir() . '/' . $fileCNIName;
-                                
-                    if (move_uploaded_file($tmpPath, $destinationPath)) {                                
+
+                    
+                    if (move_uploaded_file($tmpPath, $destinationPath)) { 
+                        $resAgence = $DB->prepare("SELECT * FROM agences WHERE agences_id = ?");
+                        $resAgence->execute([$_SESSION['user']['agence_id']]);
+                        $getAgence = $resAgence->fetch(PDO::FETCH_ASSOC);
+                        
+                        $folderToCreate = $cleanFirstName . "-" . $cleanLastName;
+                        $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_client'], $folderToCreate);
+
+                        $uploadSuccess = uploadPdfToNextcloud($getAgence['agence_path_client'], $folderToCreate, $destinationPath);                                
+                        unlink($destinationPath);
                     }
                 } else {
                     $error_message = [

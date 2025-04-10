@@ -12,6 +12,7 @@
 
     if(empty($_POST['client'])) { header('Location: ../../index.php'); exit(); }
     if(empty($_POST['immatCar'])) { $_POST['immatCar'] = $_GET['vehicle_immat'] ?? ''; }
+    if(empty($_POST['client'])) { $_POST['client'] = $_GET['client_email'] ?? ''; }
 
 ?>
 

@@ -19,6 +19,8 @@ window.selectAgence = (tableName, AgenceId) => {
     updateTable(filteredRows, tableName);
 };
 
+
+// Barre de recherche
 const searchTable = (tableName, searchBarId) => {
     const searchTerm = document.getElementById(searchBarId).value.toLowerCase();
 
@@ -35,6 +37,8 @@ const searchTable = (tableName, searchBarId) => {
     updateTable(filteredRows, tableName);
 };
 
+
+// update le tableau
 const updateTable = (rows, tableName) => {
     const tbody = document.getElementById(`${tableName}TableBody`);
     tbody.innerHTML = rows
@@ -57,6 +61,8 @@ const updateTable = (rows, tableName) => {
         }).join('');
 };
 
+
+// Editer une cellule du tableau
 const editCell = (td, field, index, tableName) => {
     if (td.querySelector("input, select")) {
         return;
@@ -166,7 +172,7 @@ const editCell = (td, field, index, tableName) => {
     });
 };
 
-
+// Met à jour la BDD
 const updateDatabase = (item, oldUniqueValue, tableName) => {
     const controllerFile = (tableName === "CustomersSell" || tableName === "CustomersBuy") ? "controllerCustomers.php" : "controllerVehicles.php";
 
@@ -238,7 +244,7 @@ const closePopup = () => {
     overlay.classList.add("hidden");
 };
 
-
+// initialisation des tableaux
 const initTable = (tableName, rows) => {
     window[tableName] = rows;
     updateTable(rows, tableName);
