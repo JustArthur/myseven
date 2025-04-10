@@ -247,11 +247,16 @@
         </div>
     </form>
 
+    <!-- Overlay (fond sombre) -->
+    <div id="overlay" class="cardItem-overlay hidden"></div>
+
+    <!-- Popup -->
     <div id="cardItem" class="cardItem hidden">
-        <div class="cardItem-content" id="cardItem_content" >
-            <!-- INSERT AVEC JS -->
+        <div id="cardItem_content" class=cardItem_content>
+            <!-- Le contenu de la popup sera inséré dynamiquement ici -->
         </div>
     </div>
+
     
     <script>
         const rowsCustomersSell = [<?= generateRows($resClientVendeur, $customerFields) ?>];

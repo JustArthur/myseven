@@ -49,7 +49,7 @@ const updateTable = (rows, tableName) => {
                     ${Object.keys(row).filter(field => field !== lastIndex).map(field => {
                         return `<td ondblclick="editCell(this, '${field}', ${realIndex}, '${tableName}')">${row[field]}</td>`;
                     }).join('')}
-                    <td class="btn_card" onclick="openCloseCard('${tableName}', ${realIndex})">Voir</td>
+                    <td class="btn_card" onclick="openPopup('${tableName}', ${realIndex})">Voir</td>
                     <td><input type="radio" name="${typeValue}" value="${row[uniqueKey]}"></td>
                     <td><input type="text" value="${lastIndexValue}" hidden="true"></td>
                 </tr>
@@ -179,24 +179,28 @@ const updateDatabase = (item, oldUniqueValue, tableName) => {
     });
 };
 
-const openCloseCard = (tableName, realIndex) => {
-    const card = document.getElementById("cardItem");
-    card.classList.toggle("hidden");
+const openPopup = (tableName, realIndex) => {
+    const popup = document.getElementById("cardItem");
+    const overlay = document.getElementById("overlay");
 
-    if(card.classList.contains("hidden")) {
-        return;
-    } else {
-        cardShow(tableName, realIndex);
-    }
-}
+    // Afficher l'overlay et la popup
+    overlay.classList.remove("hidden");
+    popup.classList.remove("hidden");
 
+    // Charger les informations spécifiques dans la popup
+    cardShow(tableName, realIndex);
+};
+
+// Fonction pour afficher le contenu de la popup
 const cardShow = (tableName, realIndex) => {
     const cardItemContent = document.getElementById("cardItem_content");
 
-    if(tableName === "CustomersSell" || tableName === "CustomersBuy") {
+    console.log(tableName, realIndex);
+
+    if (tableName === "CustomersSell" || tableName === "CustomersBuy") {
         const customer = window[tableName][realIndex];
         cardItemContent.innerHTML = `
-            <span onclick="openCloseCard(${tableName}, ${realIndex})" class="material-symbols-outlined">close</span>
+            <span onclick="closePopup()" class="material-symbols-outlined">close</span>
             <h2>Informations du client</h2>
             <p><strong>Nom : </strong> ${customer.clients_nom}</p>
             <p><strong>Prénom : </strong> ${customer.clients_prenom}</p>
@@ -210,19 +214,30 @@ const cardShow = (tableName, realIndex) => {
     } else {
         const vehicle = window[tableName][realIndex];
         cardItemContent.innerHTML = `
-            <span onclick="openCloseCard(${tableName}, ${realIndex})" class="material-symbols-outlined">close</span>
+            <span onclick="closePopup()" class="material-symbols-outlined">close</span>
             <h2>Informations du véhicule</h2>
             <p><strong>Marque : </strong> ${vehicle.vehicules_marque}</p>
-            <p><strong>Model : </strong> ${vehicle.vehicules_model}</p>
-            <p><strong>Annee : </strong> ${vehicle.vehicules_annee}</p>
+            <p><strong>Modèle : </strong> ${vehicle.vehicules_model}</p>
+            <p><strong>Année : </strong> ${vehicle.vehicules_annee}</p>
             <p><strong>Immatriculation : </strong> ${vehicle.vehicules_immatriculation}</p>
             <p><strong>Puissance : </strong> ${vehicle.vehicules_puissance}</p>
-            <p><strong>Type boite : </strong> ${vehicle.vehicules_type_boite}</p>
+            <p><strong>Type de boîte : </strong> ${vehicle.vehicules_type_boite}</p>
             <p><strong>Couleur : </strong> ${vehicle.vehicules_couleur}</p>
             <p><strong>Finition : </strong> ${vehicle.vehicules_finition}</p>
         `;
     }
-}
+};
+
+// Fonction pour fermer la popup
+const closePopup = () => {
+    const popup = document.getElementById("cardItem");
+    const overlay = document.getElementById("overlay");
+
+    // Cacher la popup et l'overlay
+    popup.classList.add("hidden");
+    overlay.classList.add("hidden");
+};
+
 
 const initTable = (tableName, rows) => {
     window[tableName] = rows;
