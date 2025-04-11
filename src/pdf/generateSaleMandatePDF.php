@@ -174,6 +174,6 @@
 
     $pdf->Output('F', $destinationPath);
     // uploadPdfToNextcloud($resAgence['agence_path_client'], strtoupper($cleanedValueName), $destinationPath);
-    // uploadPdfToNextcloud($resAgence['agence_path_vehicules'], strtoupper($cleanedValueVehicule), $destinationPath);
+    uploadPdfToNextcloud($resAgence['agence_path_vehicules'], strtoupper($cleanedValueVehicule), $destinationPath);
     $pdf->Output('I', $pdfNameFile);
 ?>
