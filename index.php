@@ -24,7 +24,9 @@
         'PDF'
     ];
 
-    var_dump($_SESSION['user']);
+    if ($_SERVER['HTTP_HOST'] === '127.0.0.1' || $_SERVER['HTTP_HOST'] === 'myseven') {
+        var_dump($_SESSION);
+    }
 
     $resAgence = selectAllAgence($DB);
     $resAgence = $resAgence->fetchAll();
