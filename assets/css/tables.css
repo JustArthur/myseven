@@ -10,11 +10,22 @@
     outline: none;
 }
 
-form {
+body {
+    width: 100vw;
+    height: 100vh;
     display: flex;
     flex-direction: column;
-    gap: 40px;
-    margin: 20px;
+    padding: 10px;
+    gap: 10px;
+}
+
+form {
+    height: 100%;
+    overflow: hidden;
+}
+
+.tableau {
+    height: 100%;
 }
 
 .navbar {
@@ -56,6 +67,7 @@ form {
     gap: 20px;
     border-radius: 0 0 var(--border-radius) var(--border-radius);
     overflow: hidden;
+    height: 93%;
 }
 
 .content.active {
@@ -66,6 +78,7 @@ form {
 table {
     border-collapse: collapse;
     width: 100%;
+    height: 100%;
 }
 
 table :is(th, td) {
@@ -193,6 +206,10 @@ input[type="radio"]:checked {
     border-color: var(--primary-color);
 }
 
+.login {
+    width: max-content;
+}
+
 .login-button {
     padding: 10px 15px;
     border-radius: var(--border-radius);
@@ -202,6 +219,7 @@ input[type="radio"]:checked {
     text-align: center;
     transition: background-color 0.3s;
     color: white;
+    display: inherit;
 }
 
 .login-button:hover {
@@ -249,7 +267,7 @@ input[type="radio"]:checked {
 }
 
 .overflowTable {
-    overflow-x: auto;
+    overflow: auto;
 }
 
 .input_client,

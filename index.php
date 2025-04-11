@@ -36,6 +36,10 @@
     $resVehicule = selectAllVehicle($DB);
     $resVehicule = $resVehicule->fetchAll();
 
+    $resVehiculeAndCoTitulaire = $DB->prepare("SELECT * FROM vehicules LEFT JOIN cotitulaires ON cotitulaires.cotitulaires_vehicules_id = vehicules.vehicules_id ORDER BY vehicules.vehicules_immatriculation ASC");
+    $resVehiculeAndCoTitulaire->execute();
+    $resVehiculeAndCoTitulaire = $resVehiculeAndCoTitulaire->fetchAll();
+
     if($_SESSION['user']['role'] == 1) { $tableauOnglets[] = 'Excel'; }
 
     $DBB->closeConnection();
@@ -49,7 +53,7 @@
             'generateBonReservation' => 'src/forms/reservationForm.php',
             'generateAccordBaissePrix' => 'src/forms/priceReductionForm.php',
             'generateContractEngagement' => 'src/forms/contractEngagementForm.php',
-            'generateInformationSell' => 'src/pdf/generateInformationSell.php'
+            'generateInformationSell' => 'src/forms/informationSellForm.php'
         ];
 
         if (empty($selectedCustomers) || empty($selectedVehicles)) {
@@ -88,15 +92,13 @@
     <title>Myseven - Panel Administrateur</title>
 </head>
 <body>
-    <form id="bigForm" method="POST">
-        <div class="login">
-            <?php if (!empty($_SESSION['user'])) { ?>
-                <a href="logout.php" class="login-button deco">Se deconnecter</a>
-            <?php } else {
-                header('Location: login.php');
-            } ?>
-        </div>
+    <div class="login">
+        <?php if (!empty($_SESSION['user'])) { ?>
+            <a href="logout.php" class="login-button deco">Se deconnecter</a>
+        <?php } ?>
+    </div>
 
+    <form id="bigForm" method="POST">
         <div class="tableau">
             <div class="navbar">
                 <?php foreach($tableauOnglets as $index => $onglet) { ?>
@@ -253,6 +255,10 @@
         const rowsCustomersSell = [<?= generateRows($resClientVendeur, $customerFields) ?>];
         const rowsCustomersBuy = [<?= generateRows($resClientAcheteur, $customerFields) ?>];
         const rowsVehicles = [<?= generateRows($resVehicule, $vehicleFields) ?>];
+
+        window.noteCustomersSell = [<?= generateRows($resClientVendeur, $allCustomersField) ?>];
+        window.noteCustomersBuy = [<?= generateRows($resClientAcheteur, $allCustomersField) ?>];
+        window.noteVehicles = [<?= generateRows($resVehiculeAndCoTitulaire, $allVehicleFields) ?>];
 
         // Désactiver le entrée du grand form
         document.getElementById("bigForm").addEventListener("keypress", function (e) {

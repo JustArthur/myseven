@@ -1,6 +1,5 @@
-let currentPage = 1,
-    rowsPerPage = 50;
-    editingCell = null
+let rowsPerPage = 50;
+let editingCell = null;
 
 window.selectAgence = (tableName, AgenceId) => {
     const selectedAgenceId = document.getElementById(AgenceId).value;
@@ -15,7 +14,6 @@ window.selectAgence = (tableName, AgenceId) => {
         });
     }
 
-    currentPage = 1;
     updateTable(filteredRows, tableName);
 };
 
@@ -41,25 +39,38 @@ const searchTable = (tableName, searchBarId) => {
 // update le tableau
 const updateTable = (rows, tableName) => {
     const tbody = document.getElementById(`${tableName}TableBody`);
+
+    const uniqueKey = tableName === "Vehicles" ? "vehicules_immatriculation" : "clients_email";
+    const typeValue = tableName === "Vehicles" ? "selectedVehicles" : "selectedCustomers";
+
+    const tableMap = {
+        Vehicles: "noteVehicles",
+        CustomersSell: "noteCustomersSell",
+        CustomersBuy: "noteCustomersBuy"
+    };
+    const tableFull = tableMap[tableName];
+
+    const lastIndexKey = tableName === "Vehicles" ? "vehicules_agence_id" : "clients_agence_id";
+
     tbody.innerHTML = rows
         .map((row, index) => {
-            const uniqueKey = tableName === "Vehicles" ? "vehicules_immatriculation" : "clients_email";
-            const typeValue = tableName === "Vehicles" ? "selectedVehicles" : "selectedCustomers";
             const realIndex = window[tableName].findIndex(r => r[uniqueKey] === row[uniqueKey]);
-            const lastIndexValue = tableName === "Vehicles" ? row.vehicules_agence_id : row.clients_agence_id;
-            const lastIndex = tableName === "Vehicles" ? "vehicules_agence_id" : "clients_agence_id";
+            const lastIndexValue = row[lastIndexKey];
+
             return `
                 <tr data-index="${realIndex}" data-real-index="${realIndex}" onclick="selectRow(this, '${tableName}')">
-                    ${Object.keys(row).filter(field => field !== lastIndex).map(field => {
+                    ${Object.keys(row).filter(field => field !== lastIndexKey).map(field => {
                         return `<td ondblclick="editCell(this, '${field}', ${realIndex}, '${tableName}')">${row[field]}</td>`;
                     }).join('')}
-                    <td class="btn_card" onclick="openPopup('${tableName}', ${realIndex})">Voir</td>
+                    <td class="btn_card" onclick="openPopup('${tableFull}', ${realIndex})">Voir</td>
                     <td><input type="radio" name="${typeValue}" value="${row[uniqueKey]}"></td>
                     <td><input type="text" value="${lastIndexValue}" hidden="true"></td>
                 </tr>
             `;
-        }).join('');
+        })
+        .join('');
 };
+
 
 
 // Editer une cellule du tableau
@@ -201,38 +212,73 @@ const openPopup = (tableName, realIndex) => {
 const cardShow = (tableName, realIndex) => {
     const cardItemContent = document.getElementById("cardItem_content");
 
-    console.log(tableName, realIndex);
+    // Définir le tableau en fonction du tableName
+    let data;
+    if (tableName === "noteCustomersSell" || tableName === "noteCustomersBuy") {
+        data = window[tableName];
+    } else if (tableName === "noteVehicles") {
+        data = window[tableName];
+    }
 
-    if (tableName === "CustomersSell" || tableName === "CustomersBuy") {
-        const customer = window[tableName][realIndex];
-        cardItemContent.innerHTML = `
-            <span onclick="closePopup()" class="material-symbols-outlined">close</span>
-            <h2>Informations du client</h2>
-            <p><strong>Nom : </strong> ${customer.clients_nom}</p>
-            <p><strong>Prénom : </strong> ${customer.clients_prenom}</p>
-            <p><strong>Email : </strong> ${customer.clients_email}</p>
-            <p><strong>Téléphone : </strong> ${customer.clients_telephone}</p>
-            <p><strong>Adresse : </strong> ${customer.clients_rue}</p>
-            <p><strong>Code postal : </strong> ${customer.clients_cp}</p>
-            <p><strong>Ville : </strong> ${customer.clients_ville}</p>
-            <p><strong>Numéro CNI : </strong> ${customer.clients_numero_cni}</p>
-        `;
+    console.log(realIndex);
+    console.log(data[realIndex]);
+
+    if (data) {
+        const item = data[realIndex];  // Récupérer l'élément au bon index
+        if (tableName === "noteCustomersSell" || tableName === "noteCustomersBuy") {
+            // Afficher les informations du client
+            cardItemContent.innerHTML = `
+                <span onclick="closePopup()" class="material-symbols-outlined">close</span>
+                <h2>Informations du client</h2>
+                <p><strong>Nom : </strong> ${item.clients_nom}</p>
+                <p><strong>Prénom : </strong> ${item.clients_prenom}</p>
+                <p><strong>Email : </strong> ${item.clients_email}</p>
+                <p><strong>Téléphone : </strong> ${item.clients_telephone}</p>
+                <p><strong>Date d'anniversaire : </strong> ${item.clients_anniversaire}</p>
+                <p><strong>Lieu de naissance : </strong> ${item.clients_lieu_naissance}</p>
+                <p><strong>Type de client : </strong> ${item.clients_type}</p>
+                <p><strong>Adresse : </strong> ${item.clients_rue}</p>
+                <p><strong>Code postal : </strong> ${item.clients_cp}</p>
+                <p><strong>Ville : </strong> ${item.clients_ville}</p>
+                <p><strong>Numéro CNI : </strong> ${item.clients_numero_cni}</p>
+            `;
+        } else if (tableName === "noteVehicles") {
+            // Afficher les informations du véhicule
+            const formatDate = (dateString) => {
+                if (!dateString) return "N/A";
+                const date = new Date(dateString);
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}/${month}/${year}`;
+            };
+
+            cardItemContent.innerHTML = `
+                <span onclick="closePopup()" class="material-symbols-outlined">close</span>
+                <h2>Informations du véhicule</h2>
+                <p><strong>Immatriculation : </strong> ${item.vehicules_immatriculation}</p>
+                <p><strong>Marque : </strong> ${item.vehicules_marque}</p>
+                <p><strong>Modèle : </strong> ${item.vehicules_model}</p>
+                <p><strong>Année : </strong> ${item.vehicules_annee}</p>
+                <p><strong>Puissance : </strong> ${item.vehicules_puissance}</p>
+                <p><strong>Type de boîte : </strong> ${item.vehicules_type_boite}</p>
+                <p><strong>Couleur : </strong> ${item.vehicules_couleur}</p>
+                <p><strong>Finition : </strong> ${item.vehicules_finition}</p>
+                <p><strong>Origne : </strong> ${item.vehicules_origine}</p>
+                <p><strong>Kilometrage : </strong> ${item.vehicules_kilometrage} km</p>
+                <p><strong>Nombre de main : </strong> ${item.vehicules_nombre_main}</p>
+                <p><strong>Date de mise en circulation : </strong> ${formatDate(item.vehicules_date_mise_en_circu)}</p>
+                <p><strong>Date entretien : </strong> ${formatDate(item.vehicules_date_entretetien)}</p>
+                <p><strong>Frais récent : </strong> ${item.vehicules_frais_recent}</p>
+                <p><strong>Frais à prévoir : </strong> ${item.vehicules_frais_prevoir}</p>
+            `;
+        }
     } else {
-        const vehicle = window[tableName][realIndex];
-        cardItemContent.innerHTML = `
-            <span onclick="closePopup()" class="material-symbols-outlined">close</span>
-            <h2>Informations du véhicule</h2>
-            <p><strong>Marque : </strong> ${vehicle.vehicules_marque}</p>
-            <p><strong>Modèle : </strong> ${vehicle.vehicules_model}</p>
-            <p><strong>Année : </strong> ${vehicle.vehicules_annee}</p>
-            <p><strong>Immatriculation : </strong> ${vehicle.vehicules_immatriculation}</p>
-            <p><strong>Puissance : </strong> ${vehicle.vehicules_puissance}</p>
-            <p><strong>Type de boîte : </strong> ${vehicle.vehicules_type_boite}</p>
-            <p><strong>Couleur : </strong> ${vehicle.vehicules_couleur}</p>
-            <p><strong>Finition : </strong> ${vehicle.vehicules_finition}</p>
-        `;
+        // Gestion d'erreur si le tableau n'est pas trouvé
+        cardItemContent.innerHTML = `<p>Erreur: Le tableau de données est introuvable.</p>`;
     }
 };
+
 
 // Fonction pour fermer la popup
 const closePopup = () => {

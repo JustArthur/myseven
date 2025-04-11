@@ -48,11 +48,6 @@
     $resVehicule->execute([$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();
 
-    if(empty($resVehicule['vehicules_type']) || empty($resVehicule['vehicules_numero_serie'])) {
-        header('Location: ../forms/tempFileInformationSell.php?idClient=' . $resClient['clients_id'] . '&idVehicule=' . $resVehicule['vehicules_id'] . '');
-        exit();
-    }
-
     $importVarPDF = [
         $resClient['clients_nom'] . ' ' . $resClient['clients_prenom'],
         $resClient['clients_rue'] . ' ' . $resClient['clients_ville'] . ' ' . $resClient['clients_cp'],
@@ -61,13 +56,13 @@
         $resVehicule['vehicules_model'],
         $resVehicule['vehicules_type'],
         $resVehicule['vehicules_immatriculation'],
-        $resVehicule['vehicules_kilometrage'],
+        $_POST['kilometrage'],
         $resVehicule['vehicules_couleur'],
-        $resVehicule['vehicules_puissance'],
+        $_POST['puissanceFiscale'],
         $resVehicule['vehicules_numero_serie'],
         date('d/m/Y', strtotime($resVehicule['vehicules_date_mise_en_circu'])),
-        date('d/m/Y', strtotime($resVehicule['vehicules_date_entretien'])),
-        // PV N° ,
+        date('d/m/Y', strtotime($_POST['dernierControleTechnique'])),
+        $_POST['pvNum'],
         $resAgence['agence_nom'],
         date('d/m/Y')
     ];
@@ -94,7 +89,7 @@
         ['x' => 140, 'y' => 110], // Numéro de série
         ['x' => 140, 'y' => 115], // Mise en circulation véhicule
         ['x' => 125, 'y' => 159.5], // Date dernier contrôle technique
-        // ['x' => 155, 'y' => 159.5], // PV N°
+        ['x' => 155, 'y' => 159.5], // PV N°
         ['x' => 52, 'y' => 219.5], // Nom de l'agence
         ['x' => 88, 'y' => 219.5] // Date du jour
     ];
@@ -137,6 +132,6 @@
 
     $pdf->Output('F', $destinationPath);
     // uploadPdfToNextcloud($getAgence['agence_path_client'], $cleanedValueName, $destinationPath);
-    uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $cleanedValueVehicule, $destinationPath);
+    // uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $cleanedValueVehicule, $destinationPath);
     $pdf->Output('I', $pdfNameFile);
 ?>
