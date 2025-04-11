@@ -68,19 +68,23 @@
                     <p class="text_error">Ce champ est requis</p>
                 </div>
 
-                <div class="input_box">
-                    <span class="label form_required">Origine du véhicule</span>
-                    <input required type="text" name="originCar" id="originCar">
+                <?php if(empty($resVehicule['vehicules_origine'])) { ?>
+                    <div class="input_box">
+                        <span class="label form_required">Origine du véhicule</span>
+                        <input required type="text" name="originCar" id="originCar">
 
-                    <p class="text_error hidden">Ce champ est requis</p>
-                </div>
+                        <p class="text_error hidden">Ce champ est requis</p>
+                    </div>
+                <?php } ?>
 
-                <div class="input_box">
-                    <span class="label form_required">Nombre de mains</span>
-                    <input required type="text" name="nbrMains" id="nbrMains">
+                <?php if(empty($resVehicule['vehicules_nombre_main'])) { ?>
+                    <div class="input_box">
+                        <span class="label form_required">Nombre de mains</span>
+                        <input required type="text" name="nbrMains" id="nbrMains">
 
-                    <p class="text_error hidden">Ce champ est requis</p>
-                </div>
+                        <p class="text_error hidden">Ce champ est requis</p>
+                    </div>
+                <?php } ?>
 
                 <div class="input_box">
                     <span class="label form_required">Jour de la visite</span>

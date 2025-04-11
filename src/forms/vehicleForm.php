@@ -68,8 +68,8 @@ if (!empty($_POST)) {
                     if (in_array($extension, $allowed)) {
                         $fileContent = file_get_contents($_FILES['fileCarteGrise']['tmp_name']);
 
-                        $stmt = $DB->prepare("INSERT INTO vehicules (vehicules_marque, vehicules_model, vehicules_carte_grise, vehicules_immatriculation, vehicules_puissance, vehicules_type_boite, vehicules_couleur, vehicules_finition, vehicules_kilometrage, vehicules_annee, vehicules_date_entretien, vehicules_frais_prevoir, vehicules_frais_recent, vehicules_agence_id, vehicules_date_mise_en_circu, vehicules_type, vehicules_numero_serie) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                        $stmt->execute([strtoupper($brand), strtoupper($model), $fileContent, strtoupper($immatriculation), $puissance, $type_boite_value, $color, $finition, $kilometrage, $annee, $date_entretien, $frais_prevoir, $frais_recent, intval($_SESSION['user']["agence_id"]), $dateMiseEnCircu, $typeVehicle, $numSerie]);
+                        $stmt = $DB->prepare("INSERT INTO vehicules (vehicules_marque, vehicules_model, vehicules_carte_grise, vehicules_immatriculation, vehicules_puissance, vehicules_type_boite, vehicules_couleur, vehicules_finition, vehicules_kilometrage, vehicules_annee, vehicules_date_entretien, vehicules_frais_prevoir, vehicules_frais_recent, vehicules_agence_id, vehicules_date_mise_en_circu, vehicules_type, vehicules_numero_serie, vehicules_origine, vehicules_nombre_main) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        $stmt->execute([strtoupper($brand), strtoupper($model), $fileContent, strtoupper($immatriculation), $puissance, $type_boite_value, $color, $finition, $kilometrage, $annee, $date_entretien, $frais_prevoir, $frais_recent, intval($_SESSION['user']["agence_id"]), $dateMiseEnCircu, $typeVehicle, $numSerie, $originCar, $nbrMains]);
 
                         if ($stmt->rowCount() > 0) {
                             $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
@@ -267,6 +267,20 @@ if (!empty($_POST)) {
                     <input required="true" name="model" type="text" id="model">
 
                     <p class="text_error hidden">Ce champ est requis.</p>
+                </div>
+
+                <div class="input_box">
+                    <span class="label form_required">Origine du véhicule</span>
+                    <input required type="text" name="originCar" id="originCar">
+
+                    <p class="text_error hidden">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box">
+                    <span class="label form_required">Nombre de mains</span>
+                    <input required type="text" name="nbrMains" id="nbrMains">
+
+                    <p class="text_error hidden">Ce champ est requis</p>
                 </div>
 
                 <div class="input_box">

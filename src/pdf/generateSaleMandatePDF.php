@@ -53,12 +53,22 @@
     }
 
     $data = json_decode(file_get_contents($filePath), true);
-
     $data['count']++;
-
     $formattedId = sprintf('%s%s-%03d', date('y'), date('m'), $data['count']);
-
     file_put_contents($filePath, json_encode($data, JSON_PRETTY_PRINT));
+
+    if (empty($resVehicule['vehicules_nombre_main'])) {
+        $resVehicule['vehicules_nombre_main'] = $_POST['nbrMains'];
+        $updateVehicule = $DB->prepare('UPDATE vehicules SET vehicules_nombre_main = ? WHERE vehicules_id = ?');
+        $updateVehicule->execute([$resVehicule['vehicules_nombre_main'], $resVehicule['vehicules_id']]);
+    }
+
+    if(empty($resVehicule['vehicules_origine'])) {
+        $resVehicule['vehicules_origine'] = $_POST['originCar'];
+        $updateVehicule = $DB->prepare('UPDATE vehicules SET vehicules_origine = ? WHERE vehicules_id = ?');
+        $updateVehicule->execute([$_POST['originCar'], $resVehicule['vehicules_id']]);
+    }
+    
 
     //Valeur dans la BDD
     $importVarPDF = [
@@ -71,8 +81,8 @@
         $resVehicule['vehicules_model'],
         $resVehicule['vehicules_type_boite'],
         $resVehicule['vehicules_finition'],
-        $_POST['nbrMains'],
-        $_POST['originCar'],
+        $resVehicule['vehicules_nombre_main'],
+        $resVehicule['vehicules_origine'],
         $resVehicule['vehicules_frais_recent'],
         $resVehicule['vehicules_frais_prevoir'],
         $resClient['clients_email'],
@@ -164,6 +174,6 @@
 
     $pdf->Output('F', $destinationPath);
     // uploadPdfToNextcloud($resAgence['agence_path_client'], strtoupper($cleanedValueName), $destinationPath);
-    uploadPdfToNextcloud($resAgence['agence_path_vehicules'], strtoupper($cleanedValueVehicule), $destinationPath);
+    // uploadPdfToNextcloud($resAgence['agence_path_vehicules'], strtoupper($cleanedValueVehicule), $destinationPath);
     $pdf->Output('I', $pdfNameFile);
 ?>
