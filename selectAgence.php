@@ -8,7 +8,11 @@
     require_once 'database.php';
     require_once 'src/functions/selectSQL.php';
 
-    if($_GET['error'] != "1") {
+    if(empty($_SESSION['user'])) {
+        header('Location: index.php');
+    }
+
+    if(isset($_SESSION['user']['agence_id'])) {
         header('Location: index.php');
         exit();
     }
@@ -23,17 +27,10 @@
     if (!empty($_POST)) {
         extract(array: $_POST);
         if (isset($_POST['connexion'])) {
-            $getUser = selectAllUsersInfoWhereId(htmlspecialchars($_GET['username'], ENT_QUOTES), $DBB->openConnection());
+            $getUser = selectAllUsersInfoWhereId(htmlspecialchars($_SESSION['user']['identifiant'], ENT_QUOTES), $DB);
             $getUser = $getUser->fetch();
-
-            session_regenerate_id(true);
         
-            $_SESSION['user'] = [
-                'id' => htmlspecialchars($getUser['utilisateurs_id'], ENT_QUOTES),
-                'identifiant' => htmlspecialchars($getUser['utilisateurs_identifiant'], ENT_QUOTES),
-                'agence_id' => intval($choiceAgence),
-                'role' => htmlspecialchars($getUser['utilisateurs_role'], ENT_QUOTES)
-            ];
+            $_SESSION['user']['agence_id'] = htmlspecialchars($choiceAgence, ENT_QUOTES);
     
             setcookie('user_session', $_SESSION['user']['identifiant'], time() + (86400 * 30), "/", "", false, true);
             $DBB->closeConnection();

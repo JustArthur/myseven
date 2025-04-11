@@ -11,6 +11,16 @@
     $DBB = new ConnexionDB();
     $error_message = [];
 
+    if(isset($_SESSION['user']['agence_id']) && $_SESSION['user']['agence_id']) {
+        header('Location: index.php');
+        exit();
+    }
+
+    if(isset($_SESSION['user']['id']) && empty($_SESSION['user']['agence_id'])) {
+        header('Location: selectAgence.php');
+        exit();
+    }
+
     //Verifie si le navigateur possède un cookie de session et créer une session PHP
     if(isset($_COOKIE['user_session'])) {
 
@@ -18,7 +28,15 @@
         $getUser = $getUser->fetch();
 
         if($getUser['utilisateurs_role'] == 1 ) {
-            header('Location: selectAgence.php?error=1&username=' . $getUser['utilisateurs_identifiant']);
+            session_regenerate_id(true);
+
+            $_SESSION['user'] = [
+                'id' => htmlspecialchars($getUser['utilisateurs_id'], ENT_QUOTES),
+                'identifiant' => htmlspecialchars($getUser['utilisateurs_identifiant'], ENT_QUOTES),
+                'role' => htmlspecialchars($getUser['utilisateurs_role'], ENT_QUOTES)
+            ];
+
+            header('Location: selectAgence.php');
             exit();
         } else {
             session_regenerate_id(true);
@@ -69,7 +87,15 @@
                 $getUser = $getUser->fetch();
 
                 if($getUser['utilisateurs_role'] == 1) {
-                    header('Location: selectAgence.php?error=1&username=' . $getUser['utilisateurs_identifiant']);
+                    session_regenerate_id(true);
+
+                    $_SESSION['user'] = [
+                        'id' => htmlspecialchars($getUser['utilisateurs_id'], ENT_QUOTES),
+                        'identifiant' => htmlspecialchars($getUser['utilisateurs_identifiant'], ENT_QUOTES),
+                        'role' => htmlspecialchars($getUser['utilisateurs_role'], ENT_QUOTES)
+                    ];
+                    
+                    header('Location: selectAgence.php');
                     exit();
                 } else {
                     session_regenerate_id(true);

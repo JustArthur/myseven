@@ -12,7 +12,7 @@
 
     session_start();
 
-    if(!isset($_SESSION['user']['role']) || empty($_COOKIE['user_session'])) {
+    if(!isset($_SESSION['user']) || empty($_COOKIE['user_session']) || empty($_SESSION['user']['agence_id'])) {
         header('Location: login.php');
         exit();
     }
@@ -23,6 +23,8 @@
         'Clients acheteur',
         'PDF'
     ];
+
+    var_dump($_SESSION['user']);
 
     $resAgence = selectAllAgence($DB);
     $resAgence = $resAgence->fetchAll();

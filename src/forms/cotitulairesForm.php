@@ -13,7 +13,7 @@
 
     // Vérifie si il y a bien un idClient et une immatriculation de voiture
     if(empty($_POST['idClient']) || empty($_POST['immatCar'])) {
-        header('Location: ../../login.php');
+        header('Location: ../../index.php');
         exit();
     }
 

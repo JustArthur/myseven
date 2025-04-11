@@ -12,11 +12,6 @@
 
     require_once '../../database.php';
 
-    if(!isset($_SESSION['user']['role']) || empty($_COOKIE['user_session'])) {
-        header('Location: ../../login.php');
-        exit();
-    }
-
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
 
@@ -31,13 +26,13 @@
         $resClient = $resClient->fetch();
         
     } else {
-        header('Location: ../../login.php');
+        header('Location: ../../index.php');
         exit();
     }
 
 
     if(!$resClient || empty($_POST['immatCar'])) {
-        header('Location: ../../login.php');
+        header('Location: ../../index.php');
         exit();
     }
 
