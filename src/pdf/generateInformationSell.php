@@ -31,8 +31,13 @@
         $resClient = $resClient->fetch();
         
     } else {
-        header('Location: ../../login.php');
+        header('Location: ../../index.php');
         exit();
+    }
+
+    if(!empty($_POST['typeVehicle']) && !empty($_POST['numSerie'] && !empty($_POST['idVehicule']))) {
+        $updateVehicules = $DB->prepare("UPDATE vehicules SET vehicules_type = ?, vehicules_numero_serie = ? WHERE vehicules_id = ?");
+        $updateVehicules->execute([$_POST['typeVehicle'], $_POST['numSerie'], $_POST['idVehicule']]);
     }
 
     $resAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
@@ -42,6 +47,11 @@
     $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
     $resVehicule->execute([$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();
+
+    if(empty($resVehicule['vehicules_type']) || empty($resVehicule['vehicules_numero_serie'])) {
+        header('Location: ../forms/tempFileInformationSell.php?idClient=' . $resClient['clients_id'] . '&idVehicule=' . $resVehicule['vehicules_id'] . '');
+        exit();
+    }
 
     $importVarPDF = [
         $resClient['clients_nom'] . ' ' . $resClient['clients_prenom'],
@@ -127,6 +137,6 @@
 
     $pdf->Output('F', $destinationPath);
     // uploadPdfToNextcloud($getAgence['agence_path_client'], $cleanedValueName, $destinationPath);
-    uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $cleanedValueVehicule, $destinationPath);
+    // uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $cleanedValueVehicule, $destinationPath);
     $pdf->Output('I', $pdfNameFile);
 ?>
