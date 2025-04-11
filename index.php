@@ -41,16 +41,6 @@
     $resVehicule = $resVehicule->fetchAll();
 
     if($_SESSION['user']['role'] == 1) { $tableauOnglets[] = 'Excel'; }
-    // else {
-    //     $resClientVendeur = selectAllClientVendeurWhereAgence($_SESSION['user']['agence_id'], $DB);
-    //     $resClientVendeur = $resClientVendeur->fetchAll();
-
-    //     $resClientAcheteur = selectAllClientVendeurWhereAgence($_SESSION['user']['agence_id'], $DB);
-    //     $resClientAcheteur = $resClientAcheteur->fetchAll();
-
-    //     $resVehicule = selectAllVehicleWhereAgence($_SESSION['user']['agence_id'], $DB);
-    //     $resVehicule = $resVehicule->fetchAll();
-    // }
 
     $DBB->closeConnection();
 

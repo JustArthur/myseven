@@ -62,13 +62,13 @@
     $pdf->useImportedPage($pageId, 5, 10, 200);
 
     $importCoordinates = [
-        ['x' => 52, 'y' => 167], //Nom prénom
-        ['x' => 140, 'y' => 167], //Marque Model
-        ['x' => 50, 'y' => 176], //Immatriculation
-        ['x' => 30, 'y' => 185], //Agence
-        ['x' => 123, 'y' => 185], //Montant Net
-        ['x' => 118, 'y' => 253], //Agence
-        ['x' => 158, 'y' => 253], //Date
+        ['x' => 51, 'y' => 103], //Nom prénom
+        ['x' => 135, 'y' => 103], //Marque Model
+        ['x' => 48, 'y' => 109], //Immatriculation
+        ['x' => 56, 'y' => 115.5], //Agence
+        ['x' => 147, 'y' => 115.5], //Montant Net
+        ['x' => 75, 'y' => 157.5], //Agence
+        ['x' => 115, 'y' => 157.5], //Date
     ];
 
     foreach ($importVarPDF as $index => $valPDF) {
@@ -109,6 +109,6 @@
 
     $pdf->Output('F', $destinationPath);
     // uploadPdfToNextcloud($getAgence['agence_path_client'], $cleanedValueName, $destinationPath);
-    uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $cleanedValueVehicule, $destinationPath);
+    // uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $cleanedValueVehicule, $destinationPath);
     $pdf->Output('I', $pdfNameFile);
 ?>
