@@ -53,7 +53,8 @@
             'generateBonReservation' => 'src/forms/reservationForm.php',
             'generateAccordBaissePrix' => 'src/forms/priceReductionForm.php',
             'generateContractEngagement' => 'src/forms/contractEngagementForm.php',
-            'generateInformationSell' => 'src/forms/informationSellForm.php'
+            'generateInformationSell' => 'src/forms/informationSellForm.php',
+            'generateSell' => 'src/forms/saleForm.php'
         ];
 
         if (empty($selectedCustomers) || empty($selectedVehicles)) {
@@ -227,6 +228,7 @@
                     <button type="submit" target="_blank" name="generateBonReservation" class="btn-generate action-link">Bon de réservation</button>
                     <button type="submit" target="_blank" name="generateAccordBaissePrix" class="btn-generate action-link">Accord de baisse du prix net vendeur</button>
                     <button type="submit" target="_blank" name="generateInformationSell" class="btn-generate action-link">Information relative à la vente</button>
+                    <button type="submit" target="_blank" name="generateSell" class="btn-generate action-link">Dossier de vente</button>
                 </div>
             </div>
 

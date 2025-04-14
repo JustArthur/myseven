@@ -67,7 +67,8 @@ form {
     gap: 20px;
     border-radius: 0 0 var(--border-radius) var(--border-radius);
     overflow: hidden;
-    height: 93%;
+    max-height: 93%;
+    height: max-content;
 }
 
 .content.active {

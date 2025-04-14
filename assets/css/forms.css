@@ -132,6 +132,17 @@ form .input_box {
     display: flex;
     flex-direction: column;
     padding: 5px;
+    max-width: 100%;
+    width: 100%;
+}
+
+.input_box input[type="checkbox"] {
+    width: max-content;
+    accent-color: var(--primary-color);
+}
+
+.input_box .check_list .check_item {
+    
 }
 
 .search input,
@@ -299,7 +310,31 @@ select optgroup {
     font-size: 20px;
 }
 
-@media only screen and (max-width: 500px) {
+.check_list {
+    display: flex;
+    gap: 10px;
+    border: 1px solid var(--gray-30);
+    border-radius: 6px;
+}
+
+.check_list .check_item {
+    display: flex;
+    width: max-content;
+    padding: 12px;
+    gap: 5px;
+}
+
+textarea {
+    width: calc(100vw - 108px);
+    min-height: 40px;
+    height: 200px;
+    padding: 15px;
+    resize: vertical;
+}
+
+
+
+@media only screen and (max-width: 700px) {
     body {
         background-color: var(--white);
         padding: 0;
@@ -316,5 +351,14 @@ select optgroup {
 
     .input_box {
         flex: 1 1 100%;
+        width: 100%;
+    }
+
+    form {
+        flex-direction: column;
+    }
+
+    .check_list {
+        flex-direction: column;
     }
 }

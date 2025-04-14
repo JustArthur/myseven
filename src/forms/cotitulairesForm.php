@@ -115,13 +115,13 @@
 
                         //Crée le dossier du co-titulaire
                         $folderToCreate = $cleanFirstName . "-" . $cleanLastName;
-                        createNextcloudFolder($getAgence['agence_path_client'], $folderToCreate);
+                        // createNextcloudFolder($getAgence['agence_path_client'], $folderToCreate);
 
                         // Upload la CNI dans le dossier co-titulaire
-                        uploadPdfToNextcloud($getAgence['agence_path_client'], $folderToCreate, $destinationPath);
+                        // uploadPdfToNextcloud($getAgence['agence_path_client'], $folderToCreate, $destinationPath);
 
                         // Upload la CNI dans le dossier véhicule
-                        uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $uploadToVehicule, $destinationPath);
+                        // uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $uploadToVehicule, $destinationPath);
                     }
                 } else {
                     $error_message = [
@@ -140,8 +140,8 @@
 
             // Si valid alors il lance l'insert
             if ($valid) {
-                $insertCoTitulaire = $DB->prepare("INSERT INTO cotitulaires (cotitulaires_nom, cotitulaires_prenom, cotitulaires_telephone, cotitulaires_email, cotitulaires_rue, cotitulaires_ville, cotitulaires_cp, cotitulaires_copie_cni, cotitulaires_numero_cni, cotitulaires_vehicules_id, cotitulaires_agence_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $insertCoTitulaire->execute([$firstName, $lastName, $telephone, $emailCoTitulaire, $adresse, $city, $cp, $fileContent, $numCNI, intval($resVehicules['vehicules_id']), intval($_SESSION['user']['agence_id'])]);
+                $insertCoTitulaire = $DB->prepare("INSERT INTO cotitulaires (cotitulaires_nom, cotitulaires_prenom, cotitulaires_telephone, cotitulaires_email, cotitulaires_rue, cotitulaires_ville, cotitulaires_cp, cotitulaires_copie_cni, cotitulaires_numero_cni, cotitulaires_vehicules_id, cotitulaires_agence_id, cotitulaires_clients_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $insertCoTitulaire->execute([$firstName, $lastName, $telephone, $emailCoTitulaire, $adresse, $city, $cp, $fileContent, $numCNI, intval($resVehicules['vehicules_id']), intval($_SESSION['user']['agence_id']), intval($getClientPrincipal['clients_id'])]);
 
                 echo '
                     <head><link rel="stylesheet" href="../../assets/css/forms.css"></head>
