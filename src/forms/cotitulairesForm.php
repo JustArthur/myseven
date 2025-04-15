@@ -105,7 +105,7 @@
                         $uploadToVehicule = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/CLIENT_ACHETEUR/';
                     }
 
-                    $fileCNIName = "CNI_{$cleanFirstName}-{$cleanLastName}.{$extension}";
+                    $fileCNIName = "CNI_COTITULAIRE_{$cleanFirstName}-{$cleanLastName}.{$extension}";
                     $destinationPath = sys_get_temp_dir() . '/' . $fileCNIName;
 
                     if (move_uploaded_file($tmpPath, $destinationPath)) {
@@ -115,13 +115,13 @@
 
                         //Crée le dossier du co-titulaire
                         $folderToCreate = $cleanFirstName . "-" . $cleanLastName;
-                        // createNextcloudFolder($getAgence['agence_path_client'], $folderToCreate);
+                        createNextcloudFolder($getAgence['agence_path_client'], $folderToCreate);
 
                         // Upload la CNI dans le dossier co-titulaire
-                        // uploadPdfToNextcloud($getAgence['agence_path_client'], $folderToCreate, $destinationPath);
+                        uploadPdfToNextcloud($getAgence['agence_path_client'], $folderToCreate, $destinationPath);
 
                         // Upload la CNI dans le dossier véhicule
-                        // uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $uploadToVehicule, $destinationPath);
+                        uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $uploadToVehicule, $destinationPath);
                     }
                 } else {
                     $error_message = [

@@ -82,10 +82,10 @@ if (!empty($_POST)) {
                             $getAgence = $getAgence->fetch();
 
                             $brandFolder = $cleanBrand . '/';
-                            // $createBrandFolder = createNextcloudFolder($getAgence['agence_path_vehicules'], $brandFolder);
+                            createNextcloudFolder($getAgence['agence_path_vehicules'], $brandFolder);
 
                             $folderToCreate = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/';
-                            // $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreate);
+                            createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreate);
 
                             $folderToCreatePhoto = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/PHOTOS/';
                             $folderToCreateCarteGrise = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/CARTE_GRISE/';
@@ -93,17 +93,17 @@ if (!empty($_POST)) {
                             $folderToCreateFactures = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/FACTURES/';
                             $folderToCreateDocumentDeVente = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/';
 
-                            // createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreatePhoto);
-                            // createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateCarteGrise);
-                            // createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateControleTechnique);
-                            // createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateFactures);
-                            // createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateDocumentDeVente);
+                            createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreatePhoto);
+                            createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateCarteGrise);
+                            createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateControleTechnique);
+                            createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateFactures);
+                            createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateDocumentDeVente);
 
                             $folderToCreateClientVendeur = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/CLIENT_VENDEUR/';
                             $folderToCreateClientAcheteur = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/CLIENT_ACHETEUR/';
 
-                            // createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateClientVendeur);
-                            // createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateClientAcheteur);
+                            createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateClientVendeur);
+                            createNextcloudFolder($getAgence['agence_path_vehicules'], $folderToCreateClientAcheteur);
 
                             if (move_uploaded_file($tmpPath, $destinationPath)) {
                                 if (!empty($customerType)) {
@@ -134,7 +134,7 @@ if (!empty($_POST)) {
 
                                             file_put_contents($tempFilePath, $resClient['clients_copie_cni']);
 
-                                            // uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $folderToCreateClientVendeur, $tempFilePath);
+                                            uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $folderToCreateClientVendeur, $tempFilePath);
                                             break;
 
                                         default:
@@ -143,7 +143,7 @@ if (!empty($_POST)) {
                                 }
 
                                 $carteGriseUploadNext = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/CARTE_GRISE/';
-                                // uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $carteGriseUploadNext, $destinationPath);
+                                uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $carteGriseUploadNext, $destinationPath);
                                 unlink($destinationPath);
                             } else {
                                 $error_message = [

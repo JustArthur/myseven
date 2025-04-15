@@ -12,13 +12,17 @@
         exit();
     }
 
-    if(!isset($_SESSION['user']['role']) || empty($_COOKIE['user_session'])) {
-        header('Location: ../../login.php');
-        exit();
-    }
-
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
+
+     if(!empty($_POST['emailClientVendeur'])) {
+        $resUpdateClient = $DB->prepare('SELECT clients_id FROM clients WHERE clients_email = ?');
+        $resUpdateClient->execute([$_POST['emailClientVendeur']]);
+        $resUpdateClient = $resUpdateClient->fetch();
+
+        $updateVehicule = $DB->prepare('UPDATE vehicules SET vehicules_clients_id_vendeur = ? WHERE vehicules_immatriculation = ?');
+        $updateVehicule->execute([$resUpdateClient['clients_id'], $_POST['immatCar']]);
+    }
 
     if (!empty($_POST['clientEmail'])) {
         $resClientAcheteur = $DB->prepare('SELECT * FROM clients WHERE clients_email = ?');
@@ -39,15 +43,34 @@
     if(!$resClientAcheteur || empty($_POST['immatCar'])) {
         header('Location: ../../index.php');
         exit();
+        
+    } else if ($resClientAcheteur['clients_type'] != 'Acheteur') {
+        header('Location: ../../index.php');
+        exit();
     }
 
     $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
     $resVehicule->execute([$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();
 
+    if(!$resVehicule['vehicules_clients_id_vendeur']) {
+        echo '
+            <form id="redirectForm" action="addVendeurToVehicle.php" method="POST">
+                <input type="hidden" name="clientEmailAcheteur" value="' . $resClientAcheteur['clients_email'] . '">
+                <input type="hidden" name="immatCar" value="' . $resVehicule['vehicules_immatriculation'] . '">
+            </form>
+
+            <script>
+                document.getElementById("redirectForm").submit();
+            </script>
+        ';
+        exit();
+    }
+
     $resClientVendeur = $DB->prepare('SELECT * FROM clients WHERE clients_id = ?');
     $resClientVendeur->execute([$resVehicule['vehicules_clients_id_vendeur']]);
     $resClientVendeur = $resClientVendeur->fetch();
+
 
     $resClientVendeurCotitulaire = $DB->prepare('SELECT * FROM cotitulaires WHERE cotitulaires_clients_id = ?');
     $resClientVendeurCotitulaire->execute([$resClientVendeur['clients_id']]);
@@ -72,7 +95,7 @@
     <main>
         <div class="search-container">
             <h2>Générer le dossier de vente</h2>
-            <form id="form_pdf" action="../pdf/generatePriceReductionPDF.php" method="POST">
+            <form id="form_pdf" action="../pdf/generateSell.php" method="POST">
                 <div class="input_box">
                     <span class="label form_required">Nom du client vendeur</span>
                     <input required type="text" disabled value="<?= $resClientVendeur['clients_nom'] ?>" class="disabled" id="client">
@@ -90,7 +113,7 @@
 
                 <?php if($resClientVendeurCotitulaire) { ?>
                     <div class="input_box">
-                        <span class="label">Co-titulaire du client vendeur</span>
+                        <span class="label">Co-titulaire(s) du client vendeur</span>
                         <ul class="check_list">
                             <?php foreach($resClientVendeurCotitulaire as $cotitulaire) {?>
                                 <li class="check_item">
@@ -105,7 +128,7 @@
                 <?php } ?>
 
                 <div class="input_box">
-                    <span class="label form_required">Plaque d'immatriculation de la voiture vendeur</span>
+                    <span class="label form_required">Plaque d'immatriculation de la voiture vendu</span>
                     <input required type="text" disabled  value="<?= $resVehicule['vehicules_immatriculation'] ?>" class="disabled" id="immatCar">
                     <input hidden type="text" name="immatCar" value="<?= $resVehicule['vehicules_immatriculation'] ?>">
 
@@ -129,7 +152,7 @@
 
                 <?php if($resClientAcheteurCotitulaire) { ?>
                     <div class="input_box">
-                        <span class="label">Co-titulaire du client acheteur</span>
+                        <span class="label">Co-titulaire(s) du client acheteur</span>
                         <ul class="check_list">
                             <?php foreach($resClientAcheteurCotitulaire as $cotitulaire) {?>
                                 <li class="check_item">
@@ -158,6 +181,83 @@
                 </div>
 
                 <div class="input_box">
+                    <span class="label form_required">Date du CashSentinel</span>
+                    <input type="date" required name="dateCashSentinel" id="dateCashSentinel"/>
+
+                    <p class="text_error">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box">
+                    <span class="label form_required">Date livraison possible</span>
+                    <input type="date" required name="dateLivraisonPossible" id="dateLivraisonPossible"/>
+
+                    <p class="text_error">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box delaiVente">
+                    <div class="spanVente">
+                        <span class="label form_required">Garantie</span>
+                    </div>
+                    
+                    <select name="garantie" id="garantie">
+                        <option value="allRisk">Tous risques</option>
+                        <option value="compelete">Complète</option>
+                        <option value="essentiel">Essentiel</option>
+                        <option value="mbp">Moteur / Boîte / Pont</option>
+                    </select>
+
+                    <p class="text_error">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box delaiVente">
+                    <div class="spanVente">
+                        <span class="label form_required">Garantie Constructeur</span>
+                    </div>
+
+                    <div class="inputSelect">
+                        <select name="askGarantieConstructeur" id="askGarantieConstructeur">
+                            <option value="no">Non</option>
+                            <option value="yes">Oui</option>
+                        </select>
+
+                        <select class="dureeGarantieConstructeur" name="dureeGarantieConstructeur" id="dureeGarantieConstructeur">
+                            <option value="3mois">3 mois</option>
+                            <option value="6mois">6 mois</option>
+                            <option value="12mois">12 mois</option>
+                            <option value="24mois">24 mois</option>
+                        </select>
+                    </div>
+
+                    <p class="text_error">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box delaiVente">
+                    <div class="spanVente">
+                        <span class="label form_required">Paiement</span>
+                    </div>
+
+                    <div class="inputSelect">
+                        <select name="typePaiement" id="typePaiement">
+                            <option hidden value="none">Choisir le type de paiement</option>
+                            <option value="arrhes">Arrhes</option>
+                            <option value="avanceInter">Avance sur inter</option>
+                        </select>
+
+                        <select class="arrhes" name="arrhes" id="arrhes">
+                            <option value="CB">Empreinte C.B.</option>
+                            <option value="cheque">Chèque</option>
+                        </select>
+
+                        <select class="avanceInter" name="avanceInter" id="avanceInter">
+                            <option value="virement">Virement</option>
+                            <option value="cash">Cash</option>
+                        </select>
+                    </div>
+
+                    <p class="text_error">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box">
                     <input class="submit_btn" value="Générer le dossier de vente" type="submit" name="submit_btn" id="submit_btn">
                 </div>
             </form>
@@ -166,5 +266,34 @@
     </main>
 
     <script src="../../assets/js/errorMessages.js"></script>
+    <script>
+
+        const askGarantieConstructeur = document.getElementById('askGarantieConstructeur');
+        const typePaiement = document.getElementById('typePaiement');
+
+        askGarantieConstructeur.addEventListener('change', (e) => {
+            const dureeGarantieConstructeur = document.getElementById('dureeGarantieConstructeur');
+
+            if(e.target.value === 'no') {
+                dureeGarantieConstructeur.classList.remove('active')
+            } else {
+                dureeGarantieConstructeur.classList.add('active')
+            }
+        });
+
+        typePaiement.addEventListener('change', (e) => {
+            const arrhes = document.getElementById('arrhes');
+            const avanceInter = document.getElementById('avanceInter');
+
+            if(e.target.value === 'arrhes') {
+                arrhes.classList.add('active')
+                avanceInter.classList.remove('active')
+            } else {
+                arrhes.classList.remove('active')
+                avanceInter.classList.add('active')
+            }
+        });
+
+    </script>
 </body>
 </html>

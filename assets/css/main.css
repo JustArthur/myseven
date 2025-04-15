@@ -29,10 +29,15 @@
     --text-color: #333;
     --primary-text: #15141A;
     --secondary-text: #525356;
+    
     --error-color: #ea1f30;
     --error-color-20: #ea1f306c;
+
     --success-color: #008607;
     --success-color-20: #0086076c;
+
+    --warning-color: #ff9800;
+    --warning-color-20: #ff98006c;
 
     /* Styles et effets */
     --border-color: #dddddd;

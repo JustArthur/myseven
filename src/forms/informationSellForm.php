@@ -21,15 +21,18 @@
         $resClient->execute([$_POST['clientEmail']]);
         $resClient = $resClient->fetch();
 
-    } else {
+    } else if(!empty($_POST['idClient'])) {
         $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_id = ?');
         $resClient->execute([$_POST['idClient']]);
         $resClient = $resClient->fetch();
+    } else {
+        header('Location: ../../index.php');
+        exit();
     }
 
 
     if(!$resClient || empty($_POST['immatCar'])) {
-        header('Location: ../../login.php');
+        header('Location: ../../index.php');
         exit();
     }
 

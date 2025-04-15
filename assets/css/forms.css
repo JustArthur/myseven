@@ -141,10 +141,6 @@ form .input_box {
     accent-color: var(--primary-color);
 }
 
-.input_box .check_list .check_item {
-    
-}
-
 .search input,
 .input_box input,
 select {
@@ -223,32 +219,43 @@ span.label.form_required::after {
 }
 
 
-.inputPrixGarantie {
+.inputPrixGarantie,
+.dureeGarantieConstructeur,
+.arrhes,
+.avanceInter {
     display: none;
 }
 
-.inputPrixGarantie.active {
+.inputPrixGarantie.active,
+.dureeGarantieConstructeur.active,
+.arrhes.active,
+.avanceInter.active {
     display: flex;
 }
 
 .error_message {
-    color: var(--error-color);
-    background: var(--error-color-20);
     width: 100%;
     text-align: center;
     padding: 10px 5px;
-    border: 1px solid var(--error-color);
     border-radius: 5px;
 }
 
 .error_message.error {
     color: var(--error-color);
     background: var(--error-color-20);
+    border: 1px solid var(--error-color);
 }
 
 .error_message.success {
     color: var(--success-color);
     background: var(--success-color-20);
+    border: 1px solid var(--success-color);
+}
+
+.error_message.warning {
+    color: var(--warning-color);
+    background: var(--warning-color-20);
+    border: 1px solid var(--warning-color);
 }
 
 .disabled {
@@ -322,6 +329,12 @@ select optgroup {
     width: max-content;
     padding: 12px;
     gap: 5px;
+    cursor: pointer;
+}
+
+.check_list .check_item input,
+.check_list .check_item label {
+    cursor: pointer;
 }
 
 textarea {
@@ -330,6 +343,12 @@ textarea {
     height: 200px;
     padding: 15px;
     resize: vertical;
+    border: 1px solid var(--gray-30);
+    border-radius: 6px;
+}
+
+textarea:focus {
+    border: 1px solid var(--primary-color);
 }
 
 

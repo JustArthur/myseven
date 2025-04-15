@@ -20,9 +20,18 @@
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
 
-    $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_id = ?');
-    $resClient->execute([$_POST['idClient']]);
-    $resClient = $resClient->fetch();
+    $resClientAcheteur = $DB->prepare('SELECT * FROM clients WHERE clients_id = ?');
+    $resClientAcheteur->execute([$_POST['idClientAcheteur']]);
+    $resClientAcheteur = $resClientAcheteur->fetch();
+
+    $resClientVendeur = $DB->prepare('SELECT * FROM clients WHERE clients_id = ?');
+    $resClientVendeur->execute([$_POST['idClientVendeur']]);
+    $resClientVendeur = $resClientVendeur->fetch();
+
+    if(!$resClientAcheteur || !$resClientVendeur || empty($_POST['immatCar'])) {
+        header('Location: ../../index.php');
+        exit();
+    }
 
     $resAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
     $resAgence->execute([$_SESSION['user']['agence_id']]);
@@ -33,7 +42,18 @@
     $resVehicule = $resVehicule->fetch();
 
     $importVarPDF = [
+        $resVehicule['vehicules_marque'],
+        $resVehicule['vehicules_model'],
+        $resVehicule['vehicules_date_mise_en_circu'],
+        $resVehicule['vehicules_couleurs'],
+        $resVehicule['vehicules_immatriculation'],
+        $resVehicule['vehicules_kilometrage'],
+        $resClientVendeur['clients_nom'] . ' ' .$resClientVendeur['clients_telephone'],
+        $resClientAcheteur['clients_nom'] . ' ' .$resClientAcheteur['clients_telephone'],
+        //Carte grise titulaire
+        //Carte grise co-titulaire
         
+
     ];
 
     $pdf = new \setasign\Fpdi\Fpdi();

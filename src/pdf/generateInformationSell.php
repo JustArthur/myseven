@@ -34,12 +34,17 @@
         header('Location: ../../index.php');
         exit();
     }
-
+    
     if(!empty($_POST['typeVehicle']) && !empty($_POST['numSerie'] && !empty($_POST['idVehicule']))) {
         $updateVehicules = $DB->prepare("UPDATE vehicules SET vehicules_type = ?, vehicules_numero_serie = ? WHERE vehicules_id = ?");
         $updateVehicules->execute([$_POST['typeVehicle'], $_POST['numSerie'], $_POST['idVehicule']]);
     }
-
+    
+    if(!$resClient || empty($_POST['immatCar'])) {
+        header('Location: ../../index.php');
+        exit();
+    }
+    
     $resAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
     $resAgence->execute([$_SESSION['user']['agence_id']]);
     $resAgence = $resAgence->fetch();
@@ -132,6 +137,6 @@
 
     $pdf->Output('F', $destinationPath);
     // uploadPdfToNextcloud($getAgence['agence_path_client'], $cleanedValueName, $destinationPath);
-    // uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $cleanedValueVehicule, $destinationPath);
+    uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $cleanedValueVehicule, $destinationPath);
     $pdf->Output('I', $pdfNameFile);
 ?>

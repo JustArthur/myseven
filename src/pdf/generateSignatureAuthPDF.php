@@ -31,13 +31,13 @@
         $resClient = $resClient->fetch();
         
     } else {
-        header('Location: ../../login.php');
+        header('Location: ../../index.php');
         exit();
     }
 
 
     if(!$resClient || empty($_POST['immatCar'])) {
-        header('Location: ../../login.php');
+        header('Location: ../../index.php');
         exit();
     }
 

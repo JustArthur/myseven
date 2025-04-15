@@ -25,13 +25,18 @@
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
 
-    $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
-    $resVehicule->execute([$_POST['immatCar']]);
-    $resVehicule = $resVehicule->fetch();
-
     $resClient = $DB->prepare('SELECT * FROM clients WHERE clients_id = ?');
     $resClient->execute([$_POST['idClient']]);
     $resClient = $resClient->fetch();
+
+    if(!$resClient || empty($_POST['immatCar'])) {
+        header('Location: ../../index.php');
+        exit();
+    }
+
+    $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
+    $resVehicule->execute([$_POST['immatCar']]);
+    $resVehicule = $resVehicule->fetch();
 
     $resAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
     $resAgence->execute([intval($_SESSION['user']["agence_id"])]);
