@@ -41,6 +41,9 @@
     $resVehicule->execute([$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();
 
+    $resInformation = $DB->prepare('SELECT * FROM informations WHERE informations_clients_id = ? AND informations_vehicules_id = ?');
+    $resInformation->execute([$resClient, $resVehicule['vehicules_id']]);
+
     $importVarPDF = [
         $resVehicule['vehicules_marque'],
         $resVehicule['vehicules_model'],
@@ -52,8 +55,7 @@
         $resClientAcheteur['clients_nom'] . ' ' .$resClientAcheteur['clients_telephone'],
         //Carte grise titulaire
         //Carte grise co-titulaire
-        
-
+        $resInformation['informations_cashsentinel']
     ];
 
     $pdf = new \setasign\Fpdi\Fpdi();

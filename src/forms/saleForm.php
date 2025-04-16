@@ -16,12 +16,19 @@
     $DB = $DBB->openConnection();
 
      if(!empty($_POST['emailClientVendeur'])) {
-        $resUpdateClient = $DB->prepare('SELECT clients_id FROM clients WHERE clients_email = ?');
-        $resUpdateClient->execute([$_POST['emailClientVendeur']]);
-        $resUpdateClient = $resUpdateClient->fetch();
 
-        $updateVehicule = $DB->prepare('UPDATE vehicules SET vehicules_clients_id_vendeur = ? WHERE vehicules_immatriculation = ?');
-        $updateVehicule->execute([$resUpdateClient['clients_id'], $_POST['immatCar']]);
+        if (filter_var($_POST['emailClientVendeur'], FILTER_VALIDATE_EMAIL)) {
+            $resUpdateClient = $DB->prepare('SELECT clients_id FROM clients WHERE clients_email = ?');
+            $resUpdateClient->execute([$_POST['emailClientVendeur']]);
+            $resUpdateClient = $resUpdateClient->fetch();
+    
+            $updateVehicule = $DB->prepare('UPDATE vehicules SET vehicules_clients_id_vendeur = ? WHERE vehicules_immatriculation = ?');
+            $updateVehicule->execute([$resUpdateClient['clients_id'], $_POST['immatCar']]);
+        } else {
+            header('Location: ../../addVendeurToVehicle.php');
+            exit();
+        }
+
     }
 
     if (!empty($_POST['clientEmail'])) {

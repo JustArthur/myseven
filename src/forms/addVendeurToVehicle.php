@@ -80,7 +80,7 @@
                 </div>
 
                 <div class="input_box">
-                    <input class="submit_btn" value="Lier ce client à ce véhicule véhicule" type="submit" name="submit_btn" id="submit_btn">
+                    <input class="submit_btn" value="Lier ce client à ce véhicule" type="submit" name="submit_btn" id="submit_btn">
                 </div>
             </form>
 

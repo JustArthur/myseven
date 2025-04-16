@@ -143,6 +143,8 @@
                 $insertCoTitulaire = $DB->prepare("INSERT INTO cotitulaires (cotitulaires_nom, cotitulaires_prenom, cotitulaires_telephone, cotitulaires_email, cotitulaires_rue, cotitulaires_ville, cotitulaires_cp, cotitulaires_copie_cni, cotitulaires_numero_cni, cotitulaires_vehicules_id, cotitulaires_agence_id, cotitulaires_clients_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 $insertCoTitulaire->execute([$firstName, $lastName, $telephone, $emailCoTitulaire, $adresse, $city, $cp, $fileContent, $numCNI, intval($resVehicules['vehicules_id']), intval($_SESSION['user']['agence_id']), intval($getClientPrincipal['clients_id'])]);
 
+                unlink($destinationPath);
+                
                 echo '
                     <head><link rel="stylesheet" href="../../assets/css/forms.css"></head>
                     <div id="popup" class="modal">
@@ -167,8 +169,6 @@
                     </script>
                 ';
                 exit();
-
-                unlink($destinationPath);
             }
         }
     }
