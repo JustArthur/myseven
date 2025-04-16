@@ -102,7 +102,7 @@
     <main>
         <div class="search-container">
             <h2>Générer le dossier de vente</h2>
-            <form id="form_pdf" action="../pdf/generateSell.php" method="POST">
+            <form id="form_pdf" target="_blank" action="../pdf/generateSell.php" method="POST">
                 <div class="input_box">
                     <span class="label form_required">Nom du client vendeur</span>
                     <input required type="text" disabled value="<?= $resClientVendeur['clients_nom'] ?>" class="disabled" id="client">
