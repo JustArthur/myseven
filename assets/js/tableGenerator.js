@@ -1,4 +1,3 @@
-let rowsPerPage = 50;
 let editingCell = null;
 
 window.selectAgence = (tableName, AgenceId) => {
@@ -18,25 +17,31 @@ window.selectAgence = (tableName, AgenceId) => {
 };
 
 
-// Barre de recherche
-const searchTable = (tableName, searchBarId) => {
-    const searchTerm = document.getElementById(searchBarId).value.toLowerCase();
+let searchTimeout;
 
-    let filteredRows;
+const searchTable = (tableNameSQL, searchBarId) => {
+    clearTimeout(searchTimeout);
 
-    if (searchTerm === "") {
-        filteredRows = window[tableName];
-    } else {
-        filteredRows = window[tableName].filter(row =>
-            Object.values(row).some(value => value.toString().toLowerCase().includes(searchTerm))
-        );
-    }
+    searchTimeout = setTimeout(() => {
+        const searchTerm = document.getElementById(searchBarId).value.toLowerCase();
+        const tableName = tableNameSQL === "vehicules" ? "Vehicles" :
+                          tableNameSQL === "clientsVendeur" ? "CustomersSell" :
+                          "CustomersBuy";
 
-    updateTable(filteredRows, tableName);
+        fetch(`src/functions/search.php?table=${tableNameSQL}&term=${encodeURIComponent(searchTerm)}&page=${currentPage}`)
+            .then(response => response.json())
+            .then(data => {
+                updateTable(data, tableName);
+            });
+    }, 500);
 };
 
 
 // update le tableau
+let currentPage = 1;
+let totalPages = 1;
+const rowsPerPage = 25;
+
 const updateTable = (rows, tableName) => {
     const tbody = document.getElementById(`${tableName}TableBody`);
 
@@ -52,7 +57,11 @@ const updateTable = (rows, tableName) => {
 
     const lastIndexKey = tableName === "Vehicles" ? "vehicules_agence_id" : "clients_agence_id";
 
-    tbody.innerHTML = rows
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    const currentRows = rows.slice(startIndex, endIndex);
+
+    tbody.innerHTML = currentRows
         .map((row, index) => {
             const realIndex = window[tableName].findIndex(r => r[uniqueKey] === row[uniqueKey]);
             const lastIndexValue = row[lastIndexKey];
@@ -69,6 +78,52 @@ const updateTable = (rows, tableName) => {
             `;
         })
         .join('');
+    
+    // Mettre à jour le nombre total de pages
+    totalPages = Math.ceil(rows.length / rowsPerPage);
+    updatePaginationControls(tableName);
+};
+
+// Fonction pour mettre à jour les contrôles de pagination
+const updatePaginationControls = (tableName) => {
+    const paginationContainer = document.getElementById(`paginationControls_${tableName}`);
+    if (!paginationContainer) {
+        console.error(`Conteneur de pagination introuvable pour ${tableName}`);
+        return;
+    }
+
+    paginationContainer.innerHTML = '';
+
+    const createPageButton = (page, text) => {
+        const link = document.createElement("a");
+        link.href = "#";
+        link.textContent = text;
+        link.onclick = (e) => {
+            e.preventDefault();
+            changePage(page, tableName);
+        };
+        return link;
+    };
+
+    if (currentPage > 1) {
+        paginationContainer.appendChild(createPageButton(currentPage - 1, "Précédent"));
+    }
+
+    if (currentPage < totalPages) {
+        paginationContainer.appendChild(createPageButton(currentPage + 1, "Suivant"));
+    }
+};
+
+
+// Fonction pour changer de page
+const changePage = (page, tableName) => {
+    currentPage = page;
+
+    if (window[tableName]) {
+        updateTable(window[tableName], tableName);
+    } else {
+        console.error("Les données de la table ne sont pas définies.");
+    }
 };
 
 
@@ -219,9 +274,6 @@ const cardShow = (tableName, realIndex) => {
     } else if (tableName === "noteVehicles") {
         data = window[tableName];
     }
-
-    console.log(realIndex);
-    console.log(data[realIndex]);
 
     if (data) {
         const item = data[realIndex];  // Récupérer l'élément au bon index

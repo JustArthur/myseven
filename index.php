@@ -111,7 +111,7 @@
             <div class="content" id="tab1">
                 <h2><?= $tableauOnglets[0] ?></h2>
                 <div class="input_client">
-                    <input type="text" class="searchBar" id="searchBarCustomersSell" placeholder="Rechercher un client vendeur..." onkeyup="searchTable('CustomersSell', 'searchBarCustomersSell')">
+                    <input type="text" class="searchBar" id="searchBarCustomersSell" placeholder="Rechercher un client vendeur..." onkeyup="searchTable('clientsVendeur', 'searchBarCustomersSell')">
                     <select class="inputSelect" name="selectAgenceSell" id="selectAgenceSell" onchange="window.selectAgence('CustomersSell', 'selectAgenceSell')">
                         <optgroup label="Choisir l'agence pour trier les clients vendeurs">
                             <option value="All">Toute les agences</option>
@@ -142,13 +142,15 @@
                         </tbody>
                     </table>
                 </div>
+
+                <div class="pagination" id="paginationControls_CustomersSell"></div>
             </div>
 
             <!-- Véhicules -->
             <div class="content" id="tab2">
                 <h2><?= $tableauOnglets[1] ?></h2>
                 <div class="input_vehicle">
-                    <input type="text" class="searchBar" id="searchBarVehicles" placeholder="Rechercher un véhicule..." onkeyup="searchTable('Vehicles', 'searchBarVehicles')">
+                    <input type="text" class="searchBar" id="searchBarVehicles" placeholder="Rechercher un véhicule..." onkeyup="searchTable('vehicules', 'searchBarVehicles')">
                     <select class="inputSelect" name="selectAgenceVehicles" id="selectAgenceVehicles" onchange="window.selectAgence('Vehicles', 'selectAgenceVehicles')">
                         <optgroup label="Choisir l'agence pour trier les véhicules">
                             <option value="All">Toute les agences</option>
@@ -179,13 +181,15 @@
                         </tbody>
                     </table>
                 </div>
+
+                <div class="pagination" id="paginationControls_Vehicles"></div>
             </div>
 
             <!-- Clients Acheteur -->
             <div class="content" id="tab3">
                 <h2><?= $tableauOnglets[2] ?></h2>
                 <div class="input_client">
-                    <input type="text" class="searchBar" id="searchBarCustomersBuy" placeholder="Rechercher un client acheteur..." onkeyup="searchTable('CustomersBuy', 'searchBarCustomersBuy')">
+                    <input type="text" class="searchBar" id="searchBarCustomersBuy" placeholder="Rechercher un client acheteur..." onkeyup="searchTable('clientsAcheteur', 'searchBarCustomersBuy')">
                     <select class="inputSelect" name="selectAgenceBuy" id="selectAgenceBuy" onchange="window.selectAgence('CustomersBuy', 'selectAgenceBuy')">
                         <optgroup label="Choisir l'agence pour trier les clients achteurs">
                             <option value="All">Toute les agences</option>
@@ -216,6 +220,8 @@
                         </tbody>
                     </table>
                 </div>
+
+                <div class="pagination" id="paginationControls_CustomersBuy"></div>
             </div>
 
 
