@@ -142,8 +142,12 @@
                         </tbody>
                     </table>
                 </div>
+                
+                <div class="pagination_container">
+                    <div class="pagination" id="paginationControls_CustomersSell"></div>
+                    <p class="pagination_counter" id="paginationCounter_CustomersSell"></p>
+                </div>
 
-                <div class="pagination" id="paginationControls_CustomersSell"></div>
             </div>
 
             <!-- Véhicules -->
@@ -182,7 +186,10 @@
                     </table>
                 </div>
 
-                <div class="pagination" id="paginationControls_Vehicles"></div>
+                <div class="pagination_container">
+                    <div class="pagination" id="paginationControls_Vehicles"></div>
+                    <p class="pagination_counter" id="paginationCounter_Vehicles"></p>
+                </div>
             </div>
 
             <!-- Clients Acheteur -->
@@ -221,7 +228,10 @@
                     </table>
                 </div>
 
-                <div class="pagination" id="paginationControls_CustomersBuy"></div>
+                <div class="pagination_container">
+                    <div class="pagination" id="paginationControls_CustomersBuy"></div>
+                    <p class="pagination_counter" id="paginationCounter_CustomersBuy"></p>
+                </div>
             </div>
 
 

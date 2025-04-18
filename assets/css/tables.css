@@ -162,6 +162,13 @@ input[type="radio"]:checked {
     border-color: var(--primary-color);
 }
 
+.pagination_container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
 .pagination {
     display: flex;
     align-items: center;

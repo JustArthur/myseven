@@ -7,9 +7,16 @@
                 $value = str_replace(["\n", "\r"], " ", addslashes($item[$key]));
                 
                 if ($key === 'clients_copie_cni' || $key === 'vehicules_carte_grise') {
-                    $value = base64_encode($item[$key]);
-                    $value = 'data:image/jpeg;base64,' . $value;
-                }
+                    $mimeType = finfo_buffer(finfo_open(), $item[$key], FILEINFO_MIME_TYPE);
+                    
+                    if ($mimeType === 'application/pdf') {
+                        $value = base64_encode($item[$key]);
+                        $value = 'data:application/pdf;base64,' . $value;
+                    } else {
+                        $value = base64_encode($item[$key]);
+                        $value = 'data:image/jpeg;base64,' . $value;
+                    }
+                }                
                 
                 $formattedItem[] = "$key: \"$value\"";
             }

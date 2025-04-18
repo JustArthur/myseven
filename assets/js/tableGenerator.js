@@ -81,6 +81,8 @@ const updateTable = (rows, tableName) => {
 
 const updatePaginationControls = (tableName) => {
     const paginationContainer = document.getElementById(`paginationControls_${tableName}`);
+    const paginationCounter = document.getElementById(`paginationCounter_${tableName}`);
+
     if (!paginationContainer) {
         console.error(`Conteneur de pagination introuvable pour ${tableName}`);
         return;
@@ -100,11 +102,13 @@ const updatePaginationControls = (tableName) => {
     };
 
     if (currentPage > 1) {
-        paginationContainer.appendChild(createPageButton(currentPage - 1, "Précédent"));
+        paginationContainer.appendChild(createPageButton(currentPage - 1, "Page précédente"));
+        paginationCounter.innerHTML = `Page ${currentPage} sur ${totalPages}`;
     }
 
     if (currentPage < totalPages) {
-        paginationContainer.appendChild(createPageButton(currentPage + 1, "Suivant"));
+        paginationContainer.appendChild(createPageButton(currentPage + 1, "Page suivante"));
+        paginationCounter.innerHTML = `Page ${currentPage} sur ${totalPages}`;
     }
 };
 
@@ -272,7 +276,7 @@ const cardShow = (tableName, realIndex) => {
     
         const options = {
             day: '2-digit',
-            month: 'long', // Affiche le mois en toutes lettres
+            month: 'long',
             year: 'numeric',
             hour: '2-digit',
             minute: '2-digit',
@@ -288,7 +292,6 @@ const cardShow = (tableName, realIndex) => {
             <div class="cardItem_header_title">
     `;
 
-    // Détection du type et affichage
     if (tableName === "noteCustomersSell" || tableName === "noteCustomersBuy") {
         contentHTML += `
             <h2>Informations du client</h2>
@@ -305,10 +308,13 @@ const cardShow = (tableName, realIndex) => {
             <p><strong>Numéro CNI : </strong> ${item.clients_numero_cni}</p>
         </div>
         <div class="client-photo-container">
-            <img src="${item.clients_copie_cni}" alt="Photo du client" class="client-photo" />
+            ${
+                item.clients_copie_cni.startsWith("data:application/pdf")
+                    ? `<embed src="${item.clients_copie_cni}" type="application/pdf" width="100%" height="500px" />`
+                    : `<img src="${item.clients_copie_cni}" alt="Photo du client" class="client-photo" />`
+            }
         </div>
         `;
-
     } else if (tableName === "noteVehicles") {
         contentHTML += `
             <h2>Informations du véhicule</h2>
@@ -329,16 +335,19 @@ const cardShow = (tableName, realIndex) => {
             <p><strong>Frais à prévoir : </strong> ${item.vehicules_frais_prevoir}</p>
         </div>
         <div class="client-photo-container">
-            <img src="${item.vehicules_carte_grise}" alt="Carte grise" class="client-photo" />
+            ${
+                item.vehicules_carte_grise.startsWith("data:application/pdf")
+                    ? `<embed src="${item.vehicules_carte_grise}" type="application/pdf" width="100%" height="500px" />`
+                    : `<img src="${item.vehicules_carte_grise}" alt="Carte grise" class="client-photo" />`
+            }
         </div>
         `;
     }
 
-    contentHTML += '</div>'; // ferme .cardItem_header_title si ce n’est pas déjà fait
+    contentHTML += '</div>';
 
     cardItemContent.innerHTML = contentHTML;
 
-    // Détermine le type et construit l’URL dynamiquement
     let notesUrl = "";
     let notesTitle = "";
 
