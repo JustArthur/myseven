@@ -1,4 +1,9 @@
-let editingCell = null;
+let currentPage = 1,
+    totalPages = 1,
+    editingCell = null,
+    searchTimeout;
+
+const rowsPerPage = 25;
 
 window.selectAgence = (tableName, AgenceId) => {
     const selectedAgenceId = document.getElementById(AgenceId).value;
@@ -16,9 +21,6 @@ window.selectAgence = (tableName, AgenceId) => {
     updateTable(filteredRows, tableName);
 };
 
-
-let searchTimeout;
-
 const searchTable = (tableNameSQL, searchBarId) => {
     clearTimeout(searchTimeout);
 
@@ -35,12 +37,6 @@ const searchTable = (tableNameSQL, searchBarId) => {
             });
     }, 500);
 };
-
-
-// update le tableau
-let currentPage = 1;
-let totalPages = 1;
-const rowsPerPage = 25;
 
 const updateTable = (rows, tableName) => {
     const tbody = document.getElementById(`${tableName}TableBody`);
@@ -79,12 +75,10 @@ const updateTable = (rows, tableName) => {
         })
         .join('');
     
-    // Mettre à jour le nombre total de pages
     totalPages = Math.ceil(rows.length / rowsPerPage);
     updatePaginationControls(tableName);
 };
 
-// Fonction pour mettre à jour les contrôles de pagination
 const updatePaginationControls = (tableName) => {
     const paginationContainer = document.getElementById(`paginationControls_${tableName}`);
     if (!paginationContainer) {
@@ -114,8 +108,6 @@ const updatePaginationControls = (tableName) => {
     }
 };
 
-
-// Fonction pour changer de page
 const changePage = (page, tableName) => {
     currentPage = page;
 
@@ -126,9 +118,6 @@ const changePage = (page, tableName) => {
     }
 };
 
-
-
-// Editer une cellule du tableau
 const editCell = (td, field, index, tableName) => {
     if (td.querySelector("input, select")) {
         return;
@@ -238,7 +227,6 @@ const editCell = (td, field, index, tableName) => {
     });
 };
 
-// Met à jour la BDD
 const updateDatabase = (item, oldUniqueValue, tableName) => {
     const controllerFile = (tableName === "CustomersSell" || tableName === "CustomersBuy") ? "controllerCustomers.php" : "controllerVehicles.php";
 
@@ -255,94 +243,209 @@ const openPopup = (tableName, realIndex) => {
     const popup = document.getElementById("cardItem");
     const overlay = document.getElementById("overlay");
 
-    // Afficher l'overlay et la popup
     overlay.classList.remove("hidden");
     popup.classList.remove("hidden");
 
-    // Charger les informations spécifiques dans la popup
     cardShow(tableName, realIndex);
 };
 
-// Fonction pour afficher le contenu de la popup
 const cardShow = (tableName, realIndex) => {
     const cardItemContent = document.getElementById("cardItem_content");
 
-    // Définir le tableau en fonction du tableName
-    let data;
-    if (tableName === "noteCustomersSell" || tableName === "noteCustomersBuy") {
-        data = window[tableName];
-    } else if (tableName === "noteVehicles") {
-        data = window[tableName];
-    }
-
-    if (data) {
-        const item = data[realIndex];  // Récupérer l'élément au bon index
-        if (tableName === "noteCustomersSell" || tableName === "noteCustomersBuy") {
-            // Afficher les informations du client
-            cardItemContent.innerHTML = `
-                <span onclick="closePopup()" class="material-symbols-outlined">close</span>
-                <h2>Informations du client</h2>
-                <p><strong>Nom : </strong> ${item.clients_nom}</p>
-                <p><strong>Prénom : </strong> ${item.clients_prenom}</p>
-                <p><strong>Email : </strong> ${item.clients_email}</p>
-                <p><strong>Téléphone : </strong> ${item.clients_telephone}</p>
-                <p><strong>Date d'anniversaire : </strong> ${item.clients_anniversaire}</p>
-                <p><strong>Lieu de naissance : </strong> ${item.clients_lieu_naissance}</p>
-                <p><strong>Type de client : </strong> ${item.clients_type}</p>
-                <p><strong>Adresse : </strong> ${item.clients_rue}</p>
-                <p><strong>Code postal : </strong> ${item.clients_cp}</p>
-                <p><strong>Ville : </strong> ${item.clients_ville}</p>
-                <p><strong>Numéro CNI : </strong> ${item.clients_numero_cni}</p>
-            `;
-        } else if (tableName === "noteVehicles") {
-            // Afficher les informations du véhicule
-            const formatDate = (dateString) => {
-                if (!dateString) return "N/A";
-                const date = new Date(dateString);
-                const day = String(date.getDate()).padStart(2, '0');
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const year = date.getFullYear();
-                return `${day}/${month}/${year}`;
-            };
-
-            cardItemContent.innerHTML = `
-                <span onclick="closePopup()" class="material-symbols-outlined">close</span>
-                <h2>Informations du véhicule</h2>
-                <p><strong>Immatriculation : </strong> ${item.vehicules_immatriculation}</p>
-                <p><strong>Marque : </strong> ${item.vehicules_marque}</p>
-                <p><strong>Modèle : </strong> ${item.vehicules_model}</p>
-                <p><strong>Année : </strong> ${item.vehicules_annee}</p>
-                <p><strong>Puissance : </strong> ${item.vehicules_puissance}</p>
-                <p><strong>Type de boîte : </strong> ${item.vehicules_type_boite}</p>
-                <p><strong>Couleur : </strong> ${item.vehicules_couleur}</p>
-                <p><strong>Finition : </strong> ${item.vehicules_finition}</p>
-                <p><strong>Origne : </strong> ${item.vehicules_origine}</p>
-                <p><strong>Kilometrage : </strong> ${item.vehicules_kilometrage} km</p>
-                <p><strong>Nombre de main : </strong> ${item.vehicules_nombre_main}</p>
-                <p><strong>Date de mise en circulation : </strong> ${formatDate(item.vehicules_date_mise_en_circu)}</p>
-                <p><strong>Date entretien : </strong> ${formatDate(item.vehicules_date_entretetien)}</p>
-                <p><strong>Frais récent : </strong> ${item.vehicules_frais_recent}</p>
-                <p><strong>Frais à prévoir : </strong> ${item.vehicules_frais_prevoir}</p>
-            `;
-        }
-    } else {
-        // Gestion d'erreur si le tableau n'est pas trouvé
+    const data = window[tableName];
+    if (!data) {
         cardItemContent.innerHTML = `<p>Erreur: Le tableau de données est introuvable.</p>`;
+        return;
     }
+
+    const item = data[realIndex];
+
+    const formatDate = (dateString) => {
+        if (!dateString) return "Aucune date.";
+        const date = new Date(dateString);
+        return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+    };
+
+    const formatDateHours = (dateString) => {
+        if (!dateString) return "Aucune date.";
+        const date = new Date(dateString);
+    
+        const options = {
+            day: '2-digit',
+            month: 'long', // Affiche le mois en toutes lettres
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        };
+    
+        return date.toLocaleDateString('fr-FR', options).replace(',', ' -');
+    };    
+    
+
+    let contentHTML = `
+        <div class="cardItem_header">
+            <span onclick="closePopup()" class="material-symbols-outlined close-button">close</span>
+            <div class="cardItem_header_title">
+    `;
+
+    // Détection du type et affichage
+    if (tableName === "noteCustomersSell" || tableName === "noteCustomersBuy") {
+        contentHTML += `
+            <h2>Informations du client</h2>
+            <p><strong>Nom : </strong> ${item.clients_nom}</p>
+            <p><strong>Prénom : </strong> ${item.clients_prenom}</p>
+            <p><strong>Email : </strong> ${item.clients_email}</p>
+            <p><strong>Téléphone : </strong> ${item.clients_telephone}</p>
+            <p><strong>Date d'anniversaire : </strong> ${formatDate(item.clients_anniversaire)}</p>
+            <p><strong>Lieu de naissance : </strong> ${item.clients_lieu_naissance}</p>
+            <p><strong>Type de client : </strong> ${item.clients_type}</p>
+            <p><strong>Adresse : </strong> ${item.clients_rue}</p>
+            <p><strong>Code postal : </strong> ${item.clients_cp}</p>
+            <p><strong>Ville : </strong> ${item.clients_ville}</p>
+            <p><strong>Numéro CNI : </strong> ${item.clients_numero_cni}</p>
+        </div>
+        <div class="client-photo-container">
+            <img src="${item.clients_copie_cni}" alt="Photo du client" class="client-photo" />
+        </div>
+        `;
+
+    } else if (tableName === "noteVehicles") {
+        contentHTML += `
+            <h2>Informations du véhicule</h2>
+            <p><strong>Immatriculation : </strong> ${item.vehicules_immatriculation}</p>
+            <p><strong>Marque : </strong> ${item.vehicules_marque}</p>
+            <p><strong>Modèle : </strong> ${item.vehicules_model}</p>
+            <p><strong>Année : </strong> ${item.vehicules_annee}</p>
+            <p><strong>Puissance : </strong> ${item.vehicules_puissance}</p>
+            <p><strong>Type de boîte : </strong> ${item.vehicules_type_boite}</p>
+            <p><strong>Couleur : </strong> ${item.vehicules_couleur}</p>
+            <p><strong>Finition : </strong> ${item.vehicules_finition}</p>
+            <p><strong>Origine : </strong> ${item.vehicules_origine}</p>
+            <p><strong>Kilométrage : </strong> ${item.vehicules_kilometrage} km</p>
+            <p><strong>Nombre de main : </strong> ${item.vehicules_nombre_main}</p>
+            <p><strong>Date de mise en circulation : </strong> ${formatDate(item.vehicules_date_mise_en_circu)}</p>
+            <p><strong>Date entretien : </strong> ${formatDate(item.vehicules_date_entretetien)}</p>
+            <p><strong>Frais récent : </strong> ${item.vehicules_frais_recent}</p>
+            <p><strong>Frais à prévoir : </strong> ${item.vehicules_frais_prevoir}</p>
+        </div>
+        <div class="client-photo-container">
+            <img src="${item.vehicules_carte_grise}" alt="Carte grise" class="client-photo" />
+        </div>
+        `;
+    }
+
+    contentHTML += '</div>'; // ferme .cardItem_header_title si ce n’est pas déjà fait
+
+    cardItemContent.innerHTML = contentHTML;
+
+    // Détermine le type et construit l’URL dynamiquement
+    let notesUrl = "";
+    let notesTitle = "";
+
+    if (tableName === "noteCustomersSell" || tableName === "noteCustomersBuy") {
+        notesUrl = `src/functions/getNotes.php?client_id=${item.clients_id}`;
+        notesTitle = "Notes du client";
+    } else if (tableName === "noteVehicles") {
+        notesUrl = `src/functions/getNotes.php?vehicle_id=${item.vehicules_id}`;
+        notesTitle = "Notes du véhicule";
+    }
+
+    fetch(notesUrl)
+        .then(res => res.json())
+        .then(notes => {
+            let html = `
+            <form class="note-form" onsubmit="submitNote(event, '${tableName}', ${item.clients_id || item.vehicules_id})">
+                <h4>Ajouter une note :</h4>
+                <textarea name="note_content" rows="4" required placeholder="Écrire une note..."></textarea>
+                <button type="submit">Enregistrer</button>
+            </form>
+            `;
+
+            html += `<div class="client-notes-container"><h3>${notesTitle} :</h3>`;
+
+            if (notes && notes.length > 0) {
+                html += '<ul class="notes-list">';
+                notes.forEach(note => {
+                    html += `
+                        <li>
+                            <p class="date_notes">${formatDateHours(note.notes_date)}<label class=""> - ${note.notes_text}</label></p>
+                        </li>
+                    `;
+                });
+                html += '</ul>';
+            } else {
+                html += `<p>Aucune note disponible.</p>`;
+            }
+
+            html += '</div>';
+
+            const notesContainer = document.createElement('div');
+            notesContainer.innerHTML = html;
+
+            const headerTitle = cardItemContent.querySelector('.cardItem_header_title');
+            headerTitle.insertAdjacentElement('afterend', notesContainer);
+        })
+        .catch(error => {
+            console.error("Erreur récupération des notes:", error);
+        });
 };
 
+function submitNote(event, tableName, id) {
+    event.preventDefault();
 
-// Fonction pour fermer la popup
+    const form = event.target;
+    const noteContent = form.note_content.value;
+
+    const data = {
+        notes_content: noteContent
+    };
+
+    if (tableName === "noteCustomersSell" || tableName === "noteCustomersBuy") {
+        data.clients_id = id;
+    } else if (tableName === "noteVehicles") {
+        data.vehicules_id = id;
+    }
+
+    fetch('src/functions/addNote.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(response => {
+        if (response.success) {   
+            const dataList = window[tableName];
+            let index = -1;
+    
+            if (tableName === "noteVehicles") {
+                index = dataList.findIndex(el => el.vehicules_id == id || el.vehicle_id == id);
+            } else {
+                index = dataList.findIndex(el => el.clients_id == id || el.client_id == id);
+            }
+    
+            if (index !== -1) {
+                cardShow(tableName, index);
+            } else {
+                console.warn("Élément non trouvé pour le refresh (id:", id, ")");
+                console.log("Liste disponible :", dataList.map(el => el.clients_id || el.vehicules_id));
+            }
+        }
+    })
+    .catch(error => {
+        console.error("Erreur réseau :", error);
+    });
+}
+
 const closePopup = () => {
     const popup = document.getElementById("cardItem");
     const overlay = document.getElementById("overlay");
 
-    // Cacher la popup et l'overlay
     popup.classList.add("hidden");
     overlay.classList.add("hidden");
 };
 
-// initialisation des tableaux
 const initTable = (tableName, rows) => {
     window[tableName] = rows;
     updateTable(rows, tableName);

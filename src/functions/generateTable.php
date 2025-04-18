@@ -5,12 +5,18 @@
             $formattedItem = [];
             foreach ($fields as $key) {
                 $value = str_replace(["\n", "\r"], " ", addslashes($item[$key]));
+                
+                if ($key === 'clients_copie_cni' || $key === 'vehicules_carte_grise') {
+                    $value = base64_encode($item[$key]);
+                    $value = 'data:image/jpeg;base64,' . $value;
+                }
+                
                 $formattedItem[] = "$key: \"$value\"";
             }
             $items[] = "{" . implode(", ", $formattedItem) . "}";
         }
         return implode(",\n", $items);
-    }
+    }    
 
     $customerFields = [
         'clients_nom',
@@ -35,7 +41,9 @@
         'clients_rue',
         'clients_ville',
         'clients_cp',
-        'clients_numero_cni'
+        'clients_numero_cni',
+        'clients_copie_cni',
+        'clients_id'
     ];
 
     $allVehicleFields = [
@@ -55,7 +63,9 @@
         'vehicules_numero_serie',
         'vehicules_origine',
         'vehicules_kilometrage',
-        'vehicules_nombre_main'
+        'vehicules_nombre_main',
+        'vehicules_carte_grise',
+        'vehicules_id',
     ];
 
     $vehicleFields = [

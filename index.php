@@ -252,7 +252,7 @@
 
     <!-- Popup -->
     <div id="cardItem" class="cardItem hidden">
-        <div id="cardItem_content" class=cardItem_content>
+        <div id="cardItem_content" class="cardItem_content">
             <!-- Le contenu de la popup sera inséré dynamiquement ici -->
         </div>
     </div>
