@@ -74,8 +74,8 @@
 }
 
 .client-photo {
-    max-width: 100%;
-    max-height: 450px;
+    height: 600px;
+    width: 460px;
     object-fit: cover;
     border-radius: 10px;
 }
