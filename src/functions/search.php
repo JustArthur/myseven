@@ -27,10 +27,10 @@
         }
 
         if ($table === 'clients') {
-            $columnsToSelect = ['clients_nom', 'clients_prenom', 'clients_email', 'clients_telephone', 'clients_rue', 'clients_ville', 'clients_cp', 'clients_numero_cni'];
+            $columnsToSelect = ['clients_id', 'clients_nom', 'clients_prenom', 'clients_email', 'clients_telephone', 'clients_rue', 'clients_ville', 'clients_cp', 'clients_numero_cni'];
             $orderBy = 'clients_nom ASC';
         } else {
-            $columnsToSelect = ['vehicules_immatriculation', 'vehicules_marque', 'vehicules_model', 'vehicules_annee', 'vehicules_puissance', 'vehicules_type_boite', 'vehicules_couleur', 'vehicules_kilometrage'];
+            $columnsToSelect = ['vehicules_id', 'vehicules_immatriculation', 'vehicules_marque', 'vehicules_model', 'vehicules_annee', 'vehicules_puissance', 'vehicules_type_boite', 'vehicules_couleur', 'vehicules_kilometrage'];
             $orderBy = 'vehicules_immatriculation ASC';
         }
     

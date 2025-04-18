@@ -22,6 +22,7 @@
             }
             $items[] = "{" . implode(", ", $formattedItem) . "}";
         }
+        
         return implode(",\n", $items);
     }    
 

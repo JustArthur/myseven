@@ -112,7 +112,7 @@
                 <h2><?= $tableauOnglets[0] ?></h2>
                 <div class="input_client">
                     <input type="text" class="searchBar" id="searchBarCustomersSell" placeholder="Rechercher un client vendeur..." onkeyup="searchTable('clientsVendeur', 'searchBarCustomersSell')">
-                    <select class="inputSelect" name="selectAgenceSell" id="selectAgenceSell" onchange="window.selectAgence('CustomersSell', 'selectAgenceSell')">
+                    <select class="inputSelect" name="selectAgenceSell" id="selectAgenceSell" onchange="window.selectAgence('CustomersSell', 'selectAgenceSell', 'clients', 'Vendeur')">
                         <optgroup label="Choisir l'agence pour trier les clients vendeurs">
                             <option value="All">Toute les agences</option>
                             <?php foreach($resAgence as $agence) { ?>
@@ -155,7 +155,7 @@
                 <h2><?= $tableauOnglets[1] ?></h2>
                 <div class="input_vehicle">
                     <input type="text" class="searchBar" id="searchBarVehicles" placeholder="Rechercher un véhicule..." onkeyup="searchTable('vehicules', 'searchBarVehicles')">
-                    <select class="inputSelect" name="selectAgenceVehicles" id="selectAgenceVehicles" onchange="window.selectAgence('Vehicles', 'selectAgenceVehicles')">
+                    <select class="inputSelect" name="selectAgenceVehicles" id="selectAgenceVehicles" onchange="window.selectAgence('Vehicles', 'selectAgenceVehicles', 'vehicules')">
                         <optgroup label="Choisir l'agence pour trier les véhicules">
                             <option value="All">Toute les agences</option>
                             <?php foreach($resAgence as $agence) { ?>
@@ -197,7 +197,8 @@
                 <h2><?= $tableauOnglets[2] ?></h2>
                 <div class="input_client">
                     <input type="text" class="searchBar" id="searchBarCustomersBuy" placeholder="Rechercher un client acheteur..." onkeyup="searchTable('clientsAcheteur', 'searchBarCustomersBuy')">
-                    <select class="inputSelect" name="selectAgenceBuy" id="selectAgenceBuy" onchange="window.selectAgence('CustomersBuy', 'selectAgenceBuy')">
+                    <select class="inputSelect" name="selectAgenceBuy" id="selectAgenceBuy" onchange="window.selectAgence('Vehicles', 'selectAgenceBuy', 'clients', 'Acheteur')">
+
                         <optgroup label="Choisir l'agence pour trier les clients achteurs">
                             <option value="All">Toute les agences</option>
                             <?php foreach($resAgence as $agence) { ?>
@@ -269,21 +270,13 @@
 
     
     <script>
-        // Fonction pour générer les lignes du tableau à partir des données
-        const rowsCustomersSell = [<?= generateRows($resClientVendeur, $customerFields) ?>];
-        const rowsCustomersBuy = [<?= generateRows($resClientAcheteur, $customerFields) ?>];
-        const rowsVehicles = [<?= generateRows($resVehicule, $vehicleFields) ?>];
-
-        window.noteCustomersSell = [<?= generateRows($resClientVendeur, $allCustomersField) ?>];
-        window.noteCustomersBuy = [<?= generateRows($resClientAcheteur, $allCustomersField) ?>];
-        window.noteVehicles = [<?= generateRows($resVehiculeAndCoTitulaire, $allVehicleFields) ?>];
-
-        // Désactiver le entrée du grand form
         document.getElementById("bigForm").addEventListener("keypress", function (e) {
             if (e.key === "Enter") {
                 e.preventDefault();
             }
         });
+
+        
     </script>
     
     <script type="text/javascript" src="assets/js/tableGenerator.js"></script>

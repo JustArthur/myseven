@@ -1,22 +1,30 @@
 <?php
-require '../../database.php'; // Connexion PDO
+    require_once '../../database.php'; // Ta connexion PDO ici
 
-$client_id = $_GET['client_id'] ?? null;
-$vehicle_id = $_GET['vehicle_id'] ?? null;
+    header('Content-Type: application/json');
 
-$pdo = new ConnexionDB();
-$pdo = $pdo->openConnection();
+    $pdo = new ConnexionDB();
+    $pdo = $pdo->openConnection();
 
-if ($client_id) {
-    $stmt = $pdo->prepare("SELECT * FROM notes WHERE notes_clients_id = :id ORDER BY notes_date DESC");
-    $stmt->execute(['id' => $client_id]);
-} elseif ($vehicle_id) {
-    $stmt = $pdo->prepare("SELECT * FROM notes WHERE notes_vehicules_id = :id ORDER BY notes_date DESC");
-    $stmt->execute(['id' => $vehicle_id]);
-} else {
-    echo json_encode([]);
-    exit;
-}
+    $clientId = isset($_GET['clients_id']) ? intval($_GET['clients_id']) : null;
+    $vehicleId = isset($_GET['vehicle_id']) ? intval($_GET['vehicle_id']) : null;
 
-$notes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-echo json_encode($notes);
+    try {
+        if ($clientId) {
+            $stmt = $pdo->prepare("SELECT * FROM notes WHERE notes_clients_id = ? ORDER BY notes_date DESC");
+            $stmt->execute([$clientId]);
+        } elseif ($vehicleId) {
+            $stmt = $pdo->prepare("SELECT * FROM notes WHERE notes_vehicle_id = ? ORDER BY notes_date DESC");
+            $stmt->execute([$vehicleId]);
+        } else {
+            echo json_encode(["error" => "Aucun ID fourni"]);
+            exit;
+        }
+
+        $notes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($notes);
+
+    } catch (PDOException $e) {
+        echo json_encode(["error" => $e->getMessage()]);
+    }
+?>
