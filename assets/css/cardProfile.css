@@ -164,6 +164,11 @@ form.note-form {
     background-color: var(--primary-hover);
 }
 
+embed.client-photo {
+    height: 600px;
+    width: 500px;
+}
+
 @media screen and (max-width: 1300px) {
     .cardItem_header {
         flex-direction: column;
@@ -178,10 +183,15 @@ form.note-form {
     .client-photo {
         height: auto;
         width: 100%;
+        max-width: 100%;
     }
 
     .client-notes-container {
         max-height: 500px;
+    }
+
+    embed.client-photo {
+        height: 1080px;
     }
 
     .note-form textarea {
