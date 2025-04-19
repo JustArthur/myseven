@@ -20,7 +20,6 @@ const searchTable = (tableNameSQL, searchBarId) => {
         const tableName = tableNameSQL === "vehicules" ? "Vehicles" :
                           tableNameSQL === "clientsVendeur" ? "CustomersSell" :
                           "CustomersBuy";
-
         currentPage = 1;
 
         fetch(`src/functions/search.php?table=${tableNameSQL}&term=${encodeURIComponent(searchTerm)}&page=${currentPage}`)
@@ -29,11 +28,10 @@ const searchTable = (tableNameSQL, searchBarId) => {
                 updateTable(data.results, tableName);
                 totalPages = data.totalPages;
                 updatePaginationControls(tableName);
-                console.log(totalPages)
             })
             .finally(() => {
                 spinner.classList.add("hidden");
-            });;
+            });
     }, 500);
 };
 
@@ -269,11 +267,8 @@ const openPopup = (tableName, realIndex) => {
 
 const cardShow = (tableName, realIndex) => {
     const cardItemContent = document.getElementById("cardItem_content");
-    cardItemContent.innerHTML = `
-        <div class="spinner-box">
-            <p>Chargement des données...</p>
-            <div id="loadingSpinner" class="spinner"></div>
-        </div>`;
+    const spinner = document.getElementById("loadingSpinner");
+    spinner.classList.remove("hidden");
 
     const tableSQL = tableName === "Vehicles" ? "vehicules" : "clients";
 
@@ -419,10 +414,13 @@ const cardShow = (tableName, realIndex) => {
         .catch(error => {
             console.error("Erreur lors de la récupération des infos :", error);
             cardItemContent.innerHTML = `
-            <div style='display: flex; flex-direction: column; padding: 20px;'>
-                <p>Erreur lors de la récupération des données.</p>
-                <div id="loadingSpinner" class="spinner"></div>
-            </div>`;
+                <div id="loadingSpinner" class="spinner-box hidden">
+                    <div class="spinner"></div>
+                    <span class="spinner-text">Erreur lors de la récupération des infos</span>
+                </div>
+            `;
+        }).finally(() => {
+            spinner.classList.add("hidden");
         });
 };
 
@@ -442,8 +440,6 @@ function submitNote(event, tableName, id) {
         data.vehicules_id = id;
     }
 
-    console.log("Données à envoyer :", data);
-
     fetch('src/functions/addNote.php', {
         method: 'POST',
         headers: {
@@ -452,9 +448,7 @@ function submitNote(event, tableName, id) {
         body: JSON.stringify(data)
     })
     .then(res => res.json())
-    .then(response => {
-        console.log("Réponse du serveur :", response);
-        
+    .then(response => {        
         if (response.success) {   
             const dataList = window[tableName];
             let index = -1;
@@ -506,7 +500,7 @@ const fetchData = (tableName, sqlTableName, page = 1, term = "", agenceId = "All
         params.append("client_type", clientType);
     }
 
-    fetch(`src/functions/fetchTable.php?${params.toString()}`)
+    return fetch(`src/functions/fetchTable.php?${params.toString()}`)
         .then(res => res.json())
         .then(data => {
             if (data.rows && Array.isArray(data.rows)) {
@@ -517,7 +511,9 @@ const fetchData = (tableName, sqlTableName, page = 1, term = "", agenceId = "All
                 console.error(`Données invalides pour ${tableName}`, data);
             }
         })
-        .catch(err => console.error("Erreur de chargement des données:", err))
+        .catch(err => {
+            console.error("Erreur de chargement des données:", err);
+        })
         .finally(() => {
             spinner.classList.add("hidden");
         });
@@ -526,15 +522,21 @@ const fetchData = (tableName, sqlTableName, page = 1, term = "", agenceId = "All
 
 
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const spinner = document.getElementById("loadingSpinner");
     spinner.classList.remove("hidden");
-    setTimeout(() => {
-        fetchData("CustomersSell", "clients", 1, "", "All", "Vendeur");
-        fetchData("CustomersBuy", "clients", 1, "", "All", "Acheteur");
-        fetchData("Vehicles", "vehicules", 1);
-    }, 200)
-    .finally(() => {
+
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    try {
+        await Promise.all([
+            fetchData("CustomersSell", "clients", 1, "", "All", "Vendeur"),
+            fetchData("CustomersBuy", "clients", 1, "", "All", "Acheteur"),
+            fetchData("Vehicles", "vehicules", 1)
+        ]);
+    } catch (error) {
+        console.error("Erreur pendant le chargement des données :", error);
+    } finally {
         spinner.classList.add("hidden");
-    });;
+    }
 });

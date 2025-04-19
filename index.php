@@ -94,7 +94,10 @@
     <title>Myseven - Panel Administrateur</title>
 </head>
 <body>
-    <div id="loadingSpinner" class="spinner hidden"></div>
+    <div id="loadingSpinner" class="spinner-box hidden">
+        <div class="spinner"></div>
+        <span class="spinner-text">Chargement des données...</span>
+    </div>
 
     <div class="login">
         <?php if (!empty($_SESSION['user'])) { ?>
