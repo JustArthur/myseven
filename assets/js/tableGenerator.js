@@ -11,6 +11,9 @@ window.selectAgence = (tableName, agenceSelectId, sqlTableName, clientType) => {
 };
 
 const searchTable = (tableNameSQL, searchBarId) => {
+    const spinner = document.getElementById("loadingSpinner");
+    spinner.classList.remove("hidden");
+
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
         const searchTerm = document.getElementById(searchBarId).value.toLowerCase();
@@ -18,14 +21,21 @@ const searchTable = (tableNameSQL, searchBarId) => {
                           tableNameSQL === "clientsVendeur" ? "CustomersSell" :
                           "CustomersBuy";
 
+        currentPage = 1;
+
         fetch(`src/functions/search.php?table=${tableNameSQL}&term=${encodeURIComponent(searchTerm)}&page=${currentPage}`)
             .then(response => response.json())
             .then(data => {
-                updateTable(data, tableName);
-            });
+                updateTable(data.results, tableName);
+                totalPages = data.totalPages;
+                updatePaginationControls(tableName);
+                console.log(totalPages)
+            })
+            .finally(() => {
+                spinner.classList.add("hidden");
+            });;
     }, 500);
 };
-
 
 const updateTable = (rows, tableName) => {
     const tbody = document.getElementById(`${tableName}TableBody`);
@@ -115,6 +125,10 @@ const updatePaginationControls = (tableName) => {
 
     if (currentPage < totalPages) {
         paginationContainer.appendChild(createPageButton(currentPage + 1, "Page suivante", sqlTableName));
+        paginationCounter.innerHTML = `Page ${currentPage} sur ${totalPages}`;
+    }
+
+    if(currentPage === totalPages) {
         paginationCounter.innerHTML = `Page ${currentPage} sur ${totalPages}`;
     }
 };
@@ -251,15 +265,16 @@ const openPopup = (tableName, realIndex) => {
     popup.classList.remove("hidden");
 
     cardShow(tableName, realIndex);
-
-    console.log("Popup ouvert pour l'élément avec l'index réel:", realIndex);
 };
 
 const cardShow = (tableName, realIndex) => {
     const cardItemContent = document.getElementById("cardItem_content");
-    cardItemContent.innerHTML = "<p>Chargement...</p>";
+    cardItemContent.innerHTML = `
+        <div class="spinner-box">
+            <p>Chargement des données...</p>
+            <div id="loadingSpinner" class="spinner"></div>
+        </div>`;
 
-    const idKey = tableName === "Vehicles" ? "vehicules_id" : "clients_id";
     const tableSQL = tableName === "Vehicles" ? "vehicules" : "clients";
 
     fetch(`src/functions/getInfo.php?table=${tableSQL}&id=${realIndex}`)
@@ -350,7 +365,6 @@ const cardShow = (tableName, realIndex) => {
             contentHTML += '</div>';
             cardItemContent.innerHTML = contentHTML;
 
-            // 👇 Gestion des notes
             let notesUrl = "";
             let notesTitle = "";
 
@@ -369,7 +383,7 @@ const cardShow = (tableName, realIndex) => {
                         <form class="note-form" onsubmit="submitNote(event, '${tableName}', ${item.clients_id || item.vehicules_id})">
                             <h4>Ajouter une note :</h4>
                             <textarea name="note_content" rows="4" required placeholder="Écrire une note..."></textarea>
-                            <button type="submit">Enregistrer</button>
+                            <button type="submit">Ajouter la note</button>
                         </form>
                     `;
 
@@ -404,7 +418,11 @@ const cardShow = (tableName, realIndex) => {
         })
         .catch(error => {
             console.error("Erreur lors de la récupération des infos :", error);
-            cardItemContent.innerHTML = `<p>Erreur lors de la récupération des données.</p>`;
+            cardItemContent.innerHTML = `
+            <div style='display: flex; flex-direction: column; padding: 20px;'>
+                <p>Erreur lors de la récupération des données.</p>
+                <div id="loadingSpinner" class="spinner"></div>
+            </div>`;
         });
 };
 
@@ -420,9 +438,11 @@ function submitNote(event, tableName, id) {
 
     if (tableName === "CustomersSell" || tableName === "CustomersBuy") {
         data.clients_id = id;
-    } else if (tableName === "Vehicles") {
+    } else {
         data.vehicules_id = id;
     }
+
+    console.log("Données à envoyer :", data);
 
     fetch('src/functions/addNote.php', {
         method: 'POST',
@@ -433,6 +453,8 @@ function submitNote(event, tableName, id) {
     })
     .then(res => res.json())
     .then(response => {
+        console.log("Réponse du serveur :", response);
+        
         if (response.success) {   
             const dataList = window[tableName];
             let index = -1;
@@ -444,10 +466,9 @@ function submitNote(event, tableName, id) {
             }
     
             if (index !== -1) {
-                cardShow(tableName, index);
+                cardShow(tableName, id);
             } else {
                 console.warn("Élément non trouvé pour le refresh (id:", id, ")");
-                console.log("Liste disponible :", dataList.map(el => el.clients_id || el.vehicules_id));
             }
         }
     })
@@ -471,6 +492,9 @@ const initTable = (tableName, sqlTableName) => {
 const fetchData = (tableName, sqlTableName, page = 1, term = "", agenceId = "All", clientType = "") => {
     currentPage = page;
 
+    const spinner = document.getElementById("loadingSpinner");
+    spinner.classList.remove("hidden");
+
     const params = new URLSearchParams({
         table: sqlTableName,
         page: page,
@@ -493,8 +517,12 @@ const fetchData = (tableName, sqlTableName, page = 1, term = "", agenceId = "All
                 console.error(`Données invalides pour ${tableName}`, data);
             }
         })
-        .catch(err => console.error("Erreur de chargement des données:", err));
+        .catch(err => console.error("Erreur de chargement des données:", err))
+        .finally(() => {
+            spinner.classList.add("hidden");
+        });
 };
+
 
 
 

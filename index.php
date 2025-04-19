@@ -89,10 +89,13 @@
 
     <link rel="stylesheet" href="assets/css/tables.css">
     <link rel="stylesheet" href="assets/css/cardProfile.css">
+    <link rel="stylesheet" href="assets/css/spinner.css">
 
     <title>Myseven - Panel Administrateur</title>
 </head>
 <body>
+    <div id="loadingSpinner" class="spinner hidden"></div>
+
     <div class="login">
         <?php if (!empty($_SESSION['user'])) { ?>
             <a href="logout.php" class="login-button deco">Se deconnecter</a>

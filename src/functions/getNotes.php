@@ -14,7 +14,7 @@
             $stmt = $pdo->prepare("SELECT * FROM notes WHERE notes_clients_id = ? ORDER BY notes_date DESC");
             $stmt->execute([$clientId]);
         } elseif ($vehicleId) {
-            $stmt = $pdo->prepare("SELECT * FROM notes WHERE notes_vehicle_id = ? ORDER BY notes_date DESC");
+            $stmt = $pdo->prepare("SELECT * FROM notes WHERE notes_vehicules_id = ? ORDER BY notes_date DESC");
             $stmt->execute([$vehicleId]);
         } else {
             echo json_encode(["error" => "Aucun ID fourni"]);
