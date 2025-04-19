@@ -40,52 +40,32 @@ const updateTable = (rows, tableName) => {
 
     const uniqueKey = tableName === "Vehicles" ? "vehicules_immatriculation" : "clients_email";
     const typeValue = tableName === "Vehicles" ? "selectedVehicles" : "selectedCustomers";
-    const lastIndexKey = tableName === "Vehicles" ? "vehicules_agence_id" : "clients_agence_id";
+    const idKey = tableName === "Vehicles" ? "vehicules_id" : "clients_id";
+    const agenceKey = tableName === "Vehicles" ? "vehicules_agence_id" : "clients_agence_id";
 
     window[tableName] = rows;
 
-    const clientFields = [
-        "clients_nom", 
-        "clients_prenom", 
-        "clients_email", 
-        "clients_telephone", 
-        "clients_rue", 
-        "clients_ville", 
-        "clients_cp", 
-        "clients_numero_cni"
-    ];
+    // Déduire dynamiquement les colonnes à afficher
+    const fieldsToDisplay = rows.length > 0 
+        ? Object.keys(rows[0]).filter(field => ![idKey, agenceKey].includes(field)) 
+        : [];
 
-    const vehicleFields = [
-        "vehicules_immatriculation", 
-        "vehicules_marque", 
-        "vehicules_model", 
-        "vehicules_annee", 
-        "vehicules_puissance", 
-        "vehicules_type_boite", 
-        "vehicules_couleur", 
-        "vehicules_kilometrage"
-    ];
+    tbody.innerHTML = rows.map((row) => {
+        const realIndex = row[idKey];
+        const agenceValue = row[agenceKey];
 
-    const fieldsToDisplay = tableName === "Vehicles" ? vehicleFields : clientFields;
-
-    tbody.innerHTML = rows
-        .map((row) => {
-            const idKey = tableName === "Vehicles" ? "vehicules_id" : "clients_id";
-            const realIndex = row[idKey];
-            const lastIndexValue = row[lastIndexKey];
-
-            return `
-                <tr data-index="${realIndex}" data-real-index="${realIndex}" onclick="selectRow(this, '${tableName}')">
-                    ${fieldsToDisplay.map(field => {
-                        return `<td ondblclick="editCell(this, '${field}', ${realIndex}, '${tableName}')">${row[field]}</td>`;
-                    }).join('')}
-                    <td class="btn_card" onclick="openPopup('${tableName}', ${realIndex})">Voir</td>
-                    <td><input type="radio" name="${typeValue}" value="${row[uniqueKey]}"></td>
-                    <td><input type="text" value="${lastIndexValue}" hidden="true"></td>
-                </tr>
-            `;
-        })
-        .join('');
+        return `
+            <tr data-index="${realIndex}" data-real-index="${realIndex}" onclick="selectRow(this, '${tableName}')">
+                ${fieldsToDisplay.map(field => {
+                    const cellValue = row[field] ?? '';
+                    return `<td ondblclick="editCell(this, '${field}', ${realIndex}, '${tableName}')">${cellValue}</td>`;
+                }).join('')}
+                <td class="btn_card" onclick="openPopup('${tableName}', ${realIndex})">Voir</td>
+                <td><input type="radio" name="${typeValue}" value="${row[uniqueKey]}"></td>
+                <td><input type="text" value="${agenceValue}" hidden></td>
+            </tr>
+        `;
+    }).join('');
 
     updatePaginationControls(tableName);
 };

@@ -8,7 +8,6 @@
     $pdo = new ConnexionDB();
     $pdo = $pdo->openConnection();
 
-    // Assure-toi que l'émulation des préparations est activée
     $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
 
     $table = $_GET['table'] ?? '';
@@ -49,7 +48,6 @@
         }
     }
 
-    // Build ORDER BY
     $order = "ORDER BY ";
     if ($table === 'clients') {
         $order .= "clients_nom ASC";
@@ -57,47 +55,34 @@
         $order .= "vehicules_immatriculation ASC";
     }
 
-    // Get total
     $sqlCount = "SELECT COUNT(*) FROM $table WHERE $where";
     $stmt = $pdo->prepare($sqlCount);
     $stmt->execute($params);
     $totalRows = $stmt->fetchColumn();
     $totalPages = ceil($totalRows / $rowsPerPage);
 
-    // Prepare the data query
-    // Inject limit and offset directly into the SQL string
-    $sql = "SELECT * FROM $table WHERE $where $order LIMIT $rowsPerPage OFFSET $offset";
+    $selectFields = "*";
+    if ($table === 'clients') {
+        $selectFields = "clients_nom, clients_prenom, clients_email, clients_telephone, clients_rue, clients_ville, clients_cp, clients_numero_cni, clients_id, clients_agence_id";
+    } elseif ($table === 'vehicules') {
+        $selectFields = "vehicules_immatriculation, vehicules_marque, vehicules_model, vehicules_annee, vehicules_puissance, vehicules_type_boite, vehicules_couleur, vehicules_kilometrage, vehicules_id, vehicules_agence_id";
+    }
+
+    $sql = "SELECT $selectFields FROM $table WHERE $where $order LIMIT $rowsPerPage OFFSET $offset";
     $stmt = $pdo->prepare($sql);
 
-    // Bind other parameters
     foreach ($params as $key => $value) {
         $stmt->bindValue($key, $value);
     }
 
     $stmt->execute();
-    
-    // Fetch all rows, not just one
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Convert BLOBs to base64
-    foreach ($rows as &$row) {
-        // Si c'est un BLOB (par exemple 'clients_copie_cni' ou 'vehicules_carte_grise')
-        if (isset($row['clients_copie_cni'])) {
-            $row['clients_copie_cni'] = base64_encode($row['clients_copie_cni']);
-        }
-
-        if (isset($row['vehicules_carte_grise'])) {
-            $row['vehicules_carte_grise'] = base64_encode($row['vehicules_carte_grise']);
-        }
-    }
-
-    // Prepare the response with the rows and total pages
     $jsonResponse = json_encode([
         'rows' => $rows,
         'totalPages' => $totalPages,
     ]);
     
-    // Check for JSON encoding errors
     if (json_last_error() !== JSON_ERROR_NONE) {
         echo json_encode(['error' => 'Erreur lors de l\'encodage JSON: ' . json_last_error_msg()]);
         exit;
