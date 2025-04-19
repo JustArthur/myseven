@@ -203,7 +203,7 @@
                 <h2><?= $tableauOnglets[2] ?></h2>
                 <div class="input_client">
                     <input type="text" class="searchBar" id="searchBarCustomersBuy" placeholder="Rechercher un client acheteur..." onkeyup="searchTable('clientsAcheteur', 'searchBarCustomersBuy')">
-                    <select class="inputSelect" name="selectAgenceBuy" id="selectAgenceBuy" onchange="window.selectAgence('Vehicles', 'selectAgenceBuy', 'clients', 'Acheteur')">
+                    <select class="inputSelect" name="selectAgenceBuy" id="selectAgenceBuy" onchange="window.selectAgence('CustomersBuy', 'selectAgenceBuy', 'clients', 'Acheteur')">
 
                         <optgroup label="Choisir l'agence pour trier les clients achteurs">
                             <option value="All">Toute les agences</option>
@@ -281,11 +281,9 @@
                 e.preventDefault();
             }
         });
-
-        
     </script>
     
-    <script type="text/javascript" src="assets/js/tableGenerator.js"></script>
+    <script type="module" src="assets/js/main.js"></script>
     <script type="text/javascript" src="assets/js/navigation.js"></script>
 </body>
 </html>

@@ -47,7 +47,6 @@ searchInp_marque.addEventListener("keyup", () => {
 
 selectBtn_marque.addEventListener("click", () => wrapper_marque.classList.toggle("active"));
 
-// Verification function
 function verifySelection() {
     const selectedValue = selectBtn_marque.firstElementChild.innerText;
     if (!selectedValue || selectedValue === "Select an option") {

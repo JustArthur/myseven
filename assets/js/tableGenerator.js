@@ -304,7 +304,7 @@ const cardShow = (tableName, realIndex) => {
                     ${
                         item.clients_copie_cni?.startsWith("data:application/pdf")
                             ? `<embed src="${item.clients_copie_cni}" type="application/pdf" class="client-photo" />`
-                            : `<img src="${item.clients_copie_cni}" alt="Photo du client" class="client-photo" />`
+                            : `<img src="${item.clients_copie_cni}" alt="Photo du client" class="client-photo" loading="lazy" />`
                     }
                 </div>
                 `;
@@ -331,7 +331,7 @@ const cardShow = (tableName, realIndex) => {
                     ${
                         item.vehicules_carte_grise?.startsWith("data:application/pdf")
                             ? `<embed src="${item.vehicules_carte_grise}" type="application/pdf" class="client-photo" />`
-                            : `<img src="${item.vehicules_carte_grise}" alt="Carte grise" class="client-photo" />`
+                            : `<img src="${item.vehicules_carte_grise}" alt="Carte grise" class="client-photo" loading="lazy" />`
                     }
                 </div>
                 `;
