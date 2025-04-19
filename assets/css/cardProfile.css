@@ -143,6 +143,7 @@ form.note-form {
     border-radius: 5px;
     border: 1px solid var(--border-color);
     height: 120px;
+    max-height: 290px;
 }
 
 .note-form textarea:focus {
