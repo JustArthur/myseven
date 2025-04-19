@@ -526,6 +526,15 @@ const fetchData = (tableName, sqlTableName, page = 1, term = "", agenceId = "All
 
 
 
-fetchData("CustomersSell", "clients", 1, "", "All", "Vendeur");
-fetchData("CustomersBuy", "clients", 1, "", "All", "Acheteur");
-fetchData("Vehicles", "vehicules", 1);
+document.addEventListener('DOMContentLoaded', () => {
+    const spinner = document.getElementById("loadingSpinner");
+    spinner.classList.remove("hidden");
+    setTimeout(() => {
+        fetchData("CustomersSell", "clients", 1, "", "All", "Vendeur");
+        fetchData("CustomersBuy", "clients", 1, "", "All", "Acheteur");
+        fetchData("Vehicles", "vehicules", 1);
+    }, 200)
+    .finally(() => {
+        spinner.classList.add("hidden");
+    });;
+});
