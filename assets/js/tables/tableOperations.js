@@ -11,11 +11,11 @@ export const selectAgence = (tableName, agenceSelectId, sqlTableName, clientType
 };
 
 export const searchTable = (tableNameSQL, searchBarId) => {
-    const spinner = document.getElementById("loadingSpinner");
-    showSpinner(spinner);
-
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(async () => {
+        const spinner = document.getElementById("loadingSpinner");
+        showSpinner(spinner);
+
         const searchTerm = document.getElementById(searchBarId).value.toLowerCase();
         const tableName = getTableName(tableNameSQL);
         currentPage = 1;

@@ -5,7 +5,6 @@
 
     require_once 'database.php';
     require_once 'src/functions/selectSQL.php';
-    require_once 'src/functions/generateTable.php';
     
     $DBB = new ConnexionDB();
     $DB = $DBB->openConnection();
@@ -24,25 +23,13 @@
         'PDF'
     ];
 
-    $resAgence = selectAllAgence($DB);
-    $resAgence = $resAgence->fetchAll();
-    
-    $resClientVendeur = selectAllClientVendeur($DB);
-    $resClientVendeur = $resClientVendeur->fetchAll();
-
-    $resClientAcheteur = selectAllClientAcheteur($DB);
-    $resClientAcheteur = $resClientAcheteur->fetchAll();
-
-    $resVehicule = selectAllVehicle($DB);
-    $resVehicule = $resVehicule->fetchAll();
-
-    $resVehiculeAndCoTitulaire = $DB->prepare("SELECT * FROM vehicules LEFT JOIN cotitulaires ON cotitulaires.cotitulaires_vehicules_id = vehicules.vehicules_id ORDER BY vehicules.vehicules_immatriculation ASC");
-    $resVehiculeAndCoTitulaire->execute();
-    $resVehiculeAndCoTitulaire = $resVehiculeAndCoTitulaire->fetchAll();
-
     if($_SESSION['user']['role'] == 1) { $tableauOnglets[] = 'Excel'; }
 
+    $resAgence = selectAllAgence($DB);
+    $resAgence = $resAgence->fetchAll();
     $DBB->closeConnection();
+
+
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         extract($_POST);
