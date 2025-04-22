@@ -4,10 +4,11 @@ let currentPage = 1;
 let totalPages = 1;
 let editingCell = null;
 let searchTimeout;
+let selectedAgenceId = "All";
 
 export const selectAgence = (tableName, agenceSelectId, sqlTableName, clientType) => {
-    const agenceId = document.getElementById(agenceSelectId).value;
-    fetchDataAndUpdateTable(tableName, sqlTableName, 1, "", agenceId, clientType);
+    selectedAgenceId = document.getElementById(agenceSelectId).value;
+    fetchDataAndUpdateTable(tableName, sqlTableName, 1, "", selectedAgenceId, clientType);
 };
 
 export const searchTable = (tableNameSQL, searchBarId) => {
@@ -116,7 +117,7 @@ export const updatePaginationControls = (tableName) => {
 
 export const changePage = (tableName, sqlTableName, page) => {
     const typeClient = tableName === "Vehicles" ? "" : tableName === "CustomersSell" ? "Vendeur" : "Acheteur";
-    fetchDataAndUpdateTable(tableName, sqlTableName, page, "", "All", typeClient);
+    fetchDataAndUpdateTable(tableName, sqlTableName, page, "", selectedAgenceId, typeClient);
 };
 
 export const editCell = (td, field, id, tableName) => {
@@ -238,7 +239,7 @@ const updateDatabase = (item, oldUniqueValue, tableName) => {
     });
 };
 
-export const fetchDataAndUpdateTable = async (tableName, sqlTableName, page = 1, term = "", agenceId = "All", clientType = "") => {
+export const fetchDataAndUpdateTable = async (tableName, sqlTableName, page = 1, term = "", agenceId = selectedAgenceId, clientType = "") => {
     currentPage = page;
 
     const spinner = document.getElementById("loadingSpinner");
