@@ -68,25 +68,6 @@
     $resVehicule->execute([$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();
 
-    $importVarPDF = [
-        $resClient['clients_nom'] . ' ' . $resClient['clients_prenom'],
-        $resClient['clients_rue'] . ' ' . $resClient['clients_ville'] . ' ' . $resClient['clients_cp'],
-        $resClient['clients_numero_cni'],
-        $resVehicule['vehicules_marque'],
-        $resVehicule['vehicules_model'],
-        $resVehicule['vehicules_type'],
-        $resVehicule['vehicules_immatriculation'],
-        $_POST['kilometrage'],
-        $resVehicule['vehicules_couleur'],
-        $_POST['puissanceFiscale'],
-        $resVehicule['vehicules_numero_serie'],
-        date('d/m/Y', strtotime($resVehicule['vehicules_date_mise_en_circu'])),
-        date('d/m/Y', strtotime($_POST['dernierControleTechnique'])),
-        $_POST['pvNum'],
-        $resAgence['agence_nom'],
-        date('d/m/Y')
-    ];
-
     $pdf = new \setasign\Fpdi\Fpdi();
 
     $pageCount = $pdf->setSourceFile('../../documents/information_sell.pdf');
@@ -95,23 +76,23 @@
     $pdf->addPage();
     $pdf->useImportedPage($pageId, 5, 10, 200);
 
-    $importCoordinates = [
-        ['x' => 55, 'y' => 71.5], // Nom et prénom Client
-        ['x' => 55, 'y' => 76], // Adresse Client
-        ['x' => 63, 'y' => 81], // Numéro CNI
-        ['x' => 45, 'y' => 101], // Marque véhicule
-        ['x' => 45, 'y' => 105.5], // Modèle véhicule
-        ['x' => 45, 'y' => 110], // Type
-        ['x' => 58, 'y' => 115], // Immatriculation véhicule
-        ['x' => 51, 'y' => 120], // Kilomètrage véhicule
-        ['x' => 135, 'y' => 100.5], // Couleur véhicule
-        ['x' => 150, 'y' => 105.5], // Puissance véhicule
-        ['x' => 140, 'y' => 110], // Numéro de série
-        ['x' => 140, 'y' => 115], // Mise en circulation véhicule
-        ['x' => 125, 'y' => 159.5], // Date dernier contrôle technique
-        ['x' => 155, 'y' => 159.5], // PV N°
-        ['x' => 52, 'y' => 219.5], // Nom de l'agence
-        ['x' => 88, 'y' => 219.5] // Date du jour
+    $importPDFData = [
+        [ 'value' => $resClient['clients_nom'] . ' ' . $resClient['clients_prenom'], 'x' => 55, 'y' => 71.5 ],
+        [ 'value' => $resClient['clients_rue'] . ' ' . $resClient['clients_ville'] . ' ' . $resClient['clients_cp'], 'x' => 55, 'y' => 76 ],
+        [ 'value' => $resClient['clients_numero_cni'], 'x' => 63, 'y' => 81 ],
+        [ 'value' => $resVehicule['vehicules_marque'], 'x' => 45, 'y' => 101 ],
+        [ 'value' => $resVehicule['vehicules_model'], 'x' => 45, 'y' => 105.5 ],
+        [ 'value' => $resVehicule['vehicules_type'], 'x' => 45, 'y' => 110 ],
+        [ 'value' => $resVehicule['vehicules_immatriculation'], 'x' => 58, 'y' => 115 ],
+        [ 'value' => $_POST['kilometrage'], 'x' => 51, 'y' => 120 ],
+        [ 'value' => $resVehicule['vehicules_couleur'], 'x' => 135, 'y' => 100.5 ],
+        [ 'value' => $_POST['puissanceFiscale'], 'x' => 150, 'y' => 105.5 ],
+        [ 'value' => $resVehicule['vehicules_numero_serie'], 'x' => 140, 'y' => 110 ],
+        [ 'value' => date('d/m/Y', strtotime($resVehicule['vehicules_date_mise_en_circu'])), 'x' => 140, 'y' => 115 ],
+        [ 'value' => date('d/m/Y', strtotime($_POST['dernierControleTechnique'])), 'x' => 125, 'y' => 159.5 ],
+        [ 'value' => $_POST['pvNum'], 'x' => 155, 'y' => 159.5 ], 
+        [ 'value' => $resAgence['agence_nom'], 'x' => 52, 'y' => 219.5 ],
+        [ 'value' => date('d/m/Y'), 'x' => 88, 'y' => 219.5 ]
     ];
 
     foreach ($importVarPDF as $index => $valPDF) {

@@ -97,29 +97,29 @@
     $pdf->addPage();
     $pdf->useImportedPage($pageId, 5, 10, 200);
 
-    $importCoordinates = [
-        ['x' => 52, 'y' => 87],  // nom prénom
-        ['x' => 39, 'y' => 96],  // jour anniv
-        ['x' => 47, 'y' => 96],  // mois anniv
-        ['x' => 55, 'y' => 96],  // annee anniv
-        ['x' => 72, 'y' => 96],  // lieu naissance
-        ['x' => 48, 'y' => 104],  // adresse
-        ['x' => 82, 'y' => 121],  // agence
-        ['x' => 58, 'y' => 147],  // marque model
-        ['x' => 50, 'y' => 155],  // immat
-        ['x' => 27, 'y' => 199],  // agence
-        ['x' => 65, 'y' => 199],  // day
-        ['x' => 74, 'y' => 199],  // month
-        ['x' => 82, 'y' => 199]  // year
+    $importPDFData = [
+        [ 'value' => strtoupper($resClient['clients_nom']) . ' ' . $resClient['clients_prenom'], 'x' => 52, 'y' => 87 ],
+        [ 'value' => $day, 'x' => 39, 'y' => 96 ],
+        [ 'value' => $month, 'x' => 47, 'y' => 96 ],
+        [ 'value' => $year, 'x' => 55, 'y' => 96 ],
+        [ 'value' => $resClient['clients_lieu_naissance'], 'x' => 72, 'y' => 96 ],
+        [ 'value' => $resClient['clients_rue'] . ' ' . ucfirst($resClient['clients_ville']) . ' ' . $resClient['clients_cp'], 'x' => 48, 'y' => 104 ],
+        [ 'value' => $resAgence['agence_nom'], 'x' => 82, 'y' => 121 ],
+        [ 'value' => $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'], 'x' => 58, 'y' => 147 ],
+        [ 'value' => $resVehicule['vehicules_immatriculation'], 'x' => 50, 'y' => 155 ],
+        [ 'value' => $resAgence['agence_nom'], 'x' => 27, 'y' => 199 ],
+        [ 'value' => date("d"), 'x' => 65, 'y' => 199 ],
+        [ 'value' => date("m"), 'x' => 74, 'y' => 199 ],
+        [ 'value' => date("Y"), 'x' => 82, 'y' => 199 ]
     ];
 
-    foreach ($importVarPDF as $index => $valPDF) {
+    foreach ($importPDFData as $data) {
         $pdf->SetFont('Helvetica');
         $pdf->SetTextColor(0, 0, 0);
         $pdf->SetFontSize(11);
-        $pdf->SetXY($importCoordinates[$index]['x'], $importCoordinates[$index]['y']);
-        $valPDF = mb_convert_encoding($valPDF, 'windows-1252', 'UTF-8');
-        $pdf->Write(0, $valPDF);
+        $pdf->SetXY($data['x'], $data['y']);
+        $value = mb_convert_encoding($data['value'], 'windows-1252', 'UTF-8');
+        $pdf->Write(0, $value);
     }
 
     $folder = "../../storage/signature_auth/";

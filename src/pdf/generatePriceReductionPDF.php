@@ -63,18 +63,6 @@
     $resVehicule->execute([$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();
 
-    $importVarPDF = [
-        strtoupper($resClient['clients_nom']) . ' ' . $resClient['clients_prenom'],
-        $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
-        $resVehicule['vehicules_immatriculation'],
-        $_POST['netVendeur'],
-        $resAgence['agence_nom'],
-        $resAgence['agence_nom'],
-        date("d"),
-        date("m"),
-        date("Y")
-    ];
-
     $pdf = new \setasign\Fpdi\Fpdi();
 
     $pageCount = $pdf->setSourceFile('../../documents/price_reduction_agreement.pdf');
@@ -83,25 +71,25 @@
     $pdf->addPage();
     $pdf->useImportedPage($pageId, 5, 10, 200);
 
-    $importCoordinates = [
-        ['x' => 52, 'y' => 91],  // nom prénom
-        ['x' => 70, 'y' => 102],  // marque model
-        ['x' => 45, 'y' => 112],  // immat
-        ['x' => 118, 'y' => 123],  // prix net vendeur
-        ['x' => 83, 'y' => 134],  // agence
-        ['x' => 23, 'y' => 161],  // agence
-        ['x' => 68, 'y' => 161],  // day
-        ['x' => 78.5, 'y' => 161],  // month
-        ['x' => 91, 'y' => 161]  // year
+    $importPDFData = [
+        [ 'value' => strtoupper($resClient['clients_nom']) . ' ' . $resClient['clients_prenom'], 'x' => 52, 'y' => 91 ],
+        [ 'value' => $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'], 'x' => 70, 'y' => 102 ],
+        [ 'value' => $resVehicule['vehicules_immatriculation'], 'x' => 45, 'y' => 112 ],
+        [ 'value' => $_POST['netVendeur'], 'x' => 118, 'y' => 123 ],
+        [ 'value' => $resAgence['agence_nom'], 'x' => 83, 'y' => 134 ],
+        [ 'value' => $resAgence['agence_nom'], 'x' => 23, 'y' => 161 ],
+        [ 'value' => date("d"), 'x' => 68, 'y' => 161 ],
+        [ 'value' => date("m"), 'x' => 78.5, 'y' => 161 ],
+        [ 'value' => date("Y"), 'x' => 91, 'y' => 161 ]
     ];
 
-    foreach ($importVarPDF as $index => $valPDF) {
+    foreach ($importPDFData as $data) {
         $pdf->SetFont('Helvetica');
         $pdf->SetTextColor(0, 0, 0);
         $pdf->SetFontSize(11);
-        $pdf->SetXY($importCoordinates[$index]['x'], $importCoordinates[$index]['y']);
-        $valPDF = mb_convert_encoding($valPDF, 'windows-1252', 'UTF-8');
-        $pdf->Write(0, $valPDF);
+        $pdf->SetXY($data['x'], $data['y']);
+        $value = mb_convert_encoding($data['value'], 'windows-1252', 'UTF-8');
+        $pdf->Write(0, $value);
     }
 
     $folder = "../../storage/price_reduction/";

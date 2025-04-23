@@ -144,72 +144,6 @@
         $cashSentinel = $prixTotalHCG;
     }
 
-
-    // ====== Valeur qui seront insert dans le PDF ====== //
-    $importVarPDF = [
-        strtoupper($resClient['clients_nom']) . ' ' . $resClient['clients_prenom'],
-        $resClient['clients_rue'],
-        $resClient['clients_cp'],
-        $resClient['clients_ville'],
-        $resClient['clients_telephone'],
-        $resClient['clients_email'],
-        $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
-        $resVehicule['vehicules_immatriculation'],
-        $_POST['PrixVehicule'],
-        $fraisMiseEnRoute,
-        $_POST['garantieMecaniqueText'],
-        $_POST['livraison'],
-        $prixTotalHCG,
-        $_POST['fraisGC'],
-        $resAgence['agence_nom'],
-        date('d/m/Y'),
-        $_POST['depot_arrhes_input'] . " €",
-        $resAgence['agence_iban'],
-        $resAgence['agence_bic'],
-        date('d/m/Y', strtotime($resVehicule['vehicules_date_mise_en_circu'])),
-        $resAgence['agence_nom'],
-        $resAgence['agence_nom'],
-        $resAgence['agence_rue'],
-        $resAgence['agence_cp'] . " " . $resAgence['agence_ville'],
-        $resAgence['agence_telephone'],
-        $resAgence['agence_mail'],
-        "ARR " . $resVehicule['vehicules_immatriculation'],
-        ": " . $cashSentinel . " € TTC",
-    ];
-    
-
-    // ====== Coordonnées pour le PDF ====== //
-    $importCoordinates = [
-        ['x' => 103, 'y' => 52], //nom prénom
-        ['x' => 93, 'y' => 58], //adresse
-        ['x' => 94, 'y' => 64], //cp
-        ['x' => 122, 'y' => 64], //ville
-        ['x' => 85, 'y' => 71], //telephone
-        ['x' => 130, 'y' => 71], //email
-        ['x' => 48, 'y' => 88], //marque model
-        ['x' => 42, 'y' => 93.5], //immat
-        ['x' => 41, 'y' => 183], //prix véhicule
-        ['x' => 45, 'y' => 190], //frais mise à la route
-        ['x' => 45, 'y' => 196], //graentie méca
-        ['x' => 29, 'y' => 202], //Livraison
-        ['x' => 65, 'y' => 217], //Prix total HCG
-        ['x' => 65, 'y' => 223], //Frais CG
-        ['x' => 20, 'y' => 263.5], //Agence
-        ['x' => 70, 'y' => 263.5], // Date
-        ['x' => 167, 'y' => 183], // Montant arrhes
-        ['x' => 128, 'y' => 149], // IBAN
-        ['x' => 128, 'y' => 153], // BIC
-        ['x' => 130, 'y' => 93.5], // Mise en circulation
-        ['x' => 132, 'y' => 269.5], // Agence Nom
-        ['x' => 49, 'y' => 43], // Agence Nom
-        ['x' => 27, 'y' => 48], // Agence Adresse
-        ['x' => 27, 'y' => 53], // Agence CP / Ville
-        ['x' => 26, 'y' => 64], // Agence Téléphone
-        ['x' => 26, 'y' => 59], // Agence Email
-        ['x' => 128, 'y' => 145], // Arrhes
-        ['x' => 143, 'y' => 217.5], // CashSentinel
-    ];
-
     // ====== Préparation du PDF ====== //
     $pdf = new \setasign\Fpdi\Fpdi();
 
@@ -219,20 +153,52 @@
     $pdf->addPage();
     $pdf->useImportedPage($pageId, 5, 10, 200);
 
+    // ====== Valeur qui seront insert dans le PDF ====== //
+    $importPDFData = [
+        [ 'value' => strtoupper($resClient['clients_nom']) . ' ' . $resClient['clients_prenom'], 'x' => 103, 'y' => 52 ],
+        [ 'value' => $resClient['clients_rue'], 'x' => 93, 'y' => 58 ],
+        [ 'value' => $resClient['clients_cp'], 'x' => 94, 'y' => 64 ],
+        [ 'value' => $resClient['clients_ville'], 'x' => 122, 'y' => 64 ],
+        [ 'value' => $resClient['clients_telephone'], 'x' => 85, 'y' => 71 ],
+        [ 'value' => $resClient['clients_email'], 'x' => 130, 'y' => 71 ],
+        [ 'value' => $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'], 'x' => 48, 'y' => 88 ],
+        [ 'value' => $resVehicule['vehicules_immatriculation'], 'x' => 42, 'y' => 93.5 ],
+        [ 'value' => $_POST['PrixVehicule'], 'x' => 41, 'y' => 183 ],
+        [ 'value' => $fraisMiseEnRoute, 'x' => 45, 'y' => 190 ],
+        [ 'value' => $_POST['garantieMecaniqueText'], 'x' => 45, 'y' => 196 ],
+        [ 'value' => $_POST['livraison'], 'x' => 29, 'y' => 202 ],
+        [ 'value' => $prixTotalHCG, 'x' => 65, 'y' => 217 ],
+        [ 'value' => $_POST['fraisGC'], 'x' => 65, 'y' => 223 ],
+        [ 'value' => $resAgence['agence_nom'], 'x' => 20, 'y' => 263.5 ],
+        [ 'value' => date('d/m/Y'), 'x' => 70, 'y' => 263.5 ],
+        [ 'value' => $_POST['depot_arrhes_input'] . " €", 'x' => 167, 'y' => 183 ],
+        [ 'value' => $resAgence['agence_iban'], 'x' => 128, 'y' => 149 ],
+        [ 'value' => $resAgence['agence_bic'], 'x' => 128, 'y' => 153 ],
+        [ 'value' => date('d/m/Y', strtotime($resVehicule['vehicules_date_mise_en_circu'])), 'x' => 130, 'y' => 93.5 ],
+        [ 'value' => $resAgence['agence_nom'], 'x' => 132, 'y' => 269.5 ],
+        [ 'value' => $resAgence['agence_nom'], 'x' => 49, 'y' => 43 ],
+        [ 'value' => $resAgence['agence_rue'], 'x' => 27, 'y' => 48 ],
+        [ 'value' => $resAgence['agence_cp'] . " " . $resAgence['agence_ville'], 'x' => 27, 'y' => 53 ],
+        [ 'value' => $resAgence['agence_telephone'], 'x' => 26, 'y' => 64 ],
+        [ 'value' => $resAgence['agence_mail'], 'x' => 26, 'y' => 59 ],
+        [ 'value' => "ARR " . $resVehicule['vehicules_immatriculation'], 'x' => 128, 'y' => 145 ],
+        [ 'value' => ": " . $cashSentinel . " € TTC", 'x' => 143, 'y' => 217.5 ]
+    ];
+
+    foreach ($importPDFData as $data) {
+        $pdf->SetFont('Helvetica');
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->SetFontSize(10);
+        $pdf->SetXY($data['x'], $data['y']);
+        $value = mb_convert_encoding($data['value'], 'windows-1252', 'UTF-8');
+        $pdf->Write(0, $value);
+    }
+
     foreach ($crossToCreate as $index) {
         $pdf->SetFont('Helvetica');
         $pdf->SetTextColor(0, 0, 0);
         $pdf->SetXY($index['x'], $index['y']);
         $pdf->Write(0, 'X');
-    }
-
-    foreach ($importVarPDF as $index => $valPDF) {
-        $pdf->SetFont('Helvetica');
-        $pdf->SetFontSize(10);
-        $pdf->SetTextColor(0, 0, 0);
-        $pdf->SetXY($importCoordinates[$index]['x'], $importCoordinates[$index]['y']);
-        $valPDF = mb_convert_encoding($valPDF, 'windows-1252', 'UTF-8');
-        $pdf->Write(0, $valPDF);
     }
 
     $folder = "../../storage/reservations/";

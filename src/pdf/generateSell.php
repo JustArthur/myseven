@@ -16,17 +16,17 @@
         echo '
             <script>
                 alert("Erreur 403 : Accès interdit. Veuillez vous connecter pour accéder à cette page.");
-                window.location.href = "../../";
+                window.location.href = "../../login.php";
             </script>
         ';
         exit();
     }
 
-    if (empty($_POST['idClient']) || empty($_POST['immatCar'])) {
+    if (empty($_POST['idClientVendeur']) || empty($_POST['idClientAcheteur']) || empty($_POST['immatCar'])) {
         echo '
             <script>
-                alert("Impossible de trouver le client ou la plaque d\'immatriculation est invalide.");
-                window.location.href = "../../";
+                alert("Impossible de trouver le client acheteur ou vendeur, ou la plaque d\'immatriculation est invalide.");
+                window.close()
             </script>
         ';
         exit();
@@ -47,7 +47,7 @@
         echo '
             <script>
                 alert("Impossible de trouver le client acheteur ou vendeur, ou la plaque d\'immatriculation est invalide.");
-                window.location.href = "../../";
+                window.close()
             </script>
         ';
         exit();
@@ -79,23 +79,6 @@
         $cotitulairesString = "";
     }
 
-    $importVarPDF = [
-        $resVehicule['vehicules_marque'],
-        $resVehicule['vehicules_model'],
-        date('d/m/Y', strtotime($resVehicule['vehicules_date_mise_en_circu'])),
-        $resVehicule['vehicules_couleur'],
-        $resVehicule['vehicules_immatriculation'],
-        $resVehicule['vehicules_kilometrage'],
-        $resClientVendeur['clients_nom'] . ' ' . $resClientVendeur['clients_telephone'],
-        $_POST['notesClientAcheteur'],
-        $resClientAcheteur['clients_nom'] . ' ' . $resClientAcheteur['clients_telephone'],
-        $_POST['notesClientVendeur'],
-        ": " . $resClientVendeur['clients_nom'] . ' ' . $resClientVendeur['clients_prenom'],
-        ": " . $cotitulairesString,
-        date('d/m/Y', strtotime($_POST['dateCashSentinel'])),
-        date('d/m/Y', strtotime($_POST['dateLivraisonPossible'])),
-    ];
-
     $pdf = new \setasign\Fpdi\Fpdi();
 
     $pageCount = $pdf->setSourceFile('../../documents/sell.pdf');
@@ -105,106 +88,76 @@
     $pdf->useImportedPage($pageId, 5, 10, 200);
 
     $crossToInsert = [];
-
-    switch($_POST['garantie']) {
-        case 'allRisk':
-            $crossToInsert[] = ['x' => 42, 'y' => 223.5];
-            break;
-
-        case 'compelete':
-            $crossToInsert[] = ['x' => 66.5, 'y' => 223.5];
-            break;
-
-        case 'essentiel':
-            $crossToInsert[] = ['x' => 87, 'y' => 223.5];
-            break;
-
-        case 'mbp':
-            $crossToInsert[] = ['x' => 108.5, 'y' => 223.5];
-            break;
+    
+    switch ($_POST['garantie']) {
+        case 'allRisk': $crossToInsert[] = ['x' => 42, 'y' => 223.5]; break;
+        case 'compelete': $crossToInsert[] = ['x' => 66.5, 'y' => 223.5]; break;
+        case 'essentiel': $crossToInsert[] = ['x' => 87, 'y' => 223.5]; break;
+        case 'mbp': $crossToInsert[] = ['x' => 108.5, 'y' => 223.5]; break;
     }
 
-    switch($_POST['askGarantieConstructeur']) {
-        case 'yes':
-            $crossToInsert[] = ['x' => 42, 'y' => 228];
-            break;
-
-        case 'no':
-            $_POST['dureeGarantieConstructeur'] = 'none';
+    if ($_POST['askGarantieConstructeur'] === 'yes') {
+        $crossToInsert[] = ['x' => 42, 'y' => 228];
+    } else {
+        $_POST['dureeGarantieConstructeur'] = 'none';
     }
 
-    switch($_POST['dureeGarantieConstructeur']) {
-        case '3mois':
-            $crossToInsert[] = ['x' => 108.5, 'y' => 228];
-            break;
-
-        case '6mois':
-            $crossToInsert[] = ['x' => 124.5, 'y' => 228];
-            break;
-
-        case '12mois':
-            $crossToInsert[] = ['x' => 140, 'y' => 228];
-            break;
-
-        case '24mois':
-            $crossToInsert[] = ['x' => 157.5, 'y' => 228];
-            break;
+    switch ($_POST['dureeGarantieConstructeur']) {
+        case '3mois': $crossToInsert[] = ['x' => 108.5, 'y' => 228]; break;
+        case '6mois': $crossToInsert[] = ['x' => 124.5, 'y' => 228]; break;
+        case '12mois': $crossToInsert[] = ['x' => 140, 'y' => 228]; break;
+        case '24mois': $crossToInsert[] = ['x' => 157.5, 'y' => 228]; break;
     }
 
-    switch($_POST['typePaiement']) {
-        case 'arrhes':
-            $_POST['avanceInter'] = 'none';
-            break;
-        
-        case 'avanceInter':
-            $_POST['arrhes'] = 'none';
-            break;
+    switch ($_POST['typePaiement']) {
+        case 'arrhes': $_POST['avanceInter'] = 'none'; break;
+        case 'avanceInter': $_POST['arrhes'] = 'none'; break;
     }
 
-    switch($_POST['arrhes']) {
-        case 'CB':
-            $crossToInsert[] = ['x' => 149, 'y' => 244];
-            break;
-
-        case 'cheque':
-            $crossToInsert[] = ['x' => 169, 'y' => 244];
-            break;
+    switch ($_POST['arrhes']) {
+        case 'CB': $crossToInsert[] = ['x' => 149, 'y' => 244]; break;
+        case 'cheque': $crossToInsert[] = ['x' => 169, 'y' => 244]; break;
     }
 
-    switch($_POST['avanceInter']) {
-        case 'virement':
-            $crossToInsert[] = ['x' => 141, 'y' => 253.5];
-            break;
-
-        case 'cash':
-            $crossToInsert[] = ['x' => 158.5, 'y' => 253.5];
-            break;
+    switch ($_POST['avanceInter']) {
+        case 'virement': $crossToInsert[] = ['x' => 141, 'y' => 253.5]; break;
+        case 'cash': $crossToInsert[] = ['x' => 158.5, 'y' => 253.5]; break;
     }
 
-    $importCoordinates = [
-        ['x' => 45, 'y' => 55], // Marque
-        ['x' => 45, 'y' => 60], // Modèle
-        ['x' => 45, 'y' => 65], // Date de mise en circulation
-        ['x' => 135, 'y' => 55], // Couleur
-        ['x' => 135, 'y' => 60], // Immatriculation
-        ['x' => 135, 'y' => 65], // Kilométrage
-        ['x' => 80, 'y' => 136.5], // Nom et téléphone du vendeur
-        ['x' => 22, 'y' => 141.5], // Notes vendeur
-        ['x' => 80, 'y' => 147.5], // Nom et téléphone de l'acheteur
-        ['x' => 22, 'y' => 153], // Notes acheteur
-        ['x' => 65, 'y' => 163], // Carte grise titulaire
-        ['x' => 70, 'y' => 169], // Carte grise co-titulaire
-        ['x' => 55, 'y' => 201.5], // Cashsentinel
-        ['x' => 135, 'y' => 201.5], // Date de livraison possible
+    $importPDFData = [
+        ['value' => $resVehicule['vehicules_marque'], 'x' => 45, 'y' => 55],
+        ['value' => $resVehicule['vehicules_model'], 'x' => 45, 'y' => 60],
+        ['value' => date('d/m/Y', strtotime($resVehicule['vehicules_date_mise_en_circu'])), 'x' => 45, 'y' => 65],
+        ['value' => $resVehicule['vehicules_couleur'], 'x' => 135, 'y' => 55],
+        ['value' => $resVehicule['vehicules_immatriculation'], 'x' => 135, 'y' => 60],
+        ['value' => $resVehicule['vehicules_kilometrage'], 'x' => 135, 'y' => 65],
+        ['value' => $resClientVendeur['clients_nom'] . ' ' . $resClientVendeur['clients_telephone'], 'x' => 80, 'y' => 136.5],
+        ['value' => $_POST['notesClientAcheteur'], 'x' => 22, 'y' => 141.5],
+        ['value' => $resClientAcheteur['clients_nom'] . ' ' . $resClientAcheteur['clients_telephone'], 'x' => 80, 'y' => 147.5],
+        ['value' => $_POST['notesClientVendeur'], 'x' => 22, 'y' => 153],
+        ['value' => ": " . $resClientVendeur['clients_nom'] . ' ' . $resClientVendeur['clients_prenom'], 'x' => 65, 'y' => 163],
+        ['value' => ": " . $cotitulairesString, 'x' => 70, 'y' => 169],
+        ['value' => date('d/m/Y', strtotime($_POST['dateCashSentinel'])), 'x' => 55, 'y' => 201.5],
+        ['value' => date('d/m/Y', strtotime($_POST['dateLivraisonPossible'])), 'x' => 135, 'y' => 201.5],
+        ['value' => date('d/m/Y'), 'x' => 150, 'y' => 150]
     ];
 
-    foreach ($importVarPDF as $index => $valPDF) {
+    //pnv (prix net vendeur) -> mandat engagement
+    //pvg (prix vente garantie) -> bon de resa
+    //pvv (prix de vente voiture) -> bon de resa
+    //pag () -> à saisir
+    //fmr (frais mise à la route) -> bon de resa
+    //pvcg (prix de vente carte grise) -> bon de resa
+    //Livraison (Prix de livraison) -> bon de rese
+    //Pa livraison -> à saisir, prix d'achat livraison
+
+    foreach ($importPDFData as $item) {
         $pdf->SetFont('Helvetica');
         $pdf->SetTextColor(0, 0, 0);
         $pdf->SetFontSize(11);
-        $pdf->SetXY($importCoordinates[$index]['x'], $importCoordinates[$index]['y']);
-        $valPDF = mb_convert_encoding($valPDF, 'windows-1252', 'UTF-8');
-        $pdf->Write(0, $valPDF);
+        $pdf->SetXY($item['x'], $item['y']);
+        $text = mb_convert_encoding($item['value'], 'windows-1252', 'UTF-8');
+        $pdf->Write(0, $text);
     }
 
     foreach ($crossToInsert as $cross) {

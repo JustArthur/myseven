@@ -88,68 +88,6 @@
         $updateVehicule = $DB->prepare('UPDATE vehicules SET vehicules_origine = ? WHERE vehicules_id = ?');
         $updateVehicule->execute([$_POST['originCar'], $resVehicule['vehicules_id']]);
     }
-    
-
-    //Valeur dans la BDD
-    $importVarPDF = [
-        $formattedId,
-        strtoupper($resUser['utilisateurs_nom']) . " " . $resUser['utilisateurs_prenom'],
-        strtoupper($resClient['clients_nom']) . " " . $resClient['clients_prenom'],
-        $resClient['clients_numero_cni'],
-        $resClient['clients_telephone'],
-        $resVehicule['vehicules_immatriculation'],
-        $resVehicule['vehicules_model'],
-        $resVehicule['vehicules_type_boite'],
-        $resVehicule['vehicules_finition'],
-        $resVehicule['vehicules_nombre_main'],
-        $resVehicule['vehicules_origine'],
-        $resVehicule['vehicules_frais_recent'],
-        $resVehicule['vehicules_frais_prevoir'],
-        $resClient['clients_email'],
-        $resVehicule['vehicules_marque'],
-        $resVehicule['vehicules_puissance'],
-        $resVehicule['vehicules_couleur'],
-        $resVehicule['vehicules_kilometrage'],
-        date('d/m/Y', strtotime($resVehicule['vehicules_date_entretien'])),
-        $_POST['jourVisite'],
-        $_POST['prixVente'],
-        $_POST['raisonVente'],
-        $_POST['delayVenteText'] . " " . $_POST['delayVenteType'],
-        $_POST['prixVenteSouhaite'],
-        ucfirst($resAgence['agence_nom']),
-        date('d/m/Y'),
-        date('d/m/Y', strtotime($resVehicule['vehicules_date_mise_en_circu']))
-    ];
-
-    $importCoordinates = [
-        ['x' => 33, 'y' => 54], //ID
-        ['x' => 132, 'y' => 55], //Collaborateur
-        ['x' => 56, 'y' => 63], //Nom prénom
-        ['x' => 65, 'y' => 79], //numCNI
-        ['x' => 116, 'y' => 87], //tel
-        ['x' => 70, 'y' => 97], //immat
-        ['x' => 43, 'y' => 106], //model
-        ['x' => 43, 'y' => 115], //type boite
-        ['x' => 63, 'y' => 124], //finition
-        ['x' => 60, 'y' => 134], //nbr Mains
-        ['x' => 63, 'y' => 143], //orginCar
-        ['x' => 50, 'y' => 152], //frais recent
-        ['x' => 50, 'y' => 160], //frais prevoir
-        ['x' => 116, 'y' => 79], //email
-        ['x' => 122, 'y' => 97], //marque
-        ['x' => 113, 'y' => 106], //puissance
-        ['x' => 118, 'y' => 115], //couleur
-        ['x' => 115, 'y' => 124], //kilometrage
-        ['x' => 146, 'y' => 134], //date entretien
-        ['x' => 50, 'y' => 87], //jour visite
-        ['x' => 107, 'y' => 172], //prix vente
-        ['x' => 60, 'y' => 180], //raison vente
-        ['x' => 150, 'y' => 180], //delay vente
-        ['x' => 80, 'y' => 193], //prix Vente Souhaite
-        ['x' => 32, 'y' => 254], //Agence nom
-        ['x' => 75, 'y' => 254], //Date du jour
-        ['x' => 135, 'y' => 143] //Mise en circu
-    ];
 
     $pdf = new \setasign\Fpdi\Fpdi();
 
@@ -159,13 +97,43 @@
     $pdf->addPage();
     $pdf->useImportedPage($pageId, 5, 10, 200);
 
-    foreach ($importVarPDF as $index => $valPDF) {
+    $importPDFData = [
+        ['value' => $formattedId, 'x' => 33, 'y' => 54],
+        ['value' => strtoupper($resUser['utilisateurs_nom']) . " " . $resUser['utilisateurs_prenom'], 'x' => 132, 'y' => 55],
+        ['value' => strtoupper($resClient['clients_nom']) . " " . $resClient['clients_prenom'], 'x' => 56, 'y' => 63],
+        ['value' => $resClient['clients_numero_cni'], 'x' => 65, 'y' => 79],
+        ['value' => $resClient['clients_telephone'], 'x' => 116, 'y' => 87],
+        ['value' => $resVehicule['vehicules_immatriculation'], 'x' => 70, 'y' => 97],
+        ['value' => $resVehicule['vehicules_model'], 'x' => 43, 'y' => 106],
+        ['value' => $resVehicule['vehicules_type_boite'], 'x' => 43, 'y' => 115],
+        ['value' => $resVehicule['vehicules_finition'], 'x' => 63, 'y' => 124],
+        ['value' => $resVehicule['vehicules_nombre_main'], 'x' => 60, 'y' => 134],
+        ['value' => $resVehicule['vehicules_origine'], 'x' => 63, 'y' => 143],
+        ['value' => $resVehicule['vehicules_frais_recent'], 'x' => 50, 'y' => 152],
+        ['value' => $resVehicule['vehicules_frais_prevoir'], 'x' => 50, 'y' => 160],
+        ['value' => $resClient['clients_email'], 'x' => 116, 'y' => 79],
+        ['value' => $resVehicule['vehicules_marque'], 'x' => 122, 'y' => 97],
+        ['value' => $resVehicule['vehicules_puissance'], 'x' => 113, 'y' => 106],
+        ['value' => $resVehicule['vehicules_couleur'], 'x' => 118, 'y' => 115],
+        ['value' => $resVehicule['vehicules_kilometrage'], 'x' => 115, 'y' => 124],
+        ['value' => date('d/m/Y', strtotime($resVehicule['vehicules_date_entretien'])), 'x' => 146, 'y' => 134],
+        ['value' => $_POST['jourVisite'], 'x' => 50, 'y' => 87],
+        ['value' => $_POST['prixVente'], 'x' => 107, 'y' => 172],
+        ['value' => $_POST['raisonVente'], 'x' => 60, 'y' => 180],
+        ['value' => $_POST['delayVenteText'] . " " . $_POST['delayVenteType'], 'x' => 150, 'y' => 180],
+        ['value' => $_POST['prixVenteSouhaite'], 'x' => 80, 'y' => 193],
+        ['value' => ucfirst($resAgence['agence_nom']), 'x' => 32, 'y' => 254],
+        ['value' => date('d/m/Y'), 'x' => 75, 'y' => 254],
+        ['value' => date('d/m/Y', strtotime($resVehicule['vehicules_date_mise_en_circu'])), 'x' => 135, 'y' => 143],
+    ];
+
+    foreach ($importPDFData as $item) {
         $pdf->SetFont('Helvetica');
         $pdf->SetTextColor(0, 0, 0);
         $pdf->SetFontSize(10);
-        $pdf->SetXY($importCoordinates[$index]['x'], $importCoordinates[$index]['y']);
-        $valPDF = mb_convert_encoding($valPDF, 'windows-1252', 'UTF-8');
-        $pdf->Write(0, $valPDF);
+        $pdf->SetXY($item['x'], $item['y']);
+        $text = mb_convert_encoding($item['value'], 'windows-1252', 'UTF-8');
+        $pdf->Write(0, $text);
     }
 
     $folder = "../../storage/sale_mandates/";

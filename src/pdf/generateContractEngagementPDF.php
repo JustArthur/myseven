@@ -63,16 +63,6 @@
     $resVehicule->execute([$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();
 
-    $importVarPDF = [
-        strtoupper($resClient['clients_nom']) . ' ' . $resClient['clients_prenom'],
-        $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'],
-        $resVehicule['vehicules_immatriculation'],
-        $resAgence['agence_nom'],
-        $_POST['netVendeur'],
-        $resAgence['agence_nom'],
-        date('d/m/Y')
-    ];
-
     $pdf = new \setasign\Fpdi\Fpdi();
 
     $pageCount = $pdf->setSourceFile('../../documents/contract_engagement.pdf');
@@ -81,23 +71,23 @@
     $pdf->addPage();
     $pdf->useImportedPage($pageId, 5, 10, 200);
 
-    $importCoordinates = [
-        ['x' => 51, 'y' => 103], //Nom prénom
-        ['x' => 135, 'y' => 103], //Marque Model
-        ['x' => 48, 'y' => 109], //Immatriculation
-        ['x' => 56, 'y' => 115.5], //Agence
-        ['x' => 147, 'y' => 115.5], //Montant Net
-        ['x' => 75, 'y' => 157.5], //Agence
-        ['x' => 115, 'y' => 157.5], //Date
+    $importPDFData = [
+        [ 'value' => strtoupper($resClient['clients_nom']) . ' ' . $resClient['clients_prenom'], 'x' => 51, 'y' => 103 ],
+        [ 'value' => $resVehicule['vehicules_marque'] . ' ' . $resVehicule['vehicules_model'], 'x' => 135, 'y' => 103 ],
+        [ 'value' => $resVehicule['vehicules_immatriculation'], 'x' => 48, 'y' => 109 ],
+        [ 'value' => $resAgence['agence_nom'], 'x' => 56, 'y' => 115.5 ],
+        [ 'value' => $_POST['netVendeur'], 'x' => 147, 'y' => 115.5 ],
+        [ 'value' => $resAgence['agence_nom'], 'x' => 75, 'y' => 157.5 ],
+        [ 'value' => date('d/m/Y'), 'x' => 115, 'y' => 157.5 ]
     ];
 
-    foreach ($importVarPDF as $index => $valPDF) {
+    foreach ($importPDFData as $data) {
         $pdf->SetFont('Helvetica');
         $pdf->SetTextColor(0, 0, 0);
         $pdf->SetFontSize(11);
-        $pdf->SetXY($importCoordinates[$index]['x'], $importCoordinates[$index]['y']);
-        $valPDF = mb_convert_encoding($valPDF, 'windows-1252', 'UTF-8');
-        $pdf->Write(0, $valPDF);
+        $pdf->SetXY($data['x'], $data['y']);
+        $value = mb_convert_encoding($data['value'], 'windows-1252', 'UTF-8');
+        $pdf->Write(0, $value);
     }
 
     $folder = "../../storage/contract_engagement/";

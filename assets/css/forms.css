@@ -351,6 +351,31 @@ textarea:focus {
     border: 1px solid var(--primary-color);
 }
 
+.form-step {
+    display: none;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+#step-1 {
+    display: flex;
+}
+
+.input_box.button {
+    flex-direction: row;
+    gap: 5px;
+}
+
+.input_box.button .submit_btn.outline {
+    background-color: var(--white);
+    border: 1px solid var(--primary-color);
+    color: var(--secondary-text);
+}
+
+.input_box.button .submit_btn.outline:hover {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
 
 
 @media only screen and (max-width: 700px) {
