@@ -12,7 +12,7 @@
     $error_message = [];
 
     if(isset($_SESSION['user']['agence_id']) && $_SESSION['user']['agence_id']) {
-        header('Location: index.php');
+        header('Location: ./');
         exit();
     }
 
@@ -48,7 +48,7 @@
                 'role' => htmlspecialchars($getUser['utilisateurs_role'], ENT_QUOTES)
             ];
 
-            header('Location: index.php');
+            header('Location: ./');
             exit;
         }
     }
@@ -81,7 +81,6 @@
                 ];
             }
     
-            //Si le mot de passe est correct, on créer une session PHP et un cookie
             if ($valid) {
                 $getUser = selectAllUsersInfoWhereId(htmlspecialchars($identifiant, ENT_QUOTES), $DBB->openConnection());
                 $getUser = $getUser->fetch();
@@ -110,7 +109,7 @@
                     setcookie('user_session', $_SESSION['user']['identifiant'], time() + (86400 * 30), "/", "", false, true);
                     $DBB->closeConnection();
     
-                    header('Location: index.php');
+                    header('Location: ./');
                     exit;
                 }
 

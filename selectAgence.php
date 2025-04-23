@@ -9,11 +9,11 @@
     require_once 'src/functions/selectSQL.php';
 
     if(empty($_SESSION['user'])) {
-        header('Location: index.php');
+        header('Location: login.php');
     }
 
     if(isset($_SESSION['user']['agence_id'])) {
-        header('Location: index.php');
+        header('Location: ./');
         exit();
     }
 
@@ -35,7 +35,7 @@
             setcookie('user_session', $_SESSION['user']['identifiant'], time() + (86400 * 30), "/", "", false, true);
             $DBB->closeConnection();
     
-            header('Location: index.php');
+            header('Location: ./');
             exit;
         }
     }
