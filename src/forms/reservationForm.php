@@ -7,8 +7,13 @@
 
     require_once '../../database.php';
 
-    if(!isset($_SESSION['user']['role']) || empty($_COOKIE['user_session'])) {
-        header('Location: ../../login.php');
+    if (!isset($_SESSION['user']) || empty($_COOKIE['user_session']) || empty($_SESSION['user']['agence_id'])) {
+        echo '
+            <script>
+                alert("Erreur 403 : Accès interdit. Veuillez vous connecter pour accéder à cette page.");
+                window.location.href = "../../";
+            </script>
+        ';
         exit();
     }
 
@@ -26,13 +31,23 @@
         $resClient = $resClient->fetch();
         
     } else {
-        header('Location: ../../index.php');
+        echo '
+            <script>
+                alert("Impossible de trouver le client");
+                window.location.href = "../../";
+            </script>
+        ';
         exit();
     }
 
 
     if(!$resClient || empty($_POST['immatCar'])) {
-        header('Location: ../../index.php');
+        echo '
+            <script>
+                alert("Impossible de trouver le client ou la plaque d\'immatriculation est invalide.");
+                window.location.href = "../../";
+            </script>
+        ';
         exit();
     }
 
@@ -174,5 +189,6 @@
         });
 
     </script>
+    <script src="../../assets/js/redirectForm.js"></script>
 </body>
 </html>

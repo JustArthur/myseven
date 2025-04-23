@@ -12,8 +12,23 @@
     require_once '../functions/createFolderNextCloud.php';
     require_once '../functions/cleanValues.php';
 
-    if(empty($_SESSION['user']) || empty($_COOKIE['user_session'])) {
-        header('Location: ../../login.php');
+    if (!isset($_SESSION['user']) || empty($_COOKIE['user_session']) || empty($_SESSION['user']['agence_id'])) {
+        echo '
+            <script>
+                alert("Erreur 403 : Accès interdit. Veuillez vous connecter pour accéder à cette page.");
+                window.location.href = "../../";
+            </script>
+        ';
+        exit();
+    }
+
+    if (empty($_POST['idClient']) || empty($_POST['immatCar'])) {
+        echo '
+            <script>
+                alert("Impossible de trouver le client ou la plaque d\'immatriculation est invalide.");
+                window.location.href = "../../";
+            </script>
+        ';
         exit();
     }
 
@@ -29,7 +44,12 @@
     $resClientVendeur = $resClientVendeur->fetch();
 
     if(!$resClientAcheteur || !$resClientVendeur || empty($_POST['immatCar'])) {
-        header('Location: ../../index.php');
+        echo '
+            <script>
+                alert("Impossible de trouver le client acheteur ou vendeur, ou la plaque d\'immatriculation est invalide.");
+                window.location.href = "../../";
+            </script>
+        ';
         exit();
     }
 
@@ -40,6 +60,24 @@
     $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
     $resVehicule->execute([$_POST['immatCar']]);
     $resVehicule = $resVehicule->fetch();
+
+    if (!empty($_POST['idCotitulaireVendeur'])) {
+        $ids = $_POST['idCotitulaireVendeur'];
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+        $sql = "SELECT cotitulaires_nom, cotitulaires_prenom FROM cotitulaires WHERE cotitulaires_id IN ($placeholders)";
+        $stmt = $DB->prepare($sql);
+        $stmt->execute($ids);
+        $cotitulaires = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $formattedNames = array_map(function($c) {
+            return $c['cotitulaires_nom'] . ' ' . $c['cotitulaires_prenom'];
+        }, $cotitulaires);
+    
+        $cotitulairesString = implode(' / ', $formattedNames);
+    } else {
+        $cotitulairesString = "";
+    }
 
     $importVarPDF = [
         $resVehicule['vehicules_marque'],
@@ -52,8 +90,8 @@
         $_POST['notesClientAcheteur'],
         $resClientAcheteur['clients_nom'] . ' ' . $resClientAcheteur['clients_telephone'],
         $_POST['notesClientVendeur'],
-        //Carte grise titulaire
-        //Carte grise co-titulaire
+        ": " . $resClientVendeur['clients_nom'] . ' ' . $resClientVendeur['clients_prenom'],
+        ": " . $cotitulairesString,
         date('d/m/Y', strtotime($_POST['dateCashSentinel'])),
         date('d/m/Y', strtotime($_POST['dateLivraisonPossible'])),
     ];
@@ -154,8 +192,8 @@
         ['x' => 22, 'y' => 141.5], // Notes vendeur
         ['x' => 80, 'y' => 147.5], // Nom et téléphone de l'acheteur
         ['x' => 22, 'y' => 153], // Notes acheteur
-        // ['x' => 52, 'y' => 147], // Carte grise titulaire
-        // ['x' => 52, 'y' => 154], // Carte grise co-titulaire
+        ['x' => 65, 'y' => 163], // Carte grise titulaire
+        ['x' => 70, 'y' => 169], // Carte grise co-titulaire
         ['x' => 55, 'y' => 201.5], // Cashsentinel
         ['x' => 135, 'y' => 201.5], // Date de livraison possible
     ];

@@ -5,8 +5,13 @@
 
     session_start();
 
-    if (!isset($_SESSION['user']['role']) || empty($_COOKIE['user_session'])) {
-        header('Location: ../../login.php');
+    if (!isset($_SESSION['user']) || empty($_COOKIE['user_session']) || empty($_SESSION['user']['agence_id'])) {
+        echo '
+            <script>
+                alert("Erreur 403 : Accès interdit. Veuillez vous connecter pour accéder à cette page.");
+                window.location.href = "../../";
+            </script>
+        ';
         exit();
     }
 
@@ -140,30 +145,24 @@
                             if ($validFolder) {
                                 if ($typeCustomerValue == "Acheteur") {
                                     echo '
-                                        <form id="redirectForm" action="choiceVehicle.php" method="POST" target="newTabForm" style="display:none;">
+                                        <form id="redirectForm" action="choiceVehicle.php" method="POST" style="display:none;">
                                             <input type="hidden" name="idClient" value="' . strtolower($getClient['clients_id']) . '">
                                         </form>
-
+                            
                                         <script>
-                                            window.open("", "newTabForm");
                                             document.getElementById("redirectForm").submit();
-
-                                            window.location.href = "../../index.php";
                                         </script>
                                     ';
                                     exit();
                                 } else {
                                     echo '
-                                        <form id="redirectForm" action="vehicleForm.php" method="POST"  target="newTabForm" style="display:none;">
+                                        <form id="redirectForm" action="vehicleForm.php" method="POST" style="display:none;">
                                             <input type="hidden" name="idClient" value="' . strtolower($getClient['clients_id']) . '">
                                             <input type="hidden" name="customerType" value="' . $_GET['customerType'] . '">
                                         </form>
-
+                            
                                         <script>
-                                            window.open("", "newTabForm");
                                             document.getElementById("redirectForm").submit();
-
-                                            window.location.href = "../../index.php";
                                         </script>
                                     ';
                                     exit();

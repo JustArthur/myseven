@@ -1,107 +1,115 @@
 <?php
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
-error_reporting(E_ALL);
+    ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
+    error_reporting(E_ALL);
 
-session_start();
+    session_start();
 
-// Vérification de la session utilisateur
-if(!isset($_SESSION['user']['role']) || empty($_COOKIE['user_session'])) {
-    header('Location: ../../login.php');
-    exit();
-}
+    if (!isset($_SESSION['user']) || empty($_COOKIE['user_session']) || empty($_SESSION['user']['agence_id'])) {
+        echo '
+            <script>
+                alert("Erreur 403 : Accès interdit. Veuillez vous connecter pour accéder à cette page.");
+                window.location.href = "../../";
+            </script>
+        ';
+        exit();
+    }
 
-// Vérifie si il y a bien un idClient et une immatriculation de voiture
-if(empty($_POST['idClient'])) {
-    header('Location: ../../index.php');
-    exit();
-}
+    if(empty($_POST['idClient'])) {
+        echo '
+            <script>
+                alert("Impossible de trouver le client.");
+                window.location.href = "../../";
+            </script>
+        ';
+        exit();
+    }
 
-require_once '../../database.php';
-require_once '../functions/createFolderNextCloud.php';
-require_once '../functions/cleanValues.php';
+    require_once '../../database.php';
+    require_once '../functions/createFolderNextCloud.php';
+    require_once '../functions/cleanValues.php';
 
 
 
-if (!empty($_POST)) {
-    extract(array: $_POST);
-    if (isset($_POST['submit_btn'])) {
+    if (!empty($_POST)) {
+        extract(array: $_POST);
+        if (isset($_POST['submit_btn'])) {
 
-        // Verifie si l'immatriculation est vide
-        if (empty($immatCar)) {
-            $_POST['idClient'] = $_POST['idClient'];
-            $error_message = [
-                'type' => 'error',
-                'message' => 'Aucune immatriculation selectionné.'
-            ];
-            
-        } else {
-            $DBB = new ConnexionDB;
-            $DB = $DBB->openConnection();
+            // Verifie si l'immatriculation est vide
+            if (empty($immatCar)) {
+                $_POST['idClient'] = $_POST['idClient'];
+                $error_message = [
+                    'type' => 'error',
+                    'message' => 'Aucune immatriculation selectionné.'
+                ];
+                
+            } else {
+                $DBB = new ConnexionDB;
+                $DB = $DBB->openConnection();
 
-            $resClient = $DB->prepare("SELECT * FROM clients WHERE clients_id = ?");
-            $resClient->execute([$idClient]);
-            $resClient = $resClient->fetch();
+                $resClient = $DB->prepare("SELECT * FROM clients WHERE clients_id = ?");
+                $resClient->execute([$idClient]);
+                $resClient = $resClient->fetch();
 
-            $resVehicule = $DB->prepare("SELECT * FROM vehicules WHERE vehicules_immatriculation = ?");
-            $resVehicule->execute([$immatCar]);
-            $resVehicule = $resVehicule->fetch();
+                $resVehicule = $DB->prepare("SELECT * FROM vehicules WHERE vehicules_immatriculation = ?");
+                $resVehicule->execute([$immatCar]);
+                $resVehicule = $resVehicule->fetch();
 
-            $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
-            $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
-            $getAgence = $getAgence->fetch();
+                $getAgence = $DB->prepare('SELECT * FROM agence WHERE agence_id = ?');
+                $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
+                $getAgence = $getAgence->fetch();
 
-            // Vérifie si le cni du client n'est pas vide
-            if ($resClient['clients_copie_cni']) {
-                $fileContent = $resClient['clients_copie_cni'];
+                // Vérifie si le cni du client n'est pas vide
+                if ($resClient['clients_copie_cni']) {
+                    $fileContent = $resClient['clients_copie_cni'];
 
-                //Récupère l'exntionion du fichier via le blob
-                $finfo = new finfo(FILEINFO_MIME_TYPE);
-                $mimeType = $finfo->buffer($resClient['clients_copie_cni']);
+                    //Récupère l'exntionion du fichier via le blob
+                    $finfo = new finfo(FILEINFO_MIME_TYPE);
+                    $mimeType = $finfo->buffer($resClient['clients_copie_cni']);
 
-                $extension = match ($mimeType) {
-                    'image/jpeg' => 'jpg',
-                    'image/png' => 'png',
-                    'image/gif' => 'gif',
-                    'image/webp' => 'webp',
-                    'application/pdf' => 'pdf',
-                    default => 'pdf'
-                };
+                    $extension = match ($mimeType) {
+                        'image/jpeg' => 'jpg',
+                        'image/png' => 'png',
+                        'image/gif' => 'gif',
+                        'image/webp' => 'webp',
+                        'application/pdf' => 'pdf',
+                        default => 'pdf'
+                    };
 
-                // Clean les valeurs pour créer un nom de fichier valide
-                $cleanBrand = cleanValue($resVehicule['vehicules_marque']);
-                $cleanModel = cleanValue($resVehicule['vehicules_model']);
-                $cleanImmatriculation = cleanValue($resVehicule['vehicules_immatriculation']);
-                $cleanFirstName = cleanValue($resClient['clients_prenom']);
-                $cleanLastName = cleanValue($resClient['clients_nom']);
+                    // Clean les valeurs pour créer un nom de fichier valide
+                    $cleanBrand = cleanValue($resVehicule['vehicules_marque']);
+                    $cleanModel = cleanValue($resVehicule['vehicules_model']);
+                    $cleanImmatriculation = cleanValue($resVehicule['vehicules_immatriculation']);
+                    $cleanFirstName = cleanValue($resClient['clients_prenom']);
+                    $cleanLastName = cleanValue($resClient['clients_nom']);
 
-                $tempFilePath = sys_get_temp_dir() . "/CNI_" . $cleanLastName . "-" . $cleanFirstName . ".{$extension}";
+                    $tempFilePath = sys_get_temp_dir() . "/CNI_" . $cleanLastName . "-" . $cleanFirstName . ".{$extension}";
 
-                // Met le fichier CNI dans un dossier temporaire
-                file_put_contents($tempFilePath, $fileContent);
+                    // Met le fichier CNI dans un dossier temporaire
+                    file_put_contents($tempFilePath, $fileContent);
 
-                // Crée le dossier sur NextCloud
-                $CNItoUpload = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/' . "DOCUMENTS_DE_VENTE/CLIENT_ACHETEUR/";
-                uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $CNItoUpload, $tempFilePath);
+                    // Crée le dossier sur NextCloud
+                    $CNItoUpload = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/' . "DOCUMENTS_DE_VENTE/CLIENT_ACHETEUR/";
+                    uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $CNItoUpload, $tempFilePath);
 
-                //unlink le fichier temporaire
-                unlink($tempFilePath);
+                    //unlink le fichier temporaire
+                    unlink($tempFilePath);
 
-                // Renvoi sur le formulaire suivant
-                echo '
-                    <form id="redirectForm" action="reservationForm.php" method="POST">
-                        <input type="hidden" name="idClient" value="' . $idClient . '">
-                        <input type="hidden" name="immatCar" value="' . strtoupper($immatCar) . '">
-                    </form>
-                    
-                    <script>
-                        document.getElementById("redirectForm").submit();
-                    </script>
-                ';
+                    // Renvoi sur le formulaire suivant
+                    echo '
+                        <form id="redirectForm" action="reservationForm.php" method="POST">
+                            <input type="hidden" name="idClient" value="' . $idClient . '">
+                            <input type="hidden" name="immatCar" value="' . strtoupper($immatCar) . '">
+                        </form>
+                        
+                        <script>
+                            document.getElementById("redirectForm").submit();
+                        </script>
+                    ';
+                }
             }
         }
     }
-}
 ?>
 
 <!DOCTYPE html>

@@ -5,15 +5,23 @@
 
     session_start();
 
-    // Vérifie si l'utilisateur est connecté
-    if (empty($_SESSION['user']) || empty($_COOKIE['user_session'])) {
-        header('Location: ../../login.php');
+    if (!isset($_SESSION['user']) || empty($_COOKIE['user_session']) || empty($_SESSION['user']['agence_id'])) {
+        echo '
+            <script>
+                alert("Erreur 403 : Accès interdit. Veuillez vous connecter pour accéder à cette page.");
+                window.location.href = "../../";
+            </script>
+        ';
         exit();
     }
 
-    // Vérifie si il y a bien un idClient et une immatriculation de voiture
     if(empty($_POST['idClient']) || empty($_POST['immatCar'])) {
-        header('Location: ../../index.php');
+        echo '
+            <script>
+                alert("Impossible de trouver le client ou la plaque d\'immatriculation est invalide.");
+                window.location.href = "../../";
+            </script>
+        ';
         exit();
     }
 

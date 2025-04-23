@@ -5,8 +5,13 @@
 
     session_start();
 
-    if(!isset($_SESSION['user']['role']) || empty($_COOKIE['user_session'])) {
-        header('Location: ../../login.php');
+    if (!isset($_SESSION['user']) || empty($_COOKIE['user_session']) || empty($_SESSION['user']['agence_id'])) {
+        echo '
+            <script>
+                alert("Erreur 403 : Accès interdit. Veuillez vous connecter pour accéder à cette page.");
+                window.location.href = "../../";
+            </script>
+        ';
         exit();
     }
 
@@ -26,13 +31,23 @@
         $resClient = $resClient->fetch();
         
     } else {
-        header('Location: ../../index.php');
+        echo '
+            <script>
+                alert("Impossible de trouver le client.");
+                window.location.href = "../../";
+            </script>
+        ';
         exit();
     }
 
 
     if(!$resClient || empty($_POST['immatCar'])) {
-        header('Location: ../../index.php');
+        echo '
+            <script>
+                alert("Impossible de trouver le client ou la plaque d\'immatriculation est invalide.");
+                window.location.href = "../../";
+            </script>
+        ';
         exit();
     }
 
@@ -55,7 +70,7 @@
     <main>
         <div class="search-container">
             <h2>Générer un mandat d'engagement</h2>
-            <form id="form_pdf" action="../pdf/generateContractEngagementPDF.php" method="POST">
+            <form id="form_pdf" target="_blank" action="../pdf/generateContractEngagementPDF.php" method="POST">
                 <div class="input_box">
                     <span class="label form_required">Adresse-mail du client</span>
                     <input required type="email" disabled  value="<?= $resClient['clients_email'] ?>" class="disabled" id="customerMail">
@@ -88,5 +103,6 @@
     </main>
 
     <script src="../../assets/js/errorMessages.js"></script>
+    <script src="../../assets/js/redirectForm.js"></script>
 </body>
 </html>

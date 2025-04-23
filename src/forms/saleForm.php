@@ -7,8 +7,13 @@
     
     require_once '../../database.php';
 
-    if(!isset($_SESSION['user']['role']) || empty($_COOKIE['user_session'])) {
-        header('Location: ../../login.php');
+    if (!isset($_SESSION['user']) || empty($_COOKIE['user_session']) || empty($_SESSION['user']['agence_id'])) {
+        echo '
+            <script>
+                alert("Erreur 403 : Accès interdit. Veuillez vous connecter pour accéder à cette page.");
+                window.location.href = "../../";
+            </script>
+        ';
         exit();
     }
 
@@ -42,19 +47,33 @@
         $resClientAcheteur = $resClientAcheteur->fetch();
         
     } else {
-        header('Location: ../../index.php');
+        echo '
+            <script>
+                alert("Impossible de trouver le client acheteur.");
+                window.location.href = "../../";
+            </script>
+        ';
         exit();
     }
 
 
-    if(!$resClientAcheteur || empty($_POST['immatCar'])) {
-        header('Location: ../../index.php');
+    if (!$resClientAcheteur || empty($_POST['immatCar'])) {
+        echo '
+            <script>
+                alert("Informations du client acheteur manquantes ou plaque d\'immatriculation non renseignée.");
+                window.location.href = "../../";
+            </script>
+        ';
         exit();
-        
     } else if ($resClientAcheteur['clients_type'] != 'Acheteur') {
-        header('Location: ../../index.php');
+        echo '
+            <script>
+                alert("Attention ce client n\'est pas un acheteur.");
+                window.location.href = "../../";
+            </script>
+        ';
         exit();
-    }
+    }    
 
     $resVehicule = $DB->prepare('SELECT * FROM vehicules WHERE vehicules_immatriculation = ?');
     $resVehicule->execute([$_POST['immatCar']]);
@@ -77,7 +96,6 @@
     $resClientVendeur = $DB->prepare('SELECT * FROM clients WHERE clients_id = ?');
     $resClientVendeur->execute([$resVehicule['vehicules_clients_id_vendeur']]);
     $resClientVendeur = $resClientVendeur->fetch();
-
 
     $resClientVendeurCotitulaire = $DB->prepare('SELECT * FROM cotitulaires WHERE cotitulaires_clients_id = ?');
     $resClientVendeurCotitulaire->execute([$resClientVendeur['clients_id']]);
@@ -124,7 +142,7 @@
                         <ul class="check_list">
                             <?php foreach($resClientVendeurCotitulaire as $cotitulaire) {?>
                                 <li class="check_item">
-                                    <input type="checkbox" name="idCotitulaireVendeur" id="idCotitulaire_<?= $cotitulaire['cotitulaires_id'] ?>" value="<?= $cotitulaire['cotitulaires_id'] ?>">
+                                    <input type="checkbox" name="idCotitulaireVendeur[]" id="idCotitulaire_<?= $cotitulaire['cotitulaires_id'] ?>" value="<?= $cotitulaire['cotitulaires_id'] ?>">
                                     <label for="idCotitulaire_<?= $cotitulaire['cotitulaires_id'] ?>"><?= $cotitulaire['cotitulaires_nom'] ?> <?= $cotitulaire['cotitulaires_prenom'] ?></label>
                                 </li>
                             <?php } ?>
@@ -302,5 +320,6 @@
         });
 
     </script>
+    <script src="../../assets/js/redirectForm.js"></script>
 </body>
 </html>

@@ -11,7 +11,7 @@
 
     session_start();
 
-    if(!isset($_SESSION['user']) || empty($_COOKIE['user_session']) || empty($_SESSION['user']['agence_id'])) {
+    if (!isset($_SESSION['user']) || empty($_COOKIE['user_session']) || empty($_SESSION['user']['agence_id'])) {
         header('Location: login.php');
         exit();
     }
@@ -28,8 +28,6 @@
     $resAgence = selectAllAgence($DB);
     $resAgence = $resAgence->fetchAll();
     $DBB->closeConnection();
-
-
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         extract($_POST);
@@ -51,9 +49,10 @@
         } else {
             foreach ($routes as $key => $file) {
                 if (isset($_POST[$key])) {
+                    $target = ($file === 'src/pdf/generateSignatureAuthPDF.php') ? "target='_blank'" : "";
                     
                     echo "
-                        <form style='display:none' id='postForm' action='$file' target='_blank' method='POST'>
+                        <form style='display:none' id='postForm' action='$file'" . $target ." method='POST'>
                             <input type='hidden' name='clientEmail' value='" . htmlspecialchars($selectedCustomers) . "'>
                             <input type='hidden' name='immatCar' value='" . htmlspecialchars($selectedVehicles) . "'>
                         </form>
