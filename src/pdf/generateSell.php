@@ -25,7 +25,7 @@
     if (empty($_POST['idClientVendeur']) || empty($_POST['idClientAcheteur']) || empty($_POST['immatCar'])) {
         echo '
             <script>
-                alert("Impossible de trouver le client acheteur ou vendeur, ou la plaque d\'immatriculation est invalide.");
+                alert("Impossible de trouver le client acheteur ou vendeur, ou la plaque d\'immatriculation.");
                 window.close()
             </script>
         ';
@@ -46,7 +46,7 @@
     if(!$resClientAcheteur || !$resClientVendeur || empty($_POST['immatCar'])) {
         echo '
             <script>
-                alert("Impossible de trouver le client acheteur ou vendeur, ou la plaque d\'immatriculation est invalide.");
+                alert("Impossible de trouver le client acheteur ou vendeur, ou la plaque d\'immatriculation.");
                 window.close()
             </script>
         ';
@@ -139,17 +139,16 @@
         ['value' => ": " . $cotitulairesString, 'x' => 70, 'y' => 169],
         ['value' => date('d/m/Y', strtotime($_POST['dateCashSentinel'])), 'x' => 55, 'y' => 201.5],
         ['value' => date('d/m/Y', strtotime($_POST['dateLivraisonPossible'])), 'x' => 135, 'y' => 201.5],
-        ['value' => date('d/m/Y'), 'x' => 150, 'y' => 150]
+        ['value' => $_POST['prixNETVendeur'] . '€', 'x' => 32, 'y' => 238.5],
+        ['value' => $_POST['prixVenteGarantie'] . '€', 'x' => 82, 'y' => 238.5],
+        ['value' => $_POST['prixVenteVoiture'] . '€', 'x' => 32, 'y' => 243.5],
+        ['value' => $_POST['prixAgenceGarantie'] . '€', 'x' => 82, 'y' => 243.5],
+        ['value' => $_POST['fraisMiseRoute'] . '€', 'x' => 32, 'y' => 248.5],
+        ['value' => $_POST['prixVenteCarteGrise'] . '€', 'x' => 82, 'y' => 248.5],
+        ['value' => $_POST['prixLivraison'] . '€', 'x' => 44, 'y' => 258],
+        ['value' => $_POST['prixAchatLivraison'] . '€', 'x' => 96, 'y' => 258],
+        ['value' => date('d/m/Y'), 'x' => 132, 'y' => 258]
     ];
-
-    //pnv (prix net vendeur) -> mandat engagement
-    //pvg (prix vente garantie) -> bon de resa
-    //pvv (prix de vente voiture) -> bon de resa
-    //pag () -> à saisir
-    //fmr (frais mise à la route) -> bon de resa
-    //pvcg (prix de vente carte grise) -> bon de resa
-    //Livraison (Prix de livraison) -> bon de rese
-    //Pa livraison -> à saisir, prix d'achat livraison
 
     foreach ($importPDFData as $item) {
         $pdf->SetFont('Helvetica');
@@ -167,17 +166,17 @@
         $pdf->Write(0, 'X');
     }
 
-    $folder = "../../storage/sell/";
-
-    if(!file_exists($folder)) {
-        mkdir($folder, 0777, true);
-    }
-
     $cleanBrand = cleanValue($resVehicule['vehicules_marque']);
     $cleanModel = cleanValue($resVehicule['vehicules_model']);
     $cleanImmatriculation = cleanValue($resVehicule['vehicules_immatriculation']);
     $cleanNom = cleanValue($resClientVendeur['clients_nom']);
     $cleanPrenom = cleanValue($resClientVendeur['clients_prenom']);
+
+    $folder = "../../storage/" . $cleanNom . "-" . $cleanPrenom . "/dossier_de_vente/";
+
+    if(!file_exists($folder)) {
+        mkdir($folder, 0777, true);
+    }
 
     $cleanedValueName = $cleanNom . '-' . $cleanPrenom;
     $cleanedValueVehicule = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/CLIENT_VENDEUR/';
@@ -196,6 +195,6 @@
 
     $pdf->Output('F', $destinationPath);
     // uploadPdfToNextcloud($getAgence['agence_path_client'], $cleanedValueName, $destinationPath);
-    // uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $cleanedValueVehicule, $destinationPath);
+    uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $cleanedValueVehicule, $destinationPath);
     $pdf->Output('I', $pdfNameFile);
 ?>

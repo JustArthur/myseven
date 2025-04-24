@@ -44,7 +44,7 @@
     <main>
         <div class="search-container">
             <h2>Ajouter le client vendeur du véhicule</h2>
-            <form id="form_pdf" action="saleForm.php" method="POST">
+            <form id="form_pdf" action="tripleForm.php" method="POST">
                 <?php if(!empty($error_message)) {echo "<div style='margin-bottom: 30px;' class='error_message " . $error_message['type'] . "'>" . $error_message['message'] . "</div>"; } ?>
                 
                 <div class="input_box">

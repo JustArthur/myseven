@@ -49,6 +49,14 @@
             </script>
         ';
         exit();
+    } else if ($resClient['clients_type'] != 'Acheteur') {
+        echo '
+            <script>
+                alert("Attention ce client n\'est pas un acheteur.");
+                window.location.href = "../../";
+            </script>
+        ';
+        exit();
     }
 
     $resVehicule = $DB->prepare("SELECT vehicules_immatriculation FROM vehicules WHERE vehicules_immatriculation = ?");
@@ -152,14 +160,14 @@
                     <span class="label form_required">Dépot arrhes</span>
                 </div>
 
-                <div class="inputSelect">
+                <div class="inputSelect" id="inputSelect">
                     <select name="depot_arrhes_select" id="depot_arrhes_select">
                         <option value="empBank">Empreinte Bancaire</option>
                         <option value="virBank">Virement Bancaire</option>
                         <option value="cheqEsp">Chèque ou Espèce</option>
                     </select>
 
-                    <input required type="number" min="1" name="depot_arrhes_input" placeholder="Montant" id="depot_arrhes_input">
+                    <input required type="text" min="1" name="depot_arrhes_input" placeholder="Montant" id="depot_arrhes_input">
                 </div>
 
                 <p class="text_error">Ce champ est requis</p>

@@ -53,7 +53,15 @@
     if(!$resClient || empty($_POST['immatCar'])) {
         echo '
             <script>
-                alert("Impossible de trouver le client ou la plaque d\'immatriculation est invalide.");
+                alert("Impossible de trouver le client ou la plaque d\'immatriculation.");
+                window.location.href = "../../";
+            </script>
+        ';
+        exit();
+    } else if ($resClient['clients_type'] != 'Vendeur') {
+        echo '
+            <script>
+                alert("Attention ce client n\'est pas un vendeur.");
                 window.location.href = "../../";
             </script>
         ';
@@ -104,17 +112,18 @@
         $pdf->Write(0, $valPDF);
     }
 
-    $folder = "../../storage/information_sell/";
-
-    if(!file_exists($folder)) {
-        mkdir($folder, 0777, true);
-    }
-
     $cleanBrand = cleanValue($resVehicule['vehicules_marque']);
     $cleanModel = cleanValue($resVehicule['vehicules_model']);
     $cleanImmatriculation = cleanValue($resVehicule['vehicules_immatriculation']);
     $cleanNom = cleanValue($resClient['clients_nom']);
     $cleanPrenom = cleanValue($resClient['clients_prenom']);
+    
+    $folder = "../../storage/" . $cleanNom . "-" . $cleanPrenom . "/information_relative_vente/";
+
+    if(!file_exists($folder)) {
+        mkdir($folder, 0777, true);
+    }
+
 
     $cleanedValueName = $cleanNom . '-' . $cleanPrenom;
     $cleanedValueVehicule = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/CLIENT_VENDEUR/';

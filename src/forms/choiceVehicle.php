@@ -35,7 +35,6 @@
         extract(array: $_POST);
         if (isset($_POST['submit_btn'])) {
 
-            // Verifie si l'immatriculation est vide
             if (empty($immatCar)) {
                 $_POST['idClient'] = $_POST['idClient'];
                 $error_message = [
@@ -59,11 +58,9 @@
                 $getAgence->execute([intval($_SESSION['user']["agence_id"])]);
                 $getAgence = $getAgence->fetch();
 
-                // Vérifie si le cni du client n'est pas vide
                 if ($resClient['clients_copie_cni']) {
                     $fileContent = $resClient['clients_copie_cni'];
 
-                    //Récupère l'exntionion du fichier via le blob
                     $finfo = new finfo(FILEINFO_MIME_TYPE);
                     $mimeType = $finfo->buffer($resClient['clients_copie_cni']);
 
@@ -76,7 +73,6 @@
                         default => 'pdf'
                     };
 
-                    // Clean les valeurs pour créer un nom de fichier valide
                     $cleanBrand = cleanValue($resVehicule['vehicules_marque']);
                     $cleanModel = cleanValue($resVehicule['vehicules_model']);
                     $cleanImmatriculation = cleanValue($resVehicule['vehicules_immatriculation']);
@@ -85,19 +81,15 @@
 
                     $tempFilePath = sys_get_temp_dir() . "/CNI_" . $cleanLastName . "-" . $cleanFirstName . ".{$extension}";
 
-                    // Met le fichier CNI dans un dossier temporaire
                     file_put_contents($tempFilePath, $fileContent);
 
-                    // Crée le dossier sur NextCloud
                     $CNItoUpload = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/' . "DOCUMENTS_DE_VENTE/CLIENT_ACHETEUR/";
                     uploadPdfToNextcloud($getAgence['agence_path_vehicules'], $CNItoUpload, $tempFilePath);
 
-                    //unlink le fichier temporaire
                     unlink($tempFilePath);
 
-                    // Renvoi sur le formulaire suivant
                     echo '
-                        <form id="redirectForm" action="reservationForm.php" method="POST">
+                        <form id="redirectForm" action="tripleForm.php" method="POST">
                             <input type="hidden" name="idClient" value="' . $idClient . '">
                             <input type="hidden" name="immatCar" value="' . strtoupper($immatCar) . '">
                         </form>

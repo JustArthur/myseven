@@ -60,7 +60,7 @@
     if (!$resClientAcheteur || empty($_POST['immatCar'])) {
         echo '
             <script>
-                alert("Informations du client acheteur manquantes ou plaque d\'immatriculation non renseignée.");
+                alert("Impossible de trouver le client acheteur ou la plaque d\'immatriculation est invalide.");
                 window.location.href = "../../";
             </script>
         ';
@@ -201,6 +201,62 @@
                 <div class="input_box">
                     <span class="label form_required">Notes du client vendeur</span>
                     <textarea required name="notesClientVendeur" id="noteClientVendeur"></textarea>
+
+                    <p class="text_error">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box">
+                    <span class="label form_required">Prix NET Vendeur</span>
+                    <input type="text" required name="prixNETVendeur" id="prixNETVendeur"/>
+
+                    <p class="text_error">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box">
+                    <span class="label form_required">Prix vente garantie</span>
+                    <input type="text" required name="prixVenteGarantie" id="prixVenteGarantie"/>
+
+                    <p class="text_error">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box">
+                    <span class="label form_required">Prix vente voiture</span>
+                    <input type="text" required name="prixVenteVoiture" id="prixVenteVoiture"/>
+
+                    <p class="text_error">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box">
+                    <span class="label form_required">Prix d'agence garantie</span>
+                    <input type="text" required name="prixAgenceGarantie" id="prixAgenceGarantie"/>
+
+                    <p class="text_error">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box">
+                    <span class="label form_required">Frais mise à la route</span>
+                    <input type="text" required name="fraisMiseRoute" id="fraisMiseRoute"/>
+
+                    <p class="text_error">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box">
+                    <span class="label form_required">Prix de vente carte grise</span>
+                    <input type="text" required name="prixVenteCarteGrise" id="prixVenteCarteGrise"/>
+
+                    <p class="text_error">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box">
+                    <span class="label form_required">Prix de livraison</span>
+                    <input type="text" required name="prixLivraison" id="prixLivraison"/>
+
+                    <p class="text_error">Ce champ est requis</p>
+                </div>
+
+                <div class="input_box">
+                    <span class="label form_required">Prix d'achat livraison</span>
+                    <input type="text" required name="prixAchatLivraison" id="prixAchatLivraison"/>
 
                     <p class="text_error">Ce champ est requis</p>
                 </div>

@@ -44,7 +44,15 @@
     if(!$resClient || empty($_POST['immatCar'])) {
         echo '
             <script>
-                alert("Impossible de trouver le client ou la plaque d\'immatriculation est invalide.");
+                alert("Impossible de trouver le client ou la plaque d\'immatriculation.");
+                window.location.href = "../../";
+            </script>
+        ';
+        exit();
+    } else if ($resClient['clients_type'] != 'Vendeur') {
+        echo '
+            <script>
+                alert("Attention ce client n\'est pas un vendeur.");
                 window.location.href = "../../";
             </script>
         ';

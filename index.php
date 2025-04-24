@@ -43,9 +43,10 @@
         ];
 
         if (empty($selectedCustomers) || empty($selectedVehicles)) {
-            echo "<script>
+            echo "
+                <script>
                     alert('Veuillez sélectionner un client et un véhicule avant de continuer.');
-                  </script>";
+                </script>";
         } else {
             foreach ($routes as $key => $file) {
                 if (isset($_POST[$key])) {

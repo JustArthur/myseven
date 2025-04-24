@@ -111,7 +111,8 @@
                         $cleanLastName = cleanValue($lastName);
 
                         $folderToCreate = $cleanFirstName . "-" . $cleanLastName;
-                        $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_client'], $folderToCreate);
+                        // $createFolderNextcloud = createNextcloudFolder($getAgence['agence_path_client'], $folderToCreate);
+                        $createFolderNextcloud = true;
 
                         if ($createFolderNextcloud) {
                             if (isset($_FILES['fileCNI']) && $_FILES['fileCNI']['error'] == 0) {
@@ -123,7 +124,7 @@
                                 $destinationPath = sys_get_temp_dir() . '/' . $newFileName;
 
                                 if (move_uploaded_file($tmpPath, $destinationPath)) {
-                                    uploadPdfToNextcloud($getAgence['agence_path_client'], $folderToCreate, $destinationPath);
+                                    // uploadPdfToNextcloud($getAgence['agence_path_client'], $folderToCreate, $destinationPath);
                                     unlink($destinationPath);
                                 } else {
                                     $error_message = [

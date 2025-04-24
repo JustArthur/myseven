@@ -18,7 +18,7 @@
     if(empty($_POST['idClient']) || empty($_POST['immatCar'])) {
         echo '
             <script>
-                alert("Impossible de trouver le client ou la plaque d\'immatriculation est invalide.");
+                alert("Impossible de trouver le client ou la plaque d\'immatriculation.");
                 window.location.href = "../../";
             </script>
         ';

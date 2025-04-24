@@ -49,7 +49,15 @@
     if(!$resClient || empty($_POST['immatCar'])) {
         echo '
             <script>
-                alert("Impossible de trouver le client ou la plaque d\'immatriculation est invalide.");
+                alert("Impossible de trouver le client ou la plaque d\'immatriculation.");
+                window.location.href = "../../";
+            </script>
+        ';
+        exit();
+    } else if ($resClient['clients_type'] != 'Acheteur') {
+        echo '
+            <script>
+                alert("Attention ce client n\'est pas un acheteur.");
                 window.location.href = "../../";
             </script>
         ';
@@ -201,19 +209,18 @@
         $pdf->Write(0, 'X');
     }
 
-    $folder = "../../storage/reservations/";
-
-    if(!file_exists(filename: $folder)) {
-        mkdir($folder, 0777, true);
-    }
-
-
     // ====== Prépare le chemin pour upload le PDF sur le NextCloud ====== //
     $cleanBrand = cleanValue($resVehicule['vehicules_marque']);
     $cleanModel = cleanValue($resVehicule['vehicules_model']);
     $cleanImmatriculation = cleanValue($resVehicule['vehicules_immatriculation']);
     $cleanNom = cleanValue($resClient['clients_nom']);
     $cleanPrenom = cleanValue($resClient['clients_prenom']);
+
+    $folder = "../../storage/" . $cleanNom . "-" . $cleanPrenom . "/bon_reservation/";
+
+    if(!file_exists(filename: $folder)) {
+        mkdir($folder, 0777, true);
+    }
 
     $cleanedValueName = $cleanNom . '-' . $cleanPrenom;
     $cleanedValueVehicule = $cleanBrand . '/' . $cleanModel . '-' . $cleanImmatriculation . '/DOCUMENTS_DE_VENTE/CLIENT_ACHETEUR/';
